@@ -1,0 +1,32 @@
+# === General ===
+.DS_Store
+*.log
+*.env
+.env.local
+.env.*.local
+node_modules/
+dist/
+build/
+
+# === Client (React + Vite) ===
+client/node_modules/
+client/dist/
+client/.vite/
+
+# === Server (Go) ===
+server/bin/
+server/*.exe
+server/*.out
+server/*.test
+server/coverage.out
+
+# === OS & Editor ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+Thumbs.db
+
+# === Git ===
+*.orig
