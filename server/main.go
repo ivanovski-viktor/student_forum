@@ -1,16 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net/http"
+	"github.com/gin-gonic/gin"
+	"github.com/ivanovski-viktor/student_forum/server/db"
+	"github.com/ivanovski-viktor/student_forum/server/routes"
 )
 
 func main() {
-    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        fmt.Fprintln(w,"Hello World!")
-    })
-
-    fmt.Println("Starting server at http://localhost:8080")
-    log.Fatal(http.ListenAndServe(":8080", nil))
+   db.InitDB()
+   server := gin.Default()
+   routes.RegisterRoutes(server)
+   server.Run(":8080") //localhost:8080
 }
