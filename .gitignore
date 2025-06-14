@@ -19,6 +19,8 @@ server/*.exe
 server/*.out
 server/*.test
 server/coverage.out
+# === Database ===
+server/*.db
 
 # === OS & Editor ===
 .vscode/
