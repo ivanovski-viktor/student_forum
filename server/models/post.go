@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/ivanovski-viktor/student_forum/server/db"
@@ -15,12 +16,9 @@ type Post struct {
     UpdatedAt   *time.Time `json:"updated_at,omitempty"`
     UserID      int64      `json:"user_id"`
 }
-
-
-
+//Create post
 func (p Post) Create() error {
 	p.CreatedAt = time.Now()
-	p.UpdatedAt = nil
 
 	query := `
 		INSERT INTO posts(title, description, created_at, updated_at, user_id)
@@ -43,7 +41,7 @@ func (p Post) Create() error {
 
 	return err
 }
-
+//Get all posts
 func GetAll() ([]Post, error) {
 	query := "SELECT * FROM posts"
 
@@ -67,4 +65,46 @@ func GetAll() ([]Post, error) {
 		posts = append(posts, post)
 	}
 	return posts, nil
+}
+
+func GetPostById(id int64) (*Post, error) {
+	query := 
+	`SELECT * 
+	FROM posts 
+	WHERE id = ?`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	
+	defer stmt.Close()
+	
+	var post Post
+
+	err = stmt.QueryRow(id).Scan(&post.ID, &post.Title, &post.Description, &post.CreatedAt, &post.UpdatedAt, &post.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+  	return &post, nil
+}
+
+func DeletePostByID(id int64) error {
+	query := `DELETE FROM posts WHERE id = ?`
+	result, err := db.DB.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("Post doesn't exist!")
+	}
+
+	return nil
 }

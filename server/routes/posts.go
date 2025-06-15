@@ -3,6 +3,7 @@ package routes
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ivanovski-viktor/student_forum/server/models"
@@ -21,14 +22,15 @@ func createPost(context *gin.Context) {
 
 	err = post.Create()
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": err})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to create post!"})
 		return
 	}
 
 
-    context.JSON( http.StatusOK, gin.H{"message": fmt.Sprintf("Post %s created", post.Title),})
+    context.JSON( http.StatusOK, gin.H{"message": fmt.Sprintf("Created post: %s", post.Title),})
 	return 
 }
+
 func getAllPosts(context *gin.Context) {
 
 	posts, err := models.GetAll()
@@ -38,14 +40,52 @@ func getAllPosts(context *gin.Context) {
 	}
 
 	if len(posts) < 1 {
-		context.JSON( http.StatusOK, gin.H{"message": "No posts available!"})
-		return 
-	}
+	context.JSON(http.StatusOK, gin.H{"posts": []models.Post{}})
+	return
+}
 
     context.JSON( http.StatusOK, gin.H{"posts": posts})
 	return 
 }
+
 func getPost(context *gin.Context) {
-    context.JSON( http.StatusOK, gin.H{"message": "Coming soon!"})
+
+	postIdStr := context.Param("id")
+
+	postId, err := strconv.ParseInt(postIdStr, 10, 64)
+	if err != nil {
+		context.JSON( http.StatusBadRequest, gin.H{"message": "Unable to parse post id!"})
+		return
+	}
+
+	post, err :=  models.GetPostById(postId)
+
+	if err != nil {
+		context.JSON( http.StatusBadRequest, gin.H{"message": "Unable to get post!"})
+		return
+	}
+
+	context.JSON( http.StatusOK, gin.H{"message": post})
 	return 
+}
+
+func deletePost(context *gin.Context) {
+	postIdStr := context.Param("id")
+
+	postId, err := strconv.ParseInt(postIdStr, 10, 64)
+
+	if err != nil {
+		context.JSON( http.StatusBadRequest, gin.H{"message": "Unable to parse post id!"})
+		return
+	}
+
+	err = models.DeletePostByID(postId)
+
+	if err != nil {
+		context.JSON( http.StatusInternalServerError, gin.H{"message": "Unable to find and delete the post!"})
+		return
+	}
+
+	context.JSON(http.StatusNoContent, models.Post{})
+	return
 }
