@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -16,7 +17,7 @@ func createPost(context *gin.Context) {
 	err := context.ShouldBindJSON(&post)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{ "message": "Cound not parse request data!"})
+		context.JSON(http.StatusBadRequest, gin.H{ "message": "Could not parse request data!"})
 		return
 	}
 
@@ -37,6 +38,7 @@ func getAllPosts(context *gin.Context) {
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting posts!"})
+		return
 	}
 
 	if len(posts) < 1 {
@@ -50,18 +52,16 @@ func getAllPosts(context *gin.Context) {
 
 func getPost(context *gin.Context) {
 
-	postIdStr := context.Param("id")
-
-	postId, err := strconv.ParseInt(postIdStr, 10, 64)
+	postId, err := parseParamToInt("id", context)
 	if err != nil {
 		context.JSON( http.StatusBadRequest, gin.H{"message": "Unable to parse post id!"})
 		return
 	}
-
+	
 	post, err :=  models.GetPostById(postId)
 
 	if err != nil {
-		context.JSON( http.StatusBadRequest, gin.H{"message": "Unable to get post!"})
+		context.JSON( http.StatusNotFound, gin.H{"message": "Unable to get post!"})
 		return
 	}
 
@@ -70,10 +70,8 @@ func getPost(context *gin.Context) {
 }
 
 func deletePost(context *gin.Context) {
-	postIdStr := context.Param("id")
 
-	postId, err := strconv.ParseInt(postIdStr, 10, 64)
-
+	postId, err := parseParamToInt("id", context)
 	if err != nil {
 		context.JSON( http.StatusBadRequest, gin.H{"message": "Unable to parse post id!"})
 		return
@@ -82,10 +80,60 @@ func deletePost(context *gin.Context) {
 	err = models.DeletePostByID(postId)
 
 	if err != nil {
-		context.JSON( http.StatusInternalServerError, gin.H{"message": "Unable to find and delete the post!"})
+		context.JSON( http.StatusNotFound, gin.H{"message": "Unable to find and delete the post!"})
 		return
 	}
 
-	context.JSON(http.StatusNoContent, models.Post{})
+	context.Status(http.StatusNoContent)
 	return
+}
+
+func updatePost(context *gin.Context) {
+
+	postId, err := parseParamToInt("id", context)
+	if err != nil {
+		context.JSON( http.StatusBadRequest, gin.H{"message": "Unable to parse post id!"})
+		return
+	}
+	
+	post, err :=  models.GetPostById(postId)
+
+	// seperate struct for control of user input
+	var input struct {
+		Title       *string `json:"title"`
+		Description *string `json:"description"`
+	}
+
+	if err := context.ShouldBindJSON(&input); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data!"})
+		return
+	}
+
+	// Apply updates if present
+	if input.Title != nil {
+		post.Title = *input.Title
+	}
+	if input.Description != nil {
+		post.Description = *input.Description
+	}
+
+	err = post.Update()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to update post!"})
+		return
+	}
+
+    context.JSON( http.StatusOK, gin.H{"message": fmt.Sprintf("Updated post: %s", post.Title),})
+	return 
+}
+//helper function for converting param of type string to int
+func parseParamToInt(param string, context *gin.Context ) (int64, error){
+
+	postIdStr := context.Param(param)
+
+	postId, err := strconv.ParseInt(postIdStr, 10, 64)
+	if err != nil {
+		return 0,  errors.New("Unable to parse param, param must be a number!")
+	}
+	return postId, nil
 }

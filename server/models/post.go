@@ -16,6 +16,7 @@ type Post struct {
     UpdatedAt   *time.Time `json:"updated_at,omitempty"`
     UserID      int64      `json:"user_id"`
 }
+
 //Create post
 func (p Post) Create() error {
 	p.CreatedAt = time.Now()
@@ -41,6 +42,27 @@ func (p Post) Create() error {
 
 	return err
 }
+
+//Update post
+func (p Post) Update() error {
+	now := time.Now()
+	p.UpdatedAt = &now
+	query := `
+		UPDATE posts 
+		SET title = ?, description = ?, updated_at = ?
+		WHERE id = ?
+	`
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(&p.Title, &p.Description, &p.UpdatedAt, &p.ID)
+	return err
+}
+
 //Get all posts
 func GetAll() ([]Post, error) {
 	query := "SELECT * FROM posts"
@@ -67,6 +89,7 @@ func GetAll() ([]Post, error) {
 	return posts, nil
 }
 
+//Get post by id
 func GetPostById(id int64) (*Post, error) {
 	query := 
 	`SELECT * 
@@ -90,6 +113,7 @@ func GetPostById(id int64) (*Post, error) {
   	return &post, nil
 }
 
+//Delete post by id
 func DeletePostByID(id int64) error {
 	query := `DELETE FROM posts WHERE id = ?`
 	result, err := db.DB.Exec(query, id)
