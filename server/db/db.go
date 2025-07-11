@@ -8,7 +8,7 @@ import (
 
 var DB *sql.DB
 
-func InitDB(){
+func InitDB() {
 	var err error
 	DB, err = sql.Open("sqlite3", "student_forum.db")
 
@@ -23,6 +23,20 @@ func InitDB(){
 }
 
 func createTables() {
+	createUsersTable := `
+		CREATE TABLE IF NOT EXISTS users (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			username TEXT NOT NULL,
+			email TEXT NOT NULL UNIQUE,
+			password TEXT NOT NULL)
+	`
+
+	_, err := DB.Exec(createUsersTable)
+
+	if err != nil {
+		panic("Could not create users table!")
+	}
+
 	createPostsTable := `
 		CREATE TABLE IF NOT EXISTS posts (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,9 +48,10 @@ func createTables() {
 		)
 	`
 
-	_, err := DB.Exec(createPostsTable)
+	_, err = DB.Exec(createPostsTable)
 
 	if err != nil {
 		panic("Could not create posts table!")
 	}
+
 }

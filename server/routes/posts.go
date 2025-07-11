@@ -1,102 +1,96 @@
 package routes
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ivanovski-viktor/student_forum/server/models"
+	"github.com/ivanovski-viktor/student_forum/server/utils"
 )
 
-func createPost(context *gin.Context) {
+func createPost(c *gin.Context) {
 
 	var post models.Post
 
-	err := context.ShouldBindJSON(&post)
+	err := c.ShouldBindJSON(&post)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{ "message": "Could not parse request data!"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data!"})
 		return
 	}
 
 	err = post.Create()
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to create post!"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to create post!"})
 		return
 	}
 
-
-    context.JSON( http.StatusOK, gin.H{"message": fmt.Sprintf("Created post: %s", post.Title),})
-	return 
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Created post: %s", post.Title)})
 }
 
-func getAllPosts(context *gin.Context) {
+func getAllPosts(c *gin.Context) {
 
 	posts, err := models.GetAll()
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting posts!"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting posts!"})
 		return
 	}
 
 	if len(posts) < 1 {
-	context.JSON(http.StatusOK, gin.H{"posts": []models.Post{}})
-	return
-}
-
-    context.JSON( http.StatusOK, gin.H{"posts": posts})
-	return 
-}
-
-func getPost(context *gin.Context) {
-
-	postId, err := parseParamToInt("id", context)
-	if err != nil {
-		context.JSON( http.StatusBadRequest, gin.H{"message": "Unable to parse post id!"})
-		return
-	}
-	
-	post, err :=  models.GetPostById(postId)
-
-	if err != nil {
-		context.JSON( http.StatusNotFound, gin.H{"message": "Unable to get post!"})
+		c.JSON(http.StatusOK, gin.H{"posts": []models.Post{}})
 		return
 	}
 
-	context.JSON( http.StatusOK, gin.H{"message": post})
-	return 
+	c.JSON(http.StatusOK, gin.H{"posts": posts})
 }
 
-func deletePost(context *gin.Context) {
+func getPost(c *gin.Context) {
 
-	postId, err := parseParamToInt("id", context)
+	postId, err := utils.ParseParamToInt("id", c)
 	if err != nil {
-		context.JSON( http.StatusBadRequest, gin.H{"message": "Unable to parse post id!"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Unable to parse post id!"})
+		return
+	}
+
+	post, err := models.GetPostById(postId)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Unable to get post!"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": post})
+}
+
+func deletePost(c *gin.Context) {
+
+	postId, err := utils.ParseParamToInt("id", c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Unable to parse post id!"})
 		return
 	}
 
 	err = models.DeletePostByID(postId)
 
 	if err != nil {
-		context.JSON( http.StatusNotFound, gin.H{"message": "Unable to find and delete the post!"})
+		c.JSON(http.StatusNotFound, gin.H{"message": "Unable to find and delete the post!"})
 		return
 	}
 
-	context.Status(http.StatusNoContent)
-	return
+	c.Status(http.StatusNoContent)
 }
 
-func updatePost(context *gin.Context) {
+func updatePost(c *gin.Context) {
 
-	postId, err := parseParamToInt("id", context)
+	postId, err := utils.ParseParamToInt("id", c)
 	if err != nil {
-		context.JSON( http.StatusBadRequest, gin.H{"message": "Unable to parse post id!"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Unable to parse post id!"})
 		return
 	}
-	
-	post, err :=  models.GetPostById(postId)
+
+	post, err := models.GetPostById(postId)
 
 	// seperate struct for control of user input
 	var input struct {
@@ -104,8 +98,8 @@ func updatePost(context *gin.Context) {
 		Description *string `json:"description"`
 	}
 
-	if err := context.ShouldBindJSON(&input); err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data!"})
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data!"})
 		return
 	}
 
@@ -119,21 +113,9 @@ func updatePost(context *gin.Context) {
 
 	err = post.Update()
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to update post!"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to update post!"})
 		return
 	}
 
-    context.JSON( http.StatusOK, gin.H{"message": fmt.Sprintf("Updated post: %s", post.Title),})
-	return 
-}
-//helper function for converting param of type string to int
-func parseParamToInt(param string, context *gin.Context ) (int64, error){
-
-	postIdStr := context.Param(param)
-
-	postId, err := strconv.ParseInt(postIdStr, 10, 64)
-	if err != nil {
-		return 0,  errors.New("Unable to parse param, param must be a number!")
-	}
-	return postId, nil
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Updated post: %s", post.Title)})
 }
