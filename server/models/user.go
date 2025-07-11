@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/ivanovski-viktor/student_forum/server/db"
+	"github.com/ivanovski-viktor/student_forum/server/utils"
 )
 
 type User struct {
@@ -38,8 +39,9 @@ func (u *User) ValidateCredentials() error {
 		return errors.New("invalid login credentials")
 	}
 
-	// validate password
-	if u.Password != retrievedPassword {
+	//Validate password
+	validPassword := utils.CheckPasswordHash(u.Password, retrievedPassword)
+	if !validPassword {
 		return errors.New("invalid login credentials")
 	}
 	return nil

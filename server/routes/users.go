@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ivanovski-viktor/student_forum/server/models"
+	"github.com/ivanovski-viktor/student_forum/server/utils"
 )
 
 func registerUser(c *gin.Context) {
@@ -16,6 +17,14 @@ func registerUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data!"})
 		return
 	}
+
+	//Password hashing
+	hashedPassword, err := utils.HashPassword(user.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Could not hash password!"})
+		return
+	}
+	user.Password = hashedPassword
 
 	err = user.Create()
 
@@ -42,6 +51,5 @@ func loginUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Logged in successfully!"})
-
+	c.JSON(http.StatusOK, gin.H{"message": "Logged in successfully!"})
 }
