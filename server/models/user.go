@@ -8,10 +8,17 @@ import (
 )
 
 type User struct {
-	ID       int64  `binding:required`
-	Username string `binding:required`
-	Email    string `binding:required`
-	Password string `binding:required`
+	ID       int64  `binding:"required"`
+	Username string `binding:"required"`
+	Email    string `binding:"required,email"`
+	Password string `binding:"required,strongpwd"`
+}
+
+type UserControl struct {
+	Username        string `binding:"required"`
+	Email           string `binding:"required,email"`
+	Password        string `binding:"required,strongpwd"`
+	ConfirmPassword string `json:"confirm_password" binding:"required"`
 }
 
 func (u *User) Create() error {
