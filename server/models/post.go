@@ -1,23 +1,22 @@
 package models
 
 import (
-	"errors"
 	"time"
 
 	"github.com/ivanovski-viktor/student_forum/server/db"
 )
 
-//This will be my basic version to start building the API
+// This will be my basic version to start building the API
 type Post struct {
 	ID          int64      `json:"id"`
-    Title       string     `json:"title" binding:"required"`
-    Description string     `json:"description" binding:"required"`
-    CreatedAt   time.Time  `json:"created_at"`
-    UpdatedAt   *time.Time `json:"updated_at,omitempty"`
-    UserID      int64      `json:"user_id"`
+	Title       string     `json:"title" binding:"required"`
+	Description string     `json:"description" binding:"required"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   *time.Time `json:"updated_at,omitempty"`
+	UserID      int64      `json:"user_id"`
 }
 
-//Create post
+// Create post
 func (p Post) Create() error {
 	p.CreatedAt = time.Now()
 
@@ -43,7 +42,7 @@ func (p Post) Create() error {
 	return err
 }
 
-//Update post
+// Update post
 func (p Post) Update() error {
 	now := time.Now()
 	p.UpdatedAt = &now
@@ -63,7 +62,7 @@ func (p Post) Update() error {
 	return err
 }
 
-//Get all posts
+// Get all posts
 func GetAll() ([]Post, error) {
 	query := "SELECT * FROM posts"
 
@@ -71,7 +70,7 @@ func GetAll() ([]Post, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	defer rows.Close()
 
 	var posts []Post
@@ -83,16 +82,16 @@ func GetAll() ([]Post, error) {
 		if err != nil {
 			return nil, err
 		}
-	
+
 		posts = append(posts, post)
 	}
 	return posts, nil
 }
 
-//Get post by id
+// Get post by id
 func GetPostById(id int64) (*Post, error) {
-	query := 
-	`SELECT * 
+	query :=
+		`SELECT * 
 	FROM posts 
 	WHERE id = ?`
 
@@ -100,9 +99,9 @@ func GetPostById(id int64) (*Post, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	defer stmt.Close()
-	
+
 	var post Post
 
 	err = stmt.QueryRow(id).Scan(&post.ID, &post.Title, &post.Description, &post.CreatedAt, &post.UpdatedAt, &post.UserID)
@@ -110,25 +109,15 @@ func GetPostById(id int64) (*Post, error) {
 		return nil, err
 	}
 
-  	return &post, nil
+	return &post, nil
 }
 
-//Delete post by id
-func DeletePostByID(id int64) error {
+// Delete post
+func (p Post) Delete() error {
 	query := `DELETE FROM posts WHERE id = ?`
-	result, err := db.DB.Exec(query, id)
+	_, err := db.DB.Exec(query, p.ID)
 	if err != nil {
 		return err
 	}
-
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return err
-	}
-
-	if rowsAffected == 0 {
-		return errors.New("Post doesn't exist!")
-	}
-
 	return nil
 }

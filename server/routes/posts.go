@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +11,6 @@ import (
 func createPost(c *gin.Context) {
 
 	var post models.Post
-
 	err := c.ShouldBindJSON(&post)
 
 	if err != nil {
@@ -20,13 +18,16 @@ func createPost(c *gin.Context) {
 		return
 	}
 
+	userId := c.GetInt64("userId")
+	post.UserID = userId
+
 	err = post.Create()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to create post!"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Created post: %s", post.Title)})
+	c.JSON(http.StatusOK, gin.H{"message": "Created post!"})
 }
 
 func getAllPosts(c *gin.Context) {
@@ -72,7 +73,21 @@ func deletePost(c *gin.Context) {
 		return
 	}
 
-	err = models.DeletePostByID(postId)
+	post, err := models.GetPostById(postId)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to get post!"})
+		return
+	}
+
+	userId := c.GetInt64("userId")
+
+	if post.UserID != userId {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Not authorized to delete the post!"})
+		return
+	}
+
+	err = post.Delete()
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Unable to find and delete the post!"})
@@ -91,24 +106,22 @@ func updatePost(c *gin.Context) {
 	}
 
 	post, err := models.GetPostById(postId)
-
-	// seperate struct for control of user input
-	var input struct {
-		Title       *string `json:"title"`
-		Description *string `json:"description"`
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not get post!"})
+		return
 	}
 
-	if err := c.ShouldBindJSON(&input); err != nil {
+	err = c.ShouldBindJSON(&post)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data!"})
 		return
 	}
 
-	// Apply updates if present
-	if input.Title != nil {
-		post.Title = *input.Title
-	}
-	if input.Description != nil {
-		post.Description = *input.Description
+	userId := c.GetInt64("userId")
+
+	if post.UserID != userId {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Not authorized to update the post!"})
+		return
 	}
 
 	err = post.Update()
@@ -117,5 +130,5 @@ func updatePost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Updated post: %s", post.Title)})
+	c.JSON(http.StatusOK, gin.H{"message": "Updated the post!"})
 }
