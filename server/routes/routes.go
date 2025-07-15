@@ -1,16 +1,21 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/ivanovski-viktor/student_forum/server/middleware"
+)
 
-//GET, POST, PUT, PATCH, DELETE
 func RegisterRoutes(server *gin.Engine) {
-	server.POST("/posts", createPost)
 	server.GET("/posts", getAllPosts)
 	server.GET("/posts/:id", getPost)
-	server.PUT("/posts/:id", updatePost)
-	server.DELETE("/posts/:id", deletePost)
-
-	// users
 	server.POST("/register", registerUser)
 	server.POST("/login", loginUser)
+
+	// AUTH ROUTES
+	auth := server.Group("/")
+	auth.Use(middleware.Authenticate)
+	auth.POST("/posts", createPost)
+	auth.PUT("/posts/:id", updatePost)
+	auth.DELETE("/posts/:id", deletePost)
+
 }
