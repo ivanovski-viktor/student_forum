@@ -11,9 +11,9 @@ import (
 
 func registerUser(c *gin.Context) {
 
-	var userControl models.UserControl
+	var RegisterUser models.RegisterUser
 
-	err := c.ShouldBindJSON(&userControl)
+	err := c.ShouldBindJSON(&RegisterUser)
 	if err != nil {
 		// get password validation error message
 		if validationErrors, ok := err.(validator.ValidationErrors); ok {
@@ -31,15 +31,15 @@ func registerUser(c *gin.Context) {
 		return
 	}
 
-	if userControl.Password != userControl.ConfirmPassword {
+	if RegisterUser.Password != RegisterUser.ConfirmPassword {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Passwords must match!"})
 		return
 	}
 
 	var user models.User
-	user.Username = userControl.Username
-	user.Email = userControl.Email
-	user.Password = userControl.Password
+	user.Username = RegisterUser.Username
+	user.Email = RegisterUser.Email
+	user.Password = RegisterUser.Password
 
 	//Password hashing
 	hashedPassword, err := utils.HashPassword(user.Password)
@@ -61,13 +61,17 @@ func registerUser(c *gin.Context) {
 
 func loginUser(c *gin.Context) {
 
+	var loginUser models.LoginUser
 	var user models.User
 
-	err := c.ShouldBindJSON(&user)
+	err := c.ShouldBindJSON(&loginUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data!"})
 		return
 	}
+
+	user.Email = loginUser.Email
+	user.Password = loginUser.Password
 
 	err = user.ValidateCredentials()
 	if err != nil {
@@ -82,4 +86,27 @@ func loginUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logged in successfully!", "token": token})
+}
+
+func getUser(c *gin.Context) {
+
+	userId, err := utils.ParseParamToInt("id", c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Unable to parse user id!"})
+		return
+	}
+
+	user, err := models.GetUserById(userId)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Unable to get user!"})
+		return
+	}
+
+	var UserInfo models.UserInfo
+
+	UserInfo.Username = user.Username
+	UserInfo.CreatedAt = user.CreatedAt
+
+	c.JSON(http.StatusOK, gin.H{"message": UserInfo})
 }

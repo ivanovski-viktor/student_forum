@@ -10,6 +10,7 @@ func RegisterRoutes(server *gin.Engine) {
 	server.GET("/posts/:id", getPost)
 	server.POST("/register", registerUser)
 	server.POST("/login", loginUser)
+	server.GET("/users/:id", getUser)
 
 	// AUTH ROUTES
 	auth := server.Group("/")

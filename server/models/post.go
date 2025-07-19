@@ -17,7 +17,7 @@ type Post struct {
 }
 
 // Create post
-func (p Post) Create() error {
+func (p *Post) Create() error {
 	p.CreatedAt = time.Now()
 
 	query := `
@@ -43,7 +43,7 @@ func (p Post) Create() error {
 }
 
 // Update post
-func (p Post) Update() error {
+func (p *Post) Update() error {
 	now := time.Now()
 	p.UpdatedAt = &now
 	query := `
@@ -113,7 +113,7 @@ func GetPostById(id int64) (*Post, error) {
 }
 
 // Delete post
-func (p Post) Delete() error {
+func (p *Post) Delete() error {
 	query := `DELETE FROM posts WHERE id = ?`
 	_, err := db.DB.Exec(query, p.ID)
 	if err != nil {
