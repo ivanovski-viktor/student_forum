@@ -18,5 +18,7 @@ func RegisterRoutes(server *gin.Engine) {
 	auth.POST("/posts", createPost)
 	auth.PUT("/posts/:id", updatePost)
 	auth.DELETE("/posts/:id", deletePost)
+	auth.GET("/users/me", getAuthenticatedUser)
+	auth.PATCH("/users/me/change-password", changeUserPassword)
 
 }
