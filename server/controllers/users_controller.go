@@ -1,4 +1,4 @@
-package routes
+package controllers
 
 import (
 	"net/http"
@@ -17,7 +17,7 @@ type UserInfo struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func registerUser(c *gin.Context) {
+func RegisterUser(c *gin.Context) {
 
 	var RegisterUser models.RegisterUser
 
@@ -59,7 +59,7 @@ func registerUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Created user successfully!"})
 }
 
-func loginUser(c *gin.Context) {
+func LoginUser(c *gin.Context) {
 	var user models.User
 
 	err := c.ShouldBindJSON(&user)
@@ -83,7 +83,7 @@ func loginUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Logged in successfully!", "token": token})
 }
 
-func getUser(c *gin.Context) {
+func GetUser(c *gin.Context) {
 
 	userId, err := utils.ParseParamToInt("id", c)
 	if err != nil {
@@ -107,15 +107,10 @@ func getUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": userInfo})
 }
 
-func getAuthenticatedUser(c *gin.Context) {
+func GetAuthenticatedUser(c *gin.Context) {
 
 	// Get userId from context
-
-	userId, ok := utils.GetAuthenticatedUserId(c)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-		return
-	}
+	userId := c.GetInt64("userId")
 
 	user, err := models.GetUserById(userId)
 	if err != nil {
@@ -134,7 +129,7 @@ func getAuthenticatedUser(c *gin.Context) {
 		gin.H{"message": userInfo})
 }
 
-func changeUserPassword(c *gin.Context) {
+func ChangeUserPassword(c *gin.Context) {
 
 	var changePassword models.ChangePassword
 
@@ -147,11 +142,7 @@ func changeUserPassword(c *gin.Context) {
 		return
 	}
 
-	userId, ok := utils.GetAuthenticatedUserId(c)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-		return
-	}
+	userId := c.GetInt64("userId")
 
 	user, err := models.GetUserById(userId)
 	if err != nil {

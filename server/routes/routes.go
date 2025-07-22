@@ -2,23 +2,32 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/ivanovski-viktor/student_forum/server/controllers"
 	"github.com/ivanovski-viktor/student_forum/server/middleware"
 )
 
 func RegisterRoutes(server *gin.Engine) {
-	server.GET("/posts", getAllPosts)
-	server.GET("/posts/:id", getPost)
-	server.POST("/register", registerUser)
-	server.POST("/login", loginUser)
-	server.GET("/users/:id", getUser)
+	user := server.Group("/users")
+	{
+		user.POST("/register", controllers.RegisterUser)
+		user.GET("/:id", controllers.GetUser)
 
-	// AUTH ROUTES
-	auth := server.Group("/")
-	auth.Use(middleware.Authenticate)
-	auth.POST("/posts", createPost)
-	auth.PUT("/posts/:id", updatePost)
-	auth.DELETE("/posts/:id", deletePost)
-	auth.GET("/users/me", getAuthenticatedUser)
-	auth.PATCH("/users/me/change-password", changeUserPassword)
+		// AUTHENTICATED ROUTES
+		authUser := user.Group("").Use(middleware.Authenticate)
+		authUser.GET("/me", controllers.GetAuthenticatedUser)
+		authUser.PATCH("/me/change-password", controllers.ChangeUserPassword)
+	}
+
+	post := server.Group("/posts")
+	{
+		post.GET("", controllers.GetAllPosts)
+		post.GET("/:id", controllers.GetPost)
+
+		// AUTHENTICATED ROUTES
+		protectedPosts := post.Group("").Use(middleware.Authenticate)
+		protectedPosts.POST("", controllers.CreatePost)
+		protectedPosts.PUT("/:id", controllers.UpdatePost)
+		protectedPosts.DELETE("/:id", controllers.DeletePost)
+	}
 
 }

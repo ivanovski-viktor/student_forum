@@ -1,4 +1,4 @@
-package routes
+package controllers
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 	"github.com/ivanovski-viktor/student_forum/server/utils"
 )
 
-func createPost(c *gin.Context) {
+func CreatePost(c *gin.Context) {
 
 	var post models.Post
 	err := c.ShouldBindJSON(&post)
@@ -30,7 +30,7 @@ func createPost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Created post!"})
 }
 
-func getAllPosts(c *gin.Context) {
+func GetAllPosts(c *gin.Context) {
 
 	posts, err := models.GetAll()
 
@@ -47,7 +47,7 @@ func getAllPosts(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"posts": posts})
 }
 
-func getPost(c *gin.Context) {
+func GetPost(c *gin.Context) {
 
 	postId, err := utils.ParseParamToInt("id", c)
 	if err != nil {
@@ -65,7 +65,7 @@ func getPost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": post})
 }
 
-func deletePost(c *gin.Context) {
+func DeletePost(c *gin.Context) {
 
 	postId, err := utils.ParseParamToInt("id", c)
 	if err != nil {
@@ -97,7 +97,7 @@ func deletePost(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func updatePost(c *gin.Context) {
+func UpdatePost(c *gin.Context) {
 
 	postId, err := utils.ParseParamToInt("id", c)
 	if err != nil {
