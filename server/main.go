@@ -9,7 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/ivanovski-viktor/student_forum/server/db"
 	"github.com/ivanovski-viktor/student_forum/server/routes"
-	"github.com/ivanovski-viktor/student_forum/server/utils"
+	"github.com/ivanovski-viktor/student_forum/server/validation"
 	"github.com/joho/godotenv"
 )
 
@@ -21,7 +21,7 @@ func main() {
 	}
 	// validation
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		err := v.RegisterValidation("strongpwd", utils.StrongPasswordValidator)
+		err := v.RegisterValidation("strongpwd", validation.StrongPasswordValidator)
 		if err != nil {
 			log.Fatalf("Failed to register strong password validator: %v", err)
 		}

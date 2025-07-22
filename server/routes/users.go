@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/ivanovski-viktor/student_forum/server/models"
 	"github.com/ivanovski-viktor/student_forum/server/utils"
+	"github.com/ivanovski-viktor/student_forum/server/validation"
 )
 
 type UserInfo struct {
@@ -24,17 +24,9 @@ func registerUser(c *gin.Context) {
 	err := c.ShouldBindJSON(&RegisterUser)
 	if err != nil {
 		// get password validation error message
-		if validationErrors, ok := err.(validator.ValidationErrors); ok {
-			for _, fieldErr := range validationErrors {
-				if fieldErr.Field() == "Password" && fieldErr.Tag() == "strongpwd" {
-					c.JSON(http.StatusBadRequest, gin.H{
-						"message": "Password must be at least 8 characters long and include uppercase, lowercase, digit, and special character.",
-					})
-					return
-				}
-			}
+		if validation.HandleStrongPasswordError(err, c) {
+			return
 		}
-
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data!"})
 		return
 	}
@@ -72,7 +64,7 @@ func loginUser(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Unable to parse request data!"})
 		return
 	}
 
@@ -118,15 +110,10 @@ func getUser(c *gin.Context) {
 func getAuthenticatedUser(c *gin.Context) {
 
 	// Get userId from context
-	userIdRaw, exists := c.Get("userId")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-		return
-	}
 
-	userId, ok := userIdRaw.(int64)
+	userId, ok := utils.GetAuthenticatedUserId(c)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Invalid user ID"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
 
@@ -149,15 +136,20 @@ func getAuthenticatedUser(c *gin.Context) {
 
 func changeUserPassword(c *gin.Context) {
 
-	userIdRaw, exists := c.Get("userId")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+	var changePassword models.ChangePassword
+
+	err := c.ShouldBindJSON(&changePassword)
+	if err != nil {
+		if validation.HandleStrongPasswordError(err, c) {
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data!"})
 		return
 	}
 
-	userId, ok := userIdRaw.(int64)
+	userId, ok := utils.GetAuthenticatedUserId(c)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Invalid user ID"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
 
@@ -167,9 +159,22 @@ func changeUserPassword(c *gin.Context) {
 		return
 	}
 
-	err = user.ChangePassword()
+	if !validation.ValidatePasswordChange(c, changePassword, user) {
+		return
+	}
+
+	hashedPassword, err := utils.HashPassword(changePassword.NewPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to hash password!"})
+		return
+	}
+
+	err = user.ChangePassword(hashedPassword)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to change user password!"})
 		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Changed password successfully!"})
 }
