@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -168,4 +169,38 @@ func ChangeUserPassword(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Changed password successfully!"})
+}
+
+func UploadProfilePicture(c *gin.Context) {
+	userId := c.GetInt64("userId")
+
+	file, fileHeader, err := c.Request.FormFile("profile_picture")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Image is required"})
+		return
+	}
+
+	user, err := models.GetUserById(userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "User not found"})
+		return
+	}
+
+	folderPath := fmt.Sprintf("profile_pictures/%d", userId)
+
+	// 2. Upload to Cloudinary
+	imageURL, err := utils.UploadImageToCloudinary(file, fileHeader, folderPath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload image" + err.Error()})
+		return
+	}
+
+	user.ProfileImageURL = imageURL
+	err = user.UpdateProfileImage()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Uploaded image successfully"})
 }

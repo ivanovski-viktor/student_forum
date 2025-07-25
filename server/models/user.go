@@ -10,11 +10,12 @@ import (
 
 // Add birthdate in the future
 type User struct {
-	ID        int64     `json:"id,omitempty"`
-	Username  string    `json:"username,omitempty"`
-	Email     string    `json:"email" binding:"required,email"`
-	Password  string    `json:"password" binding:"required"`
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	ID              int64     `json:"id,omitempty"`
+	Username        string    `json:"username,omitempty"`
+	Email           string    `json:"email" binding:"required,email"`
+	Password        string    `json:"password" binding:"required"`
+	ProfileImageURL string    `json:"profile_image_url,omitempty"`
+	CreatedAt       time.Time `json:"created_at,omitempty"`
 }
 
 type RegisterUser struct {
@@ -105,4 +106,15 @@ func (u *User) ChangePassword(newPassword string) error {
 	}
 
 	return nil
+}
+func (u *User) UpdateProfileImage() error {
+	query := "UPDATE users SET profile_image_url = ? WHERE id = ?"
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(u.ProfileImageURL, u.ID)
+	return err
 }

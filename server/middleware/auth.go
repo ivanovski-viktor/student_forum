@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +9,7 @@ import (
 
 func Authenticate(c *gin.Context) {
 	token := c.Request.Header.Get("Authorization")
-	fmt.Println("Authorization Header:", token)
+
 	if token == "" {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Not authorized"})
 		return
@@ -19,7 +18,7 @@ func Authenticate(c *gin.Context) {
 	userId, err := utils.VerifyJWTToken(token)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Not authorized"})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Not authorized " + err.Error()})
 		return
 	}
 

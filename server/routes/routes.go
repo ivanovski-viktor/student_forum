@@ -10,12 +10,14 @@ func RegisterRoutes(server *gin.Engine) {
 	user := server.Group("/users")
 	{
 		user.POST("/register", controllers.RegisterUser)
+		user.POST("/login", controllers.LoginUser)
 		user.GET("/:id", controllers.GetUser)
 
 		// AUTHENTICATED ROUTES
-		authUser := user.Group("").Use(middleware.Authenticate)
-		authUser.GET("/me", controllers.GetAuthenticatedUser)
-		authUser.PATCH("/me/change-password", controllers.ChangeUserPassword)
+		authUser := user.Group("/me").Use(middleware.Authenticate)
+		authUser.GET("", controllers.GetAuthenticatedUser)
+		authUser.PATCH("/change-password", controllers.ChangeUserPassword)
+		authUser.POST("/profile-picture", controllers.UploadProfilePicture)
 	}
 
 	post := server.Group("/posts")
