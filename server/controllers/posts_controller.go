@@ -132,3 +132,30 @@ func UpdatePost(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Updated the post!"})
 }
+
+func VoteOnPost(c *gin.Context) {
+	postId, err := utils.ParseParamToInt("id", c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Unable to parse post id!"})
+		return
+	}
+
+	post, err := models.GetPostById(postId)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Unable to get post!"})
+		return
+	}
+
+	var input struct {
+		VoteType int `json:"vote_type"` // 1 = upvote, -1 = downvote
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil || (input.VoteType != 1 && input.VoteType != -1) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "vote_type must be 1 or -1"})
+		return
+	}
+
+	post.UpdateVotes(input.VoteType)
+
+	c.JSON(http.StatusOK, gin.H{"message": "vote registered"})
+}

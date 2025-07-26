@@ -12,10 +12,11 @@ import (
 )
 
 type UserInfo struct {
-	ID        int64     `json:"id"`
-	Username  string    `json:"username"`
-	Email     string    `json:"email,omitempty"`
-	CreatedAt time.Time `json:"created_at"`
+	ID              int64     `json:"id"`
+	Username        string    `json:"username"`
+	Email           string    `json:"email,omitempty"`
+	ProfileImageURL string    `json:"profile_image_url,omitempty"`
+	CreatedAt       time.Time `json:"created_at"`
 }
 
 func RegisterUser(c *gin.Context) {
@@ -100,9 +101,10 @@ func GetUser(c *gin.Context) {
 	}
 
 	userInfo := UserInfo{
-		ID:        user.ID,
-		Username:  user.Username,
-		CreatedAt: user.CreatedAt,
+		ID:              user.ID,
+		Username:        user.Username,
+		ProfileImageURL: user.ProfileImageURL,
+		CreatedAt:       user.CreatedAt,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": userInfo})
@@ -120,10 +122,11 @@ func GetAuthenticatedUser(c *gin.Context) {
 	}
 
 	userInfo := UserInfo{
-		ID:        user.ID,
-		Username:  user.Username,
-		Email:     user.Email,
-		CreatedAt: user.CreatedAt,
+		ID:              user.ID,
+		Username:        user.Username,
+		Email:           user.Email,
+		ProfileImageURL: user.ProfileImageURL,
+		CreatedAt:       user.CreatedAt,
 	}
 
 	c.JSON(http.StatusOK,

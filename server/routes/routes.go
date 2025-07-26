@@ -30,6 +30,7 @@ func RegisterRoutes(server *gin.Engine) {
 		protectedPosts.POST("", controllers.CreatePost)
 		protectedPosts.PUT("/:id", controllers.UpdatePost)
 		protectedPosts.DELETE("/:id", controllers.DeletePost)
+		protectedPosts.POST("/:id/vote", controllers.VoteOnPost)
 	}
 
 }

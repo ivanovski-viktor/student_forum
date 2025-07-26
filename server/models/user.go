@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"errors"
 	"time"
 
@@ -67,23 +68,28 @@ func (u *User) ValidateCredentials() error {
 }
 
 func GetUserById(id int64) (*User, error) {
-	query :=
-		`SELECT username, email, password ,created_at 
-	FROM users 
-	WHERE id = ?`
+	query := `SELECT username, email, password, profile_image_url, created_at FROM users WHERE id = ?`
 
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
 		return nil, err
 	}
-
 	defer stmt.Close()
 
 	var user User
+	// profile image can be null
+	var profileImage sql.NullString
 
-	err = stmt.QueryRow(id).Scan(&user.Username, &user.Email, &user.Password, &user.CreatedAt)
+	err = stmt.QueryRow(id).Scan(&user.Username, &user.Email, &user.Password, &profileImage, &user.CreatedAt)
 	if err != nil {
 		return nil, err
+	}
+
+	// convert NullString to regular string
+	if profileImage.Valid {
+		user.ProfileImageURL = profileImage.String
+	} else {
+		user.ProfileImageURL = ""
 	}
 
 	user.ID = id

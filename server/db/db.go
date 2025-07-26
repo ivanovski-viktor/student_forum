@@ -46,7 +46,10 @@ func createTables() {
 			description TEXT NOT NULL,
 			created_at DATETIME NOT NULL,
 			updated_at DATETIME,
-			user_id INTEGER
+			user_id INTEGER,
+			upvotes INTEGER DEFAULT 0,
+    		downvotes INTEGER DEFAULT 0,
+			comment_count INTEGER DEFAULT 0
 		)
 	`
 
