@@ -2,8 +2,13 @@ package db
 
 import (
 	"database/sql"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
+
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 var DB *sql.DB
@@ -11,52 +16,29 @@ var DB *sql.DB
 func InitDB() {
 	var err error
 	DB, err = sql.Open("sqlite3", "student_forum.db")
-
 	if err != nil {
-		panic("Cound not connect to DB!")
+		log.Fatalf("Could not connect to DB: %v", err)
 	}
 
-	DB.SetMaxOpenConns(10)
-	DB.SetMaxIdleConns(5)
+	if err := DB.Ping(); err != nil {
+		log.Fatalf("Could not ping DB: %v", err)
+	}
 
-	createTables()
+	runMigrations()
 }
 
-func createTables() {
-	createUsersTable := `
-		CREATE TABLE IF NOT EXISTS users (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			username TEXT NOT NULL,
-			email TEXT NOT NULL UNIQUE,
-			password TEXT NOT NULL,
-			profile_image_url TEXT,   
-			created_at DATETIME NOT NULL)
-	`
+func runMigrations() {
+	migrationPath := "file://db/migrations"
+	dbPath := "sqlite3://student_forum.db"
 
-	_, err := DB.Exec(createUsersTable)
-
+	m, err := migrate.New(migrationPath, dbPath)
 	if err != nil {
-		panic("Could not create users table!")
+		log.Fatalf("Failed to initialize migrations: %v", err)
 	}
 
-	createPostsTable := `
-		CREATE TABLE IF NOT EXISTS posts (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			title TEXT NOT NULL,
-			description TEXT NOT NULL,
-			created_at DATETIME NOT NULL,
-			updated_at DATETIME,
-			user_id INTEGER,
-			upvotes INTEGER DEFAULT 0,
-    		downvotes INTEGER DEFAULT 0,
-			comment_count INTEGER DEFAULT 0
-		)
-	`
-
-	_, err = DB.Exec(createPostsTable)
-
-	if err != nil {
-		panic("Could not create posts table!")
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
+	log.Println("Migrations applied successfully")
 }
