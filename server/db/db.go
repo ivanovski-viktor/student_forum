@@ -24,6 +24,12 @@ func InitDB() {
 		log.Fatalf("Could not ping DB: %v", err)
 	}
 
+	// Enable foreign keys
+	_, err = DB.Exec("PRAGMA foreign_keys = ON")
+	if err != nil {
+		log.Fatalf("Failed to enable foreign keys: %v", err)
+	}
+
 	runMigrations()
 }
 

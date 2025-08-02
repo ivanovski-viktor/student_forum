@@ -24,6 +24,7 @@ func RegisterRoutes(server *gin.Engine) {
 	{
 		post.GET("", controllers.GetAllPosts)
 		post.GET("/:id", controllers.GetPost)
+		post.GET("/:id/comments", controllers.GetCommentsForPost)
 
 		// AUTHENTICATED ROUTES
 		protectedPosts := post.Group("").Use(middleware.Authenticate)
@@ -31,6 +32,13 @@ func RegisterRoutes(server *gin.Engine) {
 		protectedPosts.PUT("/:id", controllers.UpdatePost)
 		protectedPosts.DELETE("/:id", controllers.DeletePost)
 		protectedPosts.POST("/:id/vote", controllers.VoteOnPost)
+		protectedPosts.POST("/:id/comments", controllers.CreateComment)
 	}
 
+	// AUTHENTICATED COMMENTS
+	comment := server.Group("/comments").Use(middleware.Authenticate)
+	{
+		comment.PUT("/:id", controllers.UpdateComment)
+		comment.DELETE("/:id", controllers.DeleteComment)
+	}
 }

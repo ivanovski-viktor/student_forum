@@ -62,7 +62,7 @@ func GetPost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": post})
+	c.JSON(http.StatusOK, gin.H{"post": post})
 }
 
 func DeletePost(c *gin.Context) {
@@ -130,7 +130,7 @@ func UpdatePost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Updated the post!"})
+	c.JSON(http.StatusOK, gin.H{"post": post})
 }
 
 func VoteOnPost(c *gin.Context) {
@@ -151,7 +151,7 @@ func VoteOnPost(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil || (input.VoteType != 1 && input.VoteType != -1) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "vote_type must be 1 or -1"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "vote_type must be 1 or -1"})
 		return
 	}
 

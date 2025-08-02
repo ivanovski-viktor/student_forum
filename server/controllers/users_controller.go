@@ -191,7 +191,14 @@ func UploadProfilePicture(c *gin.Context) {
 
 	folderPath := fmt.Sprintf("profile_pictures/%d", userId)
 
-	// 2. Upload to Cloudinary
+	//Delete old profile image
+	err = utils.DeleteFolderContents(folderPath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to delete old profile image."})
+		return
+	}
+
+	// Upload to Cloudinary
 	imageURL, err := utils.UploadImageToCloudinary(file, fileHeader, folderPath)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload image" + err.Error()})

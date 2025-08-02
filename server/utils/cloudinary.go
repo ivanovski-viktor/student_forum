@@ -6,6 +6,7 @@ import (
 	"mime/multipart"
 
 	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/admin"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 )
 
@@ -30,4 +31,22 @@ func UploadImageToCloudinary(file multipart.File, fileHeader *multipart.FileHead
 
 	// Return the secure URL
 	return uploadResult.SecureURL, nil
+}
+
+func DeleteFolderContents(folderPath string) error {
+	cld, err := cloudinary.New()
+	if err != nil {
+		return fmt.Errorf("cloudinary init failed: %w", err)
+	}
+
+	ctx := context.Background()
+
+	_, err = cld.Admin.DeleteAssetsByPrefix(ctx, admin.DeleteAssetsByPrefixParams{
+		Prefix: []string{folderPath + "/"},
+	})
+	if err != nil {
+		return fmt.Errorf("failed to delete assets in folder '%s': %w", folderPath, err)
+	}
+
+	return nil
 }
