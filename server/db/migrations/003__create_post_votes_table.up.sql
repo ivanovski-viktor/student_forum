@@ -5,6 +5,6 @@ CREATE TABLE IF NOT EXISTS post_votes (
 
     PRIMARY KEY (post_id, user_id),
 
-    FOREIGN KEY(post_id) REFERENCES posts(id),
-    FOREIGN KEY(user_id) REFERENCES users(id)
+    FOREIGN KEY(post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );

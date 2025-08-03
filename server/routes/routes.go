@@ -7,6 +7,8 @@ import (
 )
 
 func RegisterRoutes(server *gin.Engine) {
+
+	// **USERS**
 	user := server.Group("/users")
 	{
 		user.POST("/register", controllers.RegisterUser)
@@ -20,6 +22,25 @@ func RegisterRoutes(server *gin.Engine) {
 		authUser.POST("/profile-picture", controllers.UploadProfilePicture)
 	}
 
+	// **GROUPS**
+	group := server.Group("/groups")
+	{
+		group.GET("", controllers.GetAllGroups)
+		group.GET("/:name", controllers.GetGroup)
+		group.GET("/:name/posts", controllers.GetPostsForGroup)
+	}
+
+	// AUTHENTICATED ROUTES
+	authGroup := group.Use(middleware.Authenticate)
+	{
+		authGroup.POST("", controllers.CreateGroup)
+		authGroup.PUT("/:name", controllers.UpdateGroup)
+		authGroup.DELETE("/:name", controllers.DeleteGroup)
+		authGroup.POST("/:name/join", controllers.JoinGroup)
+		authGroup.POST("/:name/posts", controllers.CreatePostInGroup)
+	}
+
+	// **POSTS**
 	post := server.Group("/posts")
 	{
 		post.GET("", controllers.GetAllPosts)
@@ -27,18 +48,19 @@ func RegisterRoutes(server *gin.Engine) {
 		post.GET("/:id/comments", controllers.GetCommentsForPost)
 
 		// AUTHENTICATED ROUTES
-		protectedPosts := post.Group("").Use(middleware.Authenticate)
-		protectedPosts.POST("", controllers.CreatePost)
-		protectedPosts.PUT("/:id", controllers.UpdatePost)
-		protectedPosts.DELETE("/:id", controllers.DeletePost)
-		protectedPosts.POST("/:id/vote", controllers.VoteOnPost)
-		protectedPosts.POST("/:id/comments", controllers.CreateComment)
+		authPost := post.Group("").Use(middleware.Authenticate)
+		authPost.POST("", controllers.CreatePost)
+		authPost.PUT("/:id", controllers.UpdatePost)
+		authPost.DELETE("/:id", controllers.DeletePost)
+		authPost.POST("/:id/vote", controllers.VoteOnPost)
+		authPost.POST("/:id/comments", controllers.CreateComment)
 	}
 
-	// AUTHENTICATED COMMENTS
-	comment := server.Group("/comments").Use(middleware.Authenticate)
+	// **COMMENTS**
+	// AUTHENTICATED ROUTES
+	authComment := server.Group("/comments").Use(middleware.Authenticate)
 	{
-		comment.PUT("/:id", controllers.UpdateComment)
-		comment.DELETE("/:id", controllers.DeleteComment)
+		authComment.PUT("/:id", controllers.UpdateComment)
+		authComment.DELETE("/:id", controllers.DeleteComment)
 	}
 }

@@ -1,0 +1,165 @@
+package controllers
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/ivanovski-viktor/student_forum/server/models"
+)
+
+func CreateGroup(c *gin.Context) {
+	var group models.Group
+	if err := c.ShouldBindJSON(&group); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data"})
+		return
+	}
+
+	userId := c.GetInt64("userId")
+	group.CreatorID = userId
+
+	if err := group.Create(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to create group"})
+		return
+	}
+
+	// Auto-join the creator to the group
+	err := models.JoinGroup(userId, group.Name)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Group created, but failed to join creator"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Group created successfully"})
+}
+
+func GetAllGroups(c *gin.Context) {
+	groups, err := models.GetAllGroups()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting groups"})
+		return
+	}
+
+	if len(groups) == 0 {
+		c.JSON(http.StatusOK, gin.H{"groups": []models.Group{}})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"groups": groups})
+}
+
+func GetGroup(c *gin.Context) {
+	name := c.Param("name")
+
+	group, err := models.GetGroupByName(name)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Group not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"group": group})
+}
+
+func UpdateGroup(c *gin.Context) {
+	name := c.Param("name")
+
+	group, err := models.GetGroupByName(name)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Group not found"})
+		return
+	}
+
+	userId := c.GetInt64("userId")
+	if group.CreatorID != userId {
+		c.JSON(http.StatusForbidden, gin.H{"message": "Not authorized to update this group"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&group); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request data"})
+		return
+	}
+
+	if err := group.Update(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to update group"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"group": group})
+}
+
+func JoinGroup(c *gin.Context) {
+	groupName := c.Param("name")
+	userId := c.GetInt64("userId")
+
+	err := models.JoinGroup(userId, groupName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to join group"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Successfully joined group"})
+}
+
+func GetPostsForGroup(c *gin.Context) {
+	groupName := c.Param("name")
+
+	posts, err := models.GetPostsByGroupName(groupName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to get posts"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"posts": posts})
+}
+
+func CreatePostInGroup(c *gin.Context) {
+	groupName := c.Param("name")
+	userId := c.GetInt64("userId")
+
+	// Check group exists
+	_, err := models.GetGroupByName(groupName)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Group not found"})
+		return
+	}
+
+	var post models.Post
+	if err := c.ShouldBindJSON(&post); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid post data"})
+		return
+	}
+
+	post.UserID = userId
+	post.GroupName = &groupName
+
+	if err := post.Create(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to create post in group"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Post created in group", "post": post})
+}
+
+func DeleteGroup(c *gin.Context) {
+	name := c.Param("name")
+
+	group, err := models.GetGroupByName(name)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Group not found"})
+		return
+	}
+
+	userId := c.GetInt64("userId")
+	if group.CreatorID != userId {
+		c.JSON(http.StatusForbidden, gin.H{"message": "Not authorized to delete this group"})
+		return
+	}
+
+	err = group.Delete()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete group", "err": err.Error()})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
