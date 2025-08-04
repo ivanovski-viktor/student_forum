@@ -1,4 +1,4 @@
-package routes
+package controllers
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 	"github.com/ivanovski-viktor/student_forum/server/utils"
 )
 
-func createPost(c *gin.Context) {
+func CreatePost(c *gin.Context) {
 
 	var post models.Post
 	err := c.ShouldBindJSON(&post)
@@ -30,7 +30,7 @@ func createPost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Created post!"})
 }
 
-func getAllPosts(c *gin.Context) {
+func GetAllPosts(c *gin.Context) {
 
 	posts, err := models.GetAll()
 
@@ -47,7 +47,7 @@ func getAllPosts(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"posts": posts})
 }
 
-func getPost(c *gin.Context) {
+func GetPost(c *gin.Context) {
 
 	postId, err := utils.ParseParamToInt("id", c)
 	if err != nil {
@@ -62,10 +62,10 @@ func getPost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": post})
+	c.JSON(http.StatusOK, gin.H{"post": post})
 }
 
-func deletePost(c *gin.Context) {
+func DeletePost(c *gin.Context) {
 
 	postId, err := utils.ParseParamToInt("id", c)
 	if err != nil {
@@ -97,7 +97,7 @@ func deletePost(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func updatePost(c *gin.Context) {
+func UpdatePost(c *gin.Context) {
 
 	postId, err := utils.ParseParamToInt("id", c)
 	if err != nil {
@@ -130,5 +130,31 @@ func updatePost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Updated the post!"})
+	c.JSON(http.StatusOK, gin.H{"post": post})
+}
+
+func VoteOnPost(c *gin.Context) {
+	postId, err := utils.ParseParamToInt("id", c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid post ID"})
+		return
+	}
+
+	userId := c.GetInt64("userId")
+
+	var input struct {
+		VoteType int `json:"vote_type"` // 1 = upvote, -1 = downvote
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil || (input.VoteType != 1 && input.VoteType != -1) {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "vote_type must be 1 or -1"})
+		return
+	}
+
+	if err := models.CastPostVote(userId, postId, input.VoteType); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to cast vote", "err": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Vote recorded"})
 }

@@ -2,20 +2,65 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/ivanovski-viktor/student_forum/server/controllers"
 	"github.com/ivanovski-viktor/student_forum/server/middleware"
 )
 
 func RegisterRoutes(server *gin.Engine) {
-	server.GET("/posts", getAllPosts)
-	server.GET("/posts/:id", getPost)
-	server.POST("/register", registerUser)
-	server.POST("/login", loginUser)
 
-	// AUTH ROUTES
-	auth := server.Group("/")
-	auth.Use(middleware.Authenticate)
-	auth.POST("/posts", createPost)
-	auth.PUT("/posts/:id", updatePost)
-	auth.DELETE("/posts/:id", deletePost)
+	// **USERS**
+	user := server.Group("/users")
+	{
+		user.POST("/register", controllers.RegisterUser)
+		user.POST("/login", controllers.LoginUser)
+		user.GET("/:id", controllers.GetUser)
 
+		// AUTHENTICATED ROUTES
+		authUser := user.Group("/me").Use(middleware.Authenticate)
+		authUser.GET("", controllers.GetAuthenticatedUser)
+		authUser.PATCH("/change-password", controllers.ChangeUserPassword)
+		authUser.POST("/profile-picture", controllers.UploadProfilePicture)
+	}
+
+	// **GROUPS**
+	group := server.Group("/groups")
+	{
+		group.GET("", controllers.GetAllGroups)
+		group.GET("/:name", controllers.GetGroup)
+		group.GET("/:name/posts", controllers.GetPostsForGroup)
+	}
+
+	// AUTHENTICATED ROUTES
+	authGroup := group.Use(middleware.Authenticate)
+	{
+		authGroup.POST("", controllers.CreateGroup)
+		authGroup.PUT("/:name", controllers.UpdateGroup)
+		authGroup.DELETE("/:name", controllers.DeleteGroup)
+		authGroup.POST("/:name/join", controllers.JoinGroup)
+		authGroup.POST("/:name/posts", controllers.CreatePostInGroup)
+	}
+
+	// **POSTS**
+	post := server.Group("/posts")
+	{
+		post.GET("", controllers.GetAllPosts)
+		post.GET("/:id", controllers.GetPost)
+		post.GET("/:id/comments", controllers.GetCommentsForPost)
+
+		// AUTHENTICATED ROUTES
+		authPost := post.Group("").Use(middleware.Authenticate)
+		authPost.POST("", controllers.CreatePost)
+		authPost.PUT("/:id", controllers.UpdatePost)
+		authPost.DELETE("/:id", controllers.DeletePost)
+		authPost.POST("/:id/vote", controllers.VoteOnPost)
+		authPost.POST("/:id/comments", controllers.CreateComment)
+	}
+
+	// **COMMENTS**
+	// AUTHENTICATED ROUTES
+	authComment := server.Group("/comments").Use(middleware.Authenticate)
+	{
+		authComment.PUT("/:id", controllers.UpdateComment)
+		authComment.DELETE("/:id", controllers.DeleteComment)
+	}
 }

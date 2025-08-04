@@ -1,46 +1,59 @@
 package models
 
 import (
+	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/ivanovski-viktor/student_forum/server/db"
 	"github.com/ivanovski-viktor/student_forum/server/utils"
 )
 
+// Add birthdate in the future
 type User struct {
-	ID       int64  `binding:"required"`
-	Username string `binding:"required"`
-	Email    string `binding:"required,email"`
-	Password string `binding:"required,strongpwd"`
+	ID              int64     `json:"id,omitempty"`
+	Username        string    `json:"username,omitempty"`
+	Email           string    `json:"email" binding:"required,email"`
+	Password        string    `json:"password" binding:"required"`
+	ProfileImageURL string    `json:"profile_image_url,omitempty"`
+	CreatedAt       time.Time `json:"created_at,omitempty"`
 }
 
-type UserControl struct {
-	Username        string `binding:"required"`
-	Email           string `binding:"required,email"`
-	Password        string `binding:"required,strongpwd"`
+type RegisterUser struct {
+	Username        string `json:"username" binding:"required"`
+	Email           string `json:"email" binding:"required,email"`
+	Password        string `json:"password" binding:"required,strongpwd"`
+	ConfirmPassword string `json:"confirm_password" binding:"required"`
+}
+
+type ChangePassword struct {
+	Password        string `json:"password" binding:"required"`
+	NewPassword     string `json:"new_password" binding:"required,strongpwd"`
 	ConfirmPassword string `json:"confirm_password" binding:"required"`
 }
 
 func (u *User) Create() error {
-	query := "INSERT INTO users (username, email, password) VALUES (?, ?, ?)"
+	u.CreatedAt = time.Now()
+
+	query := "INSERT INTO users (username, email, password, created_at) VALUES (?, ?, ?, ?)"
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
 		return err
 	}
 
 	defer stmt.Close()
-	_, err = stmt.Exec(u.Username, u.Email, u.Password)
+	_, err = stmt.Exec(u.Username, u.Email, u.Password, u.CreatedAt)
 
 	return err
 }
 
 func (u *User) ValidateCredentials() error {
-	query := "SELECT id, password FROM users WHERE email = ?"
+	query := "SELECT id, password, created_at FROM users WHERE email = ?"
 	row := db.DB.QueryRow(query, u.Email)
 
 	var retrievedPassword string
 
-	err := row.Scan(&u.ID, &retrievedPassword)
+	err := row.Scan(&u.ID, &retrievedPassword, &u.CreatedAt)
 
 	if err != nil {
 		return errors.New("invalid login credentials")
@@ -52,4 +65,62 @@ func (u *User) ValidateCredentials() error {
 		return errors.New("invalid login credentials")
 	}
 	return nil
+}
+
+func GetUserById(id int64) (*User, error) {
+	query := `SELECT username, email, password, profile_image_url, created_at FROM users WHERE id = ?`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	var user User
+	// profile image can be null
+	var profileImage sql.NullString
+
+	err = stmt.QueryRow(id).Scan(&user.Username, &user.Email, &user.Password, &profileImage, &user.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+
+	// convert NullString to regular string
+	if profileImage.Valid {
+		user.ProfileImageURL = profileImage.String
+	} else {
+		user.ProfileImageURL = ""
+	}
+
+	user.ID = id
+	return &user, nil
+}
+
+func (u *User) ChangePassword(newPassword string) error {
+	query := "UPDATE users SET password = ? WHERE id = ?"
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(newPassword, u.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (u *User) UpdateProfileImage() error {
+	query := "UPDATE users SET profile_image_url = ? WHERE id = ?"
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(u.ProfileImageURL, u.ID)
+	return err
 }
