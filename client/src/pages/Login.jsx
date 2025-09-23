@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../components/Input";
+import Form from "../components/Form";
+import Button from "../components/Button";
+import LinkUnderline from "../components/LinkUnderline";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -46,13 +49,8 @@ export default function Login() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-10 border border-orange-100 bg-white rounded-xl">
-      <h2 className="text-2xl mb-10 text-center">Најави се!</h2>
-      <form
-        method="POST"
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-4"
-      >
+    <div className="p-5 min-h-screen flex flex-col items-center justify-center">
+      <Form handleSubmit={handleSubmit} title="Најави се">
         <Input
           type="email"
           name="email"
@@ -70,13 +68,10 @@ export default function Login() {
           required={true}
         />
 
-        <button
-          type="submit"
-          className="bg-orange-600 mt-3 text-white py-2 rounded-full hover:bg-white hover:text-orange-600 border-2 border-transparent hover:border-orange-600 transition duration-200 ease-in-out cursor-pointer"
-        >
-          Продолжи
-        </button>
-      </form>
+        <Button buttonType="form" text="Продолжи" />
+
+        <LinkUnderline link="/register" text="Регистрирај се" />
+      </Form>
     </div>
   );
 }

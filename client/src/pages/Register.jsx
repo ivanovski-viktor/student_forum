@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Input from "../components/Input";
+import Button from "../components/Button";
+import Form from "../components/Form";
+import LinkUnderline from "../components/LinkUnderline";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -56,53 +60,42 @@ export default function Register() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-10 border border-orange-100 bg-white rounded-xl">
-      <h2 className="text-2xl mb-10 text-center">Регистрирај се!</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input
-          formMethod="POST"
+    <div className="p-5 min-h-screen flex flex-col items-center justify-center">
+      <Form handleSubmit={handleSubmit} title="Регистрирај се!">
+        <Input
           type="text"
           name="username"
           placeholder="Корисничко име"
           value={formData.username}
           onChange={handleChange}
-          required
-          className="py-2 px-4 border  text-gray-800 placeholder:text-gray-400 border-gray-400 rounded-full"
         />
-        <input
+
+        <Input
           type="email"
           name="email"
           placeholder="Е-пошта"
           value={formData.email}
           onChange={handleChange}
-          required
-          className="py-2 px-4 border rounded text-gray-800 placeholder:text-gray-400 border-gray-400 rounded-full"
         />
-        <input
+        <Input
           type="password"
           name="password"
           placeholder="Лозинка"
           value={formData.password}
           onChange={handleChange}
-          required
-          className="py-2 px-4 border  text-gray-800 placeholder:text-gray-400 border-gray-400 rounded-full"
         />
-        <input
+        <Input
           type="password"
           name="confirmPassword"
           placeholder="Потврди ја лозинката"
           value={formData.confirmPassword}
           onChange={handleChange}
-          required
-          className="py-2 px-4 border  text-gray-00 placeholder:text-gray-400 border-gray-400 rounded-full"
         />
-        <button
-          type="submit"
-          className="bg-orange-600 mt-3 text-white py-2 rounded-full hover:bg-white hover:text-orange-600 border-2 border-transparent hover:border-orange-600 transition duration-200 ease-in-out cursor-pointer"
-        >
-          Продолжи
-        </button>
-      </form>
+
+        <Button buttonType="form" text="Продолжи" />
+
+        <LinkUnderline link="/login" text="Кон најава" />
+      </Form>
     </div>
   );
 }

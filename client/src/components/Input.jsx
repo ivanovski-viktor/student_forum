@@ -3,12 +3,12 @@ export default function Input({
   name,
   placeholder,
   value,
-  required = false,
+  required = true,
   ...rest
 }) {
   return (
     <input
-      className="py-2 px-4 border  text-gray-800 placeholder:text-gray-400 border-gray-400 rounded-full"
+      className="py-2 px-4 border-2  text-gray-800 placeholder:text-gray-400 border-gray-400 rounded-full"
       type={type}
       name={name}
       placeholder={placeholder}
