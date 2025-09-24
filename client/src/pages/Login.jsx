@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../components/Input";
-import Form from "../components/Form";
-import Button from "../components/Button";
-import LinkUnderline from "../components/LinkUnderline";
+import Input from "../components/ui/Input";
+import Form from "../components/ui/Form";
+import Button from "../components/ui/Button";
+import LinkUnderline from "../components/ui/LinkUnderline";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -35,13 +35,12 @@ export default function Login() {
       if (!response.ok) {
         // Try to get error message from response
         const errorData = await response.json();
-        alert(
-          "Registration failed: " + (errorData.message || response.statusText)
-        );
+        alert(errorData.message || response.statusText);
         return;
       }
 
       const data = await response.json();
+      navigate("/");
       console.log("Welcome back " + data.token);
     } catch (error) {
       alert("An error occurred: " + error.message);
@@ -54,7 +53,7 @@ export default function Login() {
         <Input
           type="email"
           name="email"
-          placeholder="Корисничко име"
+          placeholder="Е-Пошта"
           value={formData.username}
           onChange={handleChange}
           required={true}

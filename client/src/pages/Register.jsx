@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../components/Input";
-import Button from "../components/Button";
-import Form from "../components/Form";
-import LinkUnderline from "../components/LinkUnderline";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+import Form from "../components/ui/Form";
+import LinkUnderline from "../components/ui/LinkUnderline";
 
 export default function Register() {
   const navigate = useNavigate();
