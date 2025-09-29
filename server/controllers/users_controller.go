@@ -107,7 +107,7 @@ func GetUser(c *gin.Context) {
 		CreatedAt:       user.CreatedAt,
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": userInfo})
+	c.JSON(http.StatusOK, gin.H{"user": userInfo})
 }
 
 func GetAuthenticatedUser(c *gin.Context) {
@@ -130,7 +130,7 @@ func GetAuthenticatedUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK,
-		gin.H{"message": userInfo})
+		gin.H{"user": userInfo})
 }
 
 func ChangeUserPassword(c *gin.Context) {
