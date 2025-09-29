@@ -40,8 +40,8 @@ export default function Login() {
       }
 
       const data = await response.json();
+      localStorage.setItem("token", data.token);
       navigate("/");
-      console.log("Welcome back " + data.token);
     } catch (error) {
       alert("An error occurred: " + error.message);
     }
