@@ -46,7 +46,7 @@ export default function BlogPost() {
         </span>
       </div>
 
-      <h2 className="text-xl font-semibold text-gray-900 hover:text-orange-600 transition-colors duration-200 ease-in-out mb-2">
+      <h2 className="text-gray-900 hover:text-orange-600 transition-colors duration-200 ease-in-out mb-2">
         {post.title}
       </h2>
 

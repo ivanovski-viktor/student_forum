@@ -1,4 +1,4 @@
-export function formatDate(dateString) {
+export function formatDateTime(dateString) {
   const date = new Date(dateString);
 
   const options = {

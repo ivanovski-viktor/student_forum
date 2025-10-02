@@ -1,3 +1,7 @@
+import { useRef, useState } from "react";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 export default function Input({
   type,
   name,
@@ -6,9 +10,40 @@ export default function Input({
   required = true,
   ...rest
 }) {
-  return (
+  const inputRef = useRef(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const inputClass =
+    "py-2 px-4 border-2 text-gray-800 placeholder:text-gray-400 border-gray-400 rounded-full w-full";
+
+  function handlePasswordVisibility(e) {
+    e.preventDefault(); // prevent button from submitting if inside form
+    setShowPassword((prev) => !prev);
+  }
+
+  return type === "password" ? (
+    <div className="relative w-full">
+      <input
+        ref={inputRef}
+        className={inputClass}
+        type={showPassword ? "text" : "password"}
+        name={name}
+        placeholder={placeholder}
+        value={value}
+        required={required}
+        {...rest}
+      />
+      <button
+        type="button"
+        onClick={handlePasswordVisibility}
+        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-400 transition-colors duration-200 ease-in-out cursor-pointer"
+      >
+        <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+      </button>
+    </div>
+  ) : (
     <input
-      className="py-2 px-4 border-2  text-gray-800 placeholder:text-gray-400 border-gray-400 rounded-full"
+      className={inputClass}
       type={type}
       name={name}
       placeholder={placeholder}

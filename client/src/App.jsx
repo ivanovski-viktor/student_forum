@@ -6,6 +6,7 @@ import Loader from "./components/layout/Loader.jsx";
 import NavBar from "./components/layout/NavBar.jsx";
 import BlogPost from "./pages/BlogPost.jsx";
 import MyAccount from "./pages/MyAccount.jsx";
+import UserAccount from "./pages/UserAccount.jsx";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/users/me" element={<MyAccount />} />
+        <Route path="/users/:id" element={<UserAccount />} />
         <Route path="/posts/:id" element={<BlogPost />} />
       </Routes>
     </div>

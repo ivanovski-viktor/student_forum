@@ -32,7 +32,7 @@ export default function UploadProfileImage() {
         throw new Error(`Upload failed: ${response.status}`);
       }
 
-      alert("Image uploaded successfully");
+      location.reload();
     } catch (error) {
       alert("Error uploading image:", error);
     }

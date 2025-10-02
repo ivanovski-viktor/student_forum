@@ -37,12 +37,12 @@ export default function BlogPostCard({ post }) {
       </div>
 
       <Link to={`/posts/${post.id}`}>
-        <h2 className="text-xl font-semibold text-gray-900 hover:text-orange-600 transition-colors duration-200 ease-in-out mb-2">
+        <h3 className="text-gray-900 hover:text-orange-600 transition-colors duration-200 ease-in-out mb-2">
           {post.title}
-        </h2>
+        </h3>
       </Link>
 
-      <p className="text-gray-700 mb-4 text-sm">{post.description}</p>
+      <p className="text-gray-700 mb-4 ">{post.description}</p>
 
       <div className="flex flex-wrap gap-4 text-sm text-gray-600 items-center">
         <span className="flex items-center gap-1">
