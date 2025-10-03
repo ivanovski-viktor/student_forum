@@ -212,5 +212,5 @@ func UploadProfilePicture(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Uploaded image successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Uploaded image successfully", "profile_image_url": imageURL})
 }
