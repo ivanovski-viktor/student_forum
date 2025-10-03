@@ -4,24 +4,28 @@ import Input from "../components/ui/Input";
 import Form from "../components/ui/Form";
 import Button from "../components/ui/Button";
 import LinkUnderline from "../components/ui/LinkUnderline";
+import Message from "../components/ui/Message";
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Login() {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const [message, setMessage] = useState({ type: "", text: "" });
 
   function handleChange(e) {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setMessage({ type: "", text: "" });
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/users/login", {
+      const response = await fetch(`${apiUrl}/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "raw",
@@ -35,7 +39,10 @@ export default function Login() {
       if (!response.ok) {
         // Try to get error message from response
         const errorData = await response.json();
-        alert(errorData.message || response.statusText);
+        setMessage({
+          type: "error",
+          text: errorData.message || response.statusText,
+        });
         return;
       }
 
@@ -43,7 +50,10 @@ export default function Login() {
       localStorage.setItem("token", data.token);
       navigate("/");
     } catch (error) {
-      alert("An error occurred: " + error.message);
+      setMessage({
+        type: "error",
+        text: error.message || response.statusText,
+      });
     }
   }
 
@@ -68,6 +78,7 @@ export default function Login() {
         />
 
         <Button buttonType="form" text="Продолжи" />
+        {message.text && <Message type={message.type} text={message.text} />}
 
         <LinkUnderline link="/register" text="Регистрирај се" />
       </Form>

@@ -11,13 +11,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { formatRelativeTime } from "../helper-functions/timeFormat";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export default function BlogPost() {
   const { id } = useParams();
-  const {
-    data: postData,
-    loading,
-    error,
-  } = useFetch(`http://localhost:8080/posts/${id}`);
+  const { data: postData, loading, error } = useFetch(`${apiUrl}/posts/${id}`);
 
   if (loading) return <InlineLoader />;
   if (error) return <p>Error: {error}</p>;

@@ -2,13 +2,17 @@ import { useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 
-const API = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_API_URL;
 
-export default function UploadProfileImage() {
+export default function UploadProfileImage({
+  setIsUploading,
+  setCurrentImageUrl,
+}) {
+  //   console.log("setIsUploading:", setIsUploading);
   const fileInputRef = useRef(null);
 
   const handleButtonClick = () => {
-    fileInputRef.current.click(); // Trigger file input
+    fileInputRef.current.click();
   };
 
   const handleFileChange = async (event) => {
@@ -19,8 +23,10 @@ export default function UploadProfileImage() {
     const formData = new FormData();
     formData.append("profile_picture", file);
 
+    setIsUploading?.(true);
+
     try {
-      const response = await fetch(`${API}/users/me/profile-picture`, {
+      const response = await fetch(`${apiUrl}/users/me/profile-picture`, {
         method: "POST",
         headers: {
           Authorization: token,
@@ -32,9 +38,15 @@ export default function UploadProfileImage() {
         throw new Error(`Upload failed: ${response.status}`);
       }
 
-      location.reload();
+      // Set new image url
+      const data = await response.json();
+      if (data.profile_image_url) {
+        setCurrentImageUrl(data.profile_image_url);
+      }
     } catch (error) {
-      alert("Error uploading image:", error);
+      alert("Error uploading image: " + error.message);
+    } finally {
+      setIsUploading?.(false); // Stop loader
     }
   };
 

@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightLong } from "@fortawesome/free-solid-svg-icons";
-export default function LinkUnderline({ link, text, ...rest }) {
+export default function LinkUnderline({ link, text, colorClass, ...rest }) {
   return (
     <Link
-      className="text-green-600 no-underline underline-offset-2 hover:underline mx-auto group"
+      className={`${
+        colorClass || "text-green-600"
+      } no-underline underline-offset-2 hover:underline mx-auto group`}
       to={link}
       {...rest}
     >

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InlineLoader from "../components/layout/InlineLoader";
-import UploadProfileImage from "../components/ui/UploadProfileImage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightLong } from "@fortawesome/free-solid-svg-icons";
 import { formatDateTime } from "../helper-functions/timeFormat";
 
 import logout from "../helper-functions/logout";
+import ProfileImage from "../components/users/ProfileImage";
 
-import userPlaceholder from "../assets/user-placeholder.png";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function MyAccount() {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ export default function MyAccount() {
 
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/users/me", {
+        const response = await fetch(`${apiUrl}/users/me`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -72,25 +72,7 @@ export default function MyAccount() {
         <h2 className="mb-6 text-center">Мој Профил</h2>
         <div className="flex flex-col items-center justify-center sm:grid sm:grid-cols-6 ">
           <div className="sm:col-span-2 max-sm:w-[280px] max-w-full">
-            {profile_image_url ? (
-              <div className="relative">
-                <UploadProfileImage />
-                <img
-                  className="rounded-xl w-full aspect-[1/1.25] object-cover"
-                  src={profile_image_url}
-                  alt="placeholder image"
-                />
-              </div>
-            ) : (
-              <div className="relative">
-                <UploadProfileImage />
-                <img
-                  className=" pt-10 bg-orange-600 rounded-xl aspect-[1/1.25] object-cover"
-                  src={userPlaceholder}
-                  alt="placeholder image"
-                />
-              </div>
-            )}
+            <ProfileImage image_url={profile_image_url} />
           </div>
           <div className="sm:col-span-4 flex flex-col items-start justify-center sm:pl-10 gap-4 max-sm:mt-8">
             {created_at && (
