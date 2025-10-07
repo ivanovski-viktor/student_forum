@@ -3,11 +3,11 @@ import UploadProfileImage from "../ui/UploadProfileImage";
 import userPlaceholder from "../../assets/user-placeholder.png";
 import InlineLoader from "../layout/InlineLoader";
 
-export default function ProfileImage({ image_url }) {
+export default function ProfileImage({ image_url, uploadImage = false }) {
   const [currentImageUrl, setCurrentImageUrl] = useState(image_url);
   const [isUploading, setIsUploading] = useState(false);
 
-  return (
+  return uploadImage === true ? (
     <div className="relative">
       <UploadProfileImage
         setIsUploading={setIsUploading}
@@ -27,6 +27,17 @@ export default function ProfileImage({ image_url }) {
           loading="eager"
         />
       )}
+    </div>
+  ) : (
+    <div>
+      <img
+        className={`rounded-xl w-full aspect-[1/1.25] object-cover ${
+          image_url ? "" : "pt-10 bg-orange-600"
+        }`}
+        src={currentImageUrl || userPlaceholder}
+        alt="profile image"
+        loading="eager"
+      />
     </div>
   );
 }

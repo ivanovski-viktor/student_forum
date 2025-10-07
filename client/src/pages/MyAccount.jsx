@@ -75,7 +75,7 @@ export default function MyAccount() {
         <h2 className="mb-6 text-center">Мој Профил</h2>
         <div className="flex flex-col items-center justify-center sm:grid sm:grid-cols-6 ">
           <div className="sm:col-span-2 max-sm:w-[280px] max-w-full">
-            <ProfileImage image_url={profile_image_url} />
+            <ProfileImage image_url={profile_image_url} uploadImage={true} />
           </div>
           <div className="sm:col-span-4 flex flex-col items-start justify-center sm:pl-10 gap-4 max-sm:mt-8">
             {created_at && (
