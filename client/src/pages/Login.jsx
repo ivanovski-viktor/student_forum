@@ -1,27 +1,31 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../components/Input";
-import Form from "../components/Form";
-import Button from "../components/Button";
-import LinkUnderline from "../components/LinkUnderline";
+import Input from "../components/ui/Input";
+import Form from "../components/ui/Form";
+import Button from "../components/ui/Button";
+import LinkUnderline from "../components/ui/LinkUnderline";
+import Message from "../components/ui/Message";
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Login() {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const [message, setMessage] = useState({ type: "", text: "" });
 
   function handleChange(e) {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setMessage({ type: "", text: "" });
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/users/login", {
+      const response = await fetch(`${apiUrl}/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "raw",
@@ -35,16 +39,21 @@ export default function Login() {
       if (!response.ok) {
         // Try to get error message from response
         const errorData = await response.json();
-        alert(
-          "Registration failed: " + (errorData.message || response.statusText)
-        );
+        setMessage({
+          type: "error",
+          text: errorData.message || response.statusText,
+        });
         return;
       }
 
       const data = await response.json();
-      console.log("Welcome back " + data.token);
+      localStorage.setItem("token", data.token);
+      navigate("/");
     } catch (error) {
-      alert("An error occurred: " + error.message);
+      setMessage({
+        type: "error",
+        text: error.message || response.statusText,
+      });
     }
   }
 
@@ -54,7 +63,7 @@ export default function Login() {
         <Input
           type="email"
           name="email"
-          placeholder="Корисничко име"
+          placeholder="Е-Пошта"
           value={formData.username}
           onChange={handleChange}
           required={true}
@@ -69,6 +78,7 @@ export default function Login() {
         />
 
         <Button buttonType="form" text="Продолжи" />
+        {message.text && <Message type={message.type} text={message.text} />}
 
         <LinkUnderline link="/register" text="Регистрирај се" />
       </Form>

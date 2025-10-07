@@ -1,8 +1,13 @@
+import BlogPosts from "../components/ui/BlogPosts";
+
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export default function Home() {
+  const token = localStorage.getItem("token");
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold">Welcome Home</h1>
-      <p>This is your homepage.</p>
-    </div>
+    <>
+      <div>Token: {token}</div>
+      <BlogPosts url={`${apiUrl}/posts`} />
+    </>
   );
 }

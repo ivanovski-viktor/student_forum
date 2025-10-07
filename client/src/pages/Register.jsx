@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../components/Input";
-import Button from "../components/Button";
-import Form from "../components/Form";
-import LinkUnderline from "../components/LinkUnderline";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+import Form from "../components/ui/Form";
+import LinkUnderline from "../components/ui/LinkUnderline";
+import Message from "../components/ui/Message";
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Register() {
   const navigate = useNavigate();
@@ -14,21 +17,23 @@ export default function Register() {
     password: "",
     confirmPassword: "",
   });
+  const [message, setMessage] = useState({ type: "", text: "" });
 
   function handleChange(e) {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setMessage({ type: "", text: "" });
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      setMessage({ type: "error", text: "Passwords do not match!" });
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:8080/users/register", {
+      const response = await fetch(`${apiUrl}/users/register`, {
         method: "POST",
         headers: {
           "Content-Type": "raw",
@@ -44,16 +49,22 @@ export default function Register() {
       if (!response.ok) {
         // Try to get error message from response
         const errorData = await response.json();
-        alert(
-          "Registration failed: " + (errorData.message || response.statusText)
-        );
+        setMessage({
+          type: "error",
+          text: errorData.message || response.statusText,
+        });
         return;
       }
 
       const data = await response.json();
-      alert("Registration successful! Welcome, " + data.username);
+      setMessage({
+        type: "success",
+        text: "Registration successful! Welcome, " + data.username,
+      });
 
-      navigate("/login");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
     } catch (error) {
       alert("An error occurred: " + error.message);
     }
@@ -93,6 +104,7 @@ export default function Register() {
         />
 
         <Button buttonType="form" text="Продолжи" />
+        {message.text && <Message type={message.type} text={message.text} />}
 
         <LinkUnderline link="/login" text="Кон најава" />
       </Form>
