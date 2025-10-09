@@ -15,14 +15,29 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function BlogPost() {
   const { id } = useParams();
-  const { data: postData, loading, error } = useFetch(`${apiUrl}/posts/${id}`);
 
-  if (loading) return <InlineLoader />;
-  if (error) return <p>Error: {error}</p>;
-  const post = postData.post;
+  const {
+    data: postData,
+    loading: loadingPostData,
+    error: postError,
+  } = useFetch(`${apiUrl}/posts/${id}`);
+
+  const {
+    data: commentsData,
+    loading: loadingCommentsData,
+    error: commentsError,
+  } = useFetch(`${apiUrl}/posts/${id}/comments`);
+
+  if (loadingPostData) return <InlineLoader />;
+  if (postError) return <p>Error: {postError}</p>;
+  if (commentsError) return <p>Error: {commentsError}</p>;
+
+  const post = postData?.post;
+  const comments = commentsData.comments;
+  if (!post) return <p>No post found.</p>;
 
   return (
-    <div className="container mx-auto px-6 md:px-8 ">
+    <div className="container mx-auto px-6 md:px-8">
       <div className="flex items-center gap-2">
         {!post.group_name ? (
           <span className="text-sm text-gray-600 mb-1 inline-flex gap-1 items-center">
@@ -63,6 +78,11 @@ export default function BlogPost() {
           <FontAwesomeIcon icon={faCommentDots} />
           {post.comment_count} comments
         </span>
+      </div>
+      <div>
+        {comments.map((comment) => {
+          return <div key={comment.id}>{JSON.stringify(comment)}</div>;
+        })}
       </div>
     </div>
   );
