@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InlineLoader from "../components/layout/InlineLoader";
-import UploadProfileImage from "../components/ui/UploadProfileImage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightLong } from "@fortawesome/free-solid-svg-icons";
 import { formatDateTime } from "../helper-functions/timeFormat";
@@ -10,15 +9,13 @@ import LinkUnderline from "../components/ui/LinkUnderline";
 import logout from "../helper-functions/logout";
 
 import ProfileImage from "../components/users/ProfileImage";
+import { useFetch } from "../hooks/useFetch";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function MyAccount() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const [userData, setUserData] = useState(null); // to store the response data
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   // Redirect if no token
   useEffect(() => {
@@ -27,40 +24,13 @@ export default function MyAccount() {
     }
   }, [token, navigate]);
 
-  // Fetch user data
-  useEffect(() => {
-    if (!token) return; // Don't run fetch if there's no token
-
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/users/me`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            // Token is invalid/expired, redirect to login
-            navigate("/login");
-          } else {
-            throw new Error(`Error ${response.status}`);
-          }
-        }
-
-        const data = await response.json();
-        setUserData(data);
-      } catch (err) {
-        setError(err.message || "Something went wrong");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [token, navigate]);
+  const {
+    data: userData,
+    loading,
+    error,
+  } = useFetch(`${apiUrl}/users/me`, {
+    headers: { "Content-Type": "application/json", Authorization: token },
+  });
 
   if (loading) return <InlineLoader />;
 
@@ -105,7 +75,7 @@ export default function MyAccount() {
               <LinkUnderline
                 link="./change-password"
                 text="Промени лозинка"
-                colorClass="text-red-500"
+                colorClass="red-500"
               />
             </div>
           </div>

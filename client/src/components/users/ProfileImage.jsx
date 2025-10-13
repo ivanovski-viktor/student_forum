@@ -1,5 +1,5 @@
 import { useState } from "react";
-import UploadProfileImage from "../ui/UploadProfileImage";
+import UploadProfileImage from "./UploadProfileImage";
 import userPlaceholder from "../../assets/user-placeholder.png";
 import InlineLoader from "../layout/InlineLoader";
 

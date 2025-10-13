@@ -8,9 +8,9 @@ export default function BlogPosts({ url }) {
   if (loading) return <InlineLoader />;
   if (error) return <p>Error: {error}</p>;
   return (
-    <ul className="space-y-4 p-5">
+    <ul className="space-y-4">
       {postsData.posts.map((post) => (
-        <BlogPostCard post={post} />
+        <BlogPostCard key={post.id} post={post} />
       ))}
     </ul>
   );
