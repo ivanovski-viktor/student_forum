@@ -37,7 +37,6 @@ export default function Home({ children }) {
                 Developed by:{" "}
                 <LinkUnderline
                   target="_blank"
-                  colorClass={"green-600"}
                   link="https://www.linkedin.com/in/viktor-ivanovski-a47b8426a/"
                   text={"Viktor Ivanovski."}
                 />

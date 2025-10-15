@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useAuthCheck } from "../../hooks/useAuthCheck";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
-
+import LinkUnderline from "../ui/LinkUnderline";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function CommentOnPost() {
@@ -47,7 +47,15 @@ export default function CommentOnPost() {
 
   // Wait for auth check
   if (!checked) return null;
-  if (!isAuthenticated) return null; // redirect handled by hook
+  // Show login prompt for unauthenticated users
+  if (!isAuthenticated) {
+    return (
+      <div className="flex items-center justify-between py-4  rounded-md text-sm">
+        <span>Најави се за да коментираш...</span>
+        <LinkUnderline to="/login" text="Кон најава" />
+      </div>
+    );
+  }
 
   return (
     <div>

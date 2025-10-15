@@ -75,7 +75,8 @@ export default function MyAccount() {
               <LinkUnderline
                 link="./change-password"
                 text="Промени лозинка"
-                colorClass="red-500"
+                colorClass="text-red-500"
+                bgClass="bg-red-500"
               />
             </div>
           </div>

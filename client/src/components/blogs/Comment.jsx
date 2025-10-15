@@ -1,96 +1,126 @@
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useFetch } from "../../hooks/useFetch";
 import InlineLoader from "../layout/InlineLoader";
 import userPlaceholder from "../../assets/user-placeholder.png";
-import { Link } from "react-router-dom";
-import { useState } from "react";
 import ReplyToComment from "./ReplyToComment";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Comment({ comment }) {
-  // Data
-  const { id, content, user_id, replies } = comment;
-  const repliesCount = replies?.length || 0;
+  const { id, content, user_id } = comment;
 
-  // State
   const [showReplies, setShowReplies] = useState(false);
-  const [repliesArr, setRepliesArr] = useState(replies);
-  // TODO Rework this to fetch replies, create replies endpoint because of need of deleting or updating with database generated id
+  const [replies, setReplies] = useState([]);
+  const [repliesCount, setRepliesCount] = useState(0);
+
+  // Fetch user data
   const {
     data: userData,
-    loading,
-    error,
+    loading: userLoading,
+    error: userError,
   } = useFetch(`${apiUrl}/users/${user_id}`);
 
-  if (loading) return <InlineLoader />;
-  if (error) return <div>Error: {error}</div>;
+  const user = userData?.user || {};
   const {
     id: userId,
     username: userName,
     profile_image_url: profileImageUrl,
-  } = userData.user;
+  } = user;
+
+  // Fetch replies count on initial render
+  useEffect(() => {
+    const fetchRepliesCount = async () => {
+      try {
+        const res = await fetch(`${apiUrl}/comments/${id}/replies`);
+        if (!res.ok) throw new Error("Failed to fetch replies count");
+        const json = await res.json();
+        setRepliesCount(json.replies?.length || 0);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchRepliesCount();
+  }, [id]);
+
+  // Function to fetch replies when user expands
+  const fetchReplies = async () => {
+    try {
+      const res = await fetch(`${apiUrl}/comments/${id}/replies`);
+      if (!res.ok) throw new Error("Failed to fetch replies");
+      const json = await res.json();
+      const fetchedReplies = json.replies || [];
+      setReplies(fetchedReplies);
+      setRepliesCount(fetchedReplies.length); // keep count updated after adding replies
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Fetch replies when showReplies is toggled
+  useEffect(() => {
+    if (showReplies) fetchReplies();
+  }, [showReplies]);
+
+  // Callback when a new reply is added
+  const handleReplyAdded = () => {
+    fetchReplies();
+    setShowReplies(true);
+  };
 
   return (
-    <div className=" border border-gray-200 p-4 rounded-md">
-      <div>
-        <div className="">
-          <Link
-            className=" transition-colors duration-200 ease-in-out hover:text-orange-600 flex items-center justify-start gap-2 w-max max-w-full"
-            to={`/users/${userId}`}
-          >
-            <img
-              className="rounded-full w-7 h-7 object-cover object-center bg-orange-600"
-              src={profileImageUrl || userPlaceholder}
-              width={1200}
-              alt="profile image"
-              loading="eager"
-            />
+    <div className="border border-gray-200 p-4 rounded-md">
+      {userLoading && <InlineLoader />}
+      {userError && <div>Error: {userError}</div>}
 
-            <h6>{userName}</h6>
-          </Link>
-        </div>
+      <div>
+        <Link
+          className="transition-colors duration-200 ease-in-out hover:text-orange-600 flex items-center gap-2 w-max"
+          to={`/users/${userId}`}
+        >
+          <img
+            className="rounded-full w-7 h-7 object-cover bg-orange-600"
+            src={profileImageUrl || userPlaceholder}
+            alt="profile"
+          />
+          <h6>{userName}</h6>
+        </Link>
+
         <div className="flex items-center justify-between gap-2">
           <p className="mt-2">{content}</p>
-          {repliesCount > 0 && (
-            <button
-              onClick={() => setShowReplies((prev) => !prev)}
-              className="text-xs text-gray-600 underline-offset-2 cursor-pointer underline hover:opacity-60 transition-opacity duration-200 ease-in-out"
-            >
-              {showReplies === false ? (
-                <span>
-                  Прикажи {repliesCount}{" "}
-                  {repliesCount == 1 ? "одговор" : "одговори"}
-                </span>
-              ) : (
-                <span> Сокриј </span>
-              )}
-            </button>
-          )}
+          <button
+            onClick={() => setShowReplies((prev) => !prev)}
+            className="text-xs text-gray-600 underline cursor-pointer hover:opacity-60 transition-opacity duration-200"
+          >
+            {!showReplies
+              ? repliesCount > 0
+                ? `Прикажи ${repliesCount} ${
+                    repliesCount === 1 ? "одговор" : "одговори"
+                  }`
+                : "Одговори"
+              : "Сокриј"}
+          </button>
         </div>
+
+        {showReplies && (
+          <div className="mt-2 border-t border-gray-200/80">
+            <ReplyToComment
+              commentId={id}
+              handleReplyAdded={handleReplyAdded}
+            />
+            {[...replies].reverse().map((reply, index) => (
+              <div
+                key={reply.id}
+                className={`pl-5 mt-2 border-t pt-2 border-gray-200/80${
+                  index === 0 ? " !mt-0 border-t-0" : ""
+                }`}
+              >
+                {reply.content}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-      {showReplies && (
-        <div>
-          {repliesArr && (
-            <div className="pl-5 mt-2 border-t border-gray-200">
-              {repliesArr.map((reply, index) => (
-                <div
-                  className={`pl-5 mt-2 border-t pt-2 border-gray-200${
-                    index === 0 ? " !mt-0 border-t-0" : ""
-                  }`}
-                  key={reply.id}
-                >
-                  {reply.content}
-                </div>
-              ))}
-              <ReplyToComment
-                repliesArr={repliesArr}
-                setRepliesArr={setRepliesArr}
-                commentId={id}
-              />
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }

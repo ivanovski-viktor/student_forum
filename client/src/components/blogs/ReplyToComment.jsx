@@ -3,10 +3,11 @@ import { useParams } from "react-router-dom";
 import { useAuthCheck } from "../../hooks/useAuthCheck";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
+import LinkUnderline from "../ui/LinkUnderline";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-export default function ReplyToComment({ setRepliesArr, commentId }) {
+export default function ReplyToComment({ handleReplyAdded, commentId }) {
   const { id } = useParams();
   const { isAuthenticated, checked } = useAuthCheck({
     redirectIfUnauthenticated: true,
@@ -37,13 +38,7 @@ export default function ReplyToComment({ setRepliesArr, commentId }) {
       if (!res.ok) throw new Error("Failed to post reply");
 
       setContent("");
-      setRepliesArr((prev) => [
-        ...prev,
-        {
-          content: content,
-          parent_id: commentId,
-        },
-      ]);
+      handleReplyAdded();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -53,7 +48,14 @@ export default function ReplyToComment({ setRepliesArr, commentId }) {
 
   // Wait for auth check
   if (!checked) return null;
-  if (!isAuthenticated) return null; // redirect handled by hook
+  if (!isAuthenticated) {
+    return (
+      <div className="flex items-center justify-between pl-5 py-3 border-gray-200/80 rounded-md text-xs border-b">
+        <span>Најави се за да одговориш...</span>
+        <LinkUnderline to="/login" text="Кон најава" />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -62,7 +64,7 @@ export default function ReplyToComment({ setRepliesArr, commentId }) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           disabled={loading}
-          placeholder="Коментирај..."
+          placeholder="Одговори..."
         />
         <Button
           extraClass="shrink-0 !mt-0 !py-1.5 px-3 lg:px-4 absolute top-1 right-1 text-xs"
