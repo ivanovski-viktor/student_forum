@@ -14,7 +14,6 @@ type Comment struct {
 	ParentID  *int64     `json:"parent_id,omitempty"` // only for replies
 	Content   string     `json:"content"`
 	CreatedAt time.Time  `json:"created_at"`
-	Replies   []Comment  `json:"replies,omitempty"` // only for returning replies
 }
 
 func (c *Comment) Create() error {
@@ -38,7 +37,7 @@ func GetCommentsByPostID(postID int64) ([]Comment, error) {
 	query := `
 		SELECT id, post_id, user_id, parent_id, content, created_at
 		FROM comments
-		WHERE post_id = ?
+		WHERE post_id = ? AND parent_id IS NULL
 		ORDER BY created_at ASC
 	`
 
@@ -48,7 +47,7 @@ func GetCommentsByPostID(postID int64) ([]Comment, error) {
 	}
 	defer rows.Close()
 
-	var all []Comment
+	var comments []Comment
 	for rows.Next() {
 		var c Comment
 		var parentID sql.NullInt64
@@ -59,25 +58,10 @@ func GetCommentsByPostID(postID int64) ([]Comment, error) {
 		if parentID.Valid {
 			c.ParentID = &parentID.Int64
 		}
-		all = append(all, c)
+		comments = append(comments, c)
 	}
 
-	var topLevel []Comment
-	replies := make(map[int64][]Comment)
-
-	for _, c := range all {
-		if c.ParentID != nil {
-			replies[*c.ParentID] = append(replies[*c.ParentID], c)
-		} else {
-			topLevel = append(topLevel, c)
-		}
-	}
-
-	for i := range topLevel {
-		topLevel[i].Replies = replies[topLevel[i].ID]
-	}
-
-	return topLevel, nil
+	return comments, nil
 }
 
 func GetCommentByID(id int64) (*Comment, error) {
@@ -94,6 +78,33 @@ func GetCommentByID(id int64) (*Comment, error) {
 		c.ParentID = &parentID.Int64
 	}
 	return &c, nil
+}
+
+func GetCommentReplies(id int64) ([]Comment, error) {
+	query := `SELECT id, post_id, user_id, parent_id, content, created_at FROM comments WHERE parent_id = ?`
+
+	rows, err := db.DB.Query(query, id) 
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var replies []Comment              
+
+	for rows.Next() {                 
+		var c Comment
+		err := rows.Scan(&c.ID, &c.PostID, &c.UserID, &c.ParentID, &c.Content, &c.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		replies = append(replies, c)   
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return replies, nil                
 }
 
 func (c *Comment) Update() error {

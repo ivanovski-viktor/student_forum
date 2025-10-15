@@ -9,6 +9,38 @@ import (
 	"github.com/ivanovski-viktor/student_forum/server/utils"
 )
 
+func GetComment(c *gin.Context) {
+	commentId, err := utils.ParseParamToInt("id", c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid comment ID"})
+		return
+	}
+
+	comment, err := models.GetCommentByID(commentId)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Comment not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"comment": comment})
+}
+
+func GetCommentReplies(c *gin.Context) {
+	commentId, err := utils.ParseParamToInt("id", c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid comment ID"})
+		return
+	}
+
+	replies, err := models.GetCommentReplies(commentId)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Comment not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"replies": replies})
+}
+
 func CreateComment(c *gin.Context) {
 	userId := c.GetInt64("userId")
 
