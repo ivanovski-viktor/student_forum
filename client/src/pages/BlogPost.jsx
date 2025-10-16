@@ -12,6 +12,7 @@ import {
 import { formatRelativeTime } from "../helper-functions/timeFormat";
 import MainLayout from "../components/layout/MainLayout";
 import CommentSection from "../components/blogs/CommentSection";
+import CreatedAt from "../components/ui/CreatedAt";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -53,10 +54,8 @@ export default function BlogPost() {
               <span>/{post.group_name}</span>
             </span>
           )}
-          <span className="flex items-center gap-1 text-xs text-gray-400 border-l border-gray-300 pl-2">
-            <FontAwesomeIcon icon={faClockFour} />
-            {formatRelativeTime(post.created_at)}
-          </span>
+
+          <CreatedAt time={post.created_at} />
         </div>
 
         <h2 className="text-gray-900 mb-2">{post.title}</h2>

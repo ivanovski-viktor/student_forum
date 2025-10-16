@@ -8,6 +8,7 @@ import {
   faUserGroup,
   faClockFour,
 } from "@fortawesome/free-solid-svg-icons";
+import CreatedAt from "../ui/CreatedAt";
 
 export default function BlogPostCard({ post }) {
   return (
@@ -32,10 +33,7 @@ export default function BlogPostCard({ post }) {
               <span>/{post.group_name}</span>
             </Link>
           )}
-          <span className="flex items-center gap-1 text-xs text-gray-400 border-l border-gray-300 pl-2">
-            <FontAwesomeIcon icon={faClockFour} />
-            {formatRelativeTime(post.created_at)}
-          </span>
+          <CreatedAt time={post.created_at} />
         </div>
 
         <Link to={`/posts/${post.id}`}>

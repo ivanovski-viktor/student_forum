@@ -1,1 +1,33 @@
 @import "tailwindcss";
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-semibold;
+}
+
+h1 {
+  @apply text-2xl lg:text-3xl;
+}
+h2 {
+  @apply text-xl lg:text-2xl;
+}
+h3 {
+  @apply text-lg lg:text-xl;
+}
+h4 {
+  @apply text-base lg:text-lg;
+}
+h5 {
+  @apply text-sm lg:text-base;
+}
+h6 {
+  @apply text-xs lg:text-sm;
+}
+
+body {
+  @apply font-normal text-xs lg:text-sm;
+}

@@ -4,13 +4,19 @@ import { useFetch } from "../../hooks/useFetch";
 import InlineLoader from "../layout/InlineLoader";
 import userPlaceholder from "../../assets/user-placeholder.png";
 import ReplyToComment from "./ReplyToComment";
+import Reply from "./Reply";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import CreatedAt from "../ui/CreatedAt";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Comment({ comment }) {
   const { id, content, user_id } = comment;
 
+  const [loadingReplies, setLoadingReplies] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
+  const [showReplyToComment, setShowReplyToComment] = useState(false);
   const [replies, setReplies] = useState([]);
   const [repliesCount, setRepliesCount] = useState(0);
 
@@ -59,7 +65,20 @@ export default function Comment({ comment }) {
 
   // Fetch replies when showReplies is toggled
   useEffect(() => {
-    if (showReplies) fetchReplies();
+    const loadReplies = async () => {
+      if (!showReplies) return;
+
+      setLoadingReplies(true);
+      try {
+        await fetchReplies();
+      } finally {
+        setTimeout(() => {
+          setLoadingReplies(false);
+        }, 250);
+      }
+    };
+
+    loadReplies();
   }, [showReplies]);
 
   // Callback when a new reply is added
@@ -74,50 +93,77 @@ export default function Comment({ comment }) {
       {userError && <div>Error: {userError}</div>}
 
       <div>
-        <Link
-          className="transition-colors duration-200 ease-in-out hover:text-orange-600 flex items-center gap-2 w-max"
-          to={`/users/${userId}`}
-        >
-          <img
-            className="rounded-full w-7 h-7 object-cover bg-orange-600"
-            src={profileImageUrl || userPlaceholder}
-            alt="profile"
-          />
-          <h6>{userName}</h6>
-        </Link>
+        <div className=" flex items-center gap-1">
+          <Link
+            className="transition-colors duration-200 ease-in-out hover:text-orange-600 flex items-center gap-2"
+            to={`/users/${userId}`}
+          >
+            <img
+              className="rounded-full w-8 h-8 object-cover bg-orange-600"
+              src={profileImageUrl || userPlaceholder}
+              alt="profile"
+            />
+            <h6 className="">{userName}</h6>
+          </Link>
+
+          <CreatedAt time={comment.created_at} />
+        </div>
 
         <div className="flex items-center justify-between gap-2">
-          <p className="mt-2">{content}</p>
+          <p className="mt-2 pl-10">{content}</p>
           <button
             onClick={() => setShowReplies((prev) => !prev)}
-            className="text-xs text-gray-600 underline cursor-pointer hover:opacity-60 transition-opacity duration-200"
+            className="text-xs text-gray-600 underline cursor-pointer hover:opacity-60 transition-opacity duration-200 flex items-center gap-1 "
           >
-            {!showReplies
-              ? repliesCount > 0
-                ? `Прикажи ${repliesCount} ${
-                    repliesCount === 1 ? "одговор" : "одговори"
-                  }`
-                : "Одговори"
-              : "Сокриј"}
+            {loadingReplies ? (
+              <InlineLoader small={true} />
+            ) : !showReplies ? (
+              repliesCount > 0 ? (
+                `Прикажи ${repliesCount} ${
+                  repliesCount === 1 ? "одговор" : "одговори"
+                }`
+              ) : (
+                "Одговори"
+              )
+            ) : (
+              "Сокриј"
+            )}
           </button>
         </div>
 
-        {showReplies && (
-          <div className="mt-2 border-t border-gray-200/80">
-            <ReplyToComment
-              commentId={id}
-              handleReplyAdded={handleReplyAdded}
-            />
-            {[...replies].reverse().map((reply, index) => (
-              <div
-                key={reply.id}
-                className={`pl-5 mt-2 border-t pt-2 border-gray-200/80${
-                  index === 0 ? " !mt-0 border-t-0" : ""
-                }`}
+        {showReplies && !loadingReplies && (
+          <div className="mt-2 border-t border-gray-200/80 pl-10">
+            <div className="flex items-center justify-end mt-2">
+              <button
+                className="  px-3 py-1 w-28 rounded-full text-gray-600 hover:bg-orange-200 transition-colors duration-300 ease-in-out flex items-center justify-between"
+                onClick={() => setShowReplyToComment((prev) => !prev)}
               >
-                {reply.content}
+                <FontAwesomeIcon
+                  icon={faChevronDown}
+                  className={`transition-transform duration-200 ease-in-out${
+                    showReplyToComment ? " rotate-180" : "rotate-0"
+                  }`}
+                />{" "}
+                {!showReplyToComment ? "Одговори" : "Затвори"}
+              </button>
+            </div>
+            {showReplyToComment && (
+              <ReplyToComment
+                commentId={id}
+                handleReplyAdded={handleReplyAdded}
+              />
+            )}
+            {!loadingReplies && (
+              <div className="">
+                {replies.map((reply, index) => (
+                  <Reply
+                    key={index}
+                    reply={reply}
+                    setLoadingReplies={setLoadingReplies}
+                  />
+                ))}
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
