@@ -23,10 +23,7 @@ export default function Reply({ reply }) {
     return <div className="text-xs text-red-500">Error loading user</div>;
 
   return (
-    <div
-      key={id}
-      className="mt-2 border-t pt-2 border-gray-200/80 first:mt-0 first:border-0"
-    >
+    <div key={id} className="mt-2 border-t pt-3 border-gray-200/80">
       <div className="flex items-center gap-1">
         <Link
           className="transition-colors duration-200 ease-in-out hover:text-orange-600 flex items-center gap-2"

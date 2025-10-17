@@ -9,6 +9,7 @@ import MyAccount from "./pages/MyAccount.jsx";
 import UserAccount from "./pages/UserAccount.jsx";
 import ChangePassword from "./pages/ChangePassword.jsx";
 import Group from "./pages/Group.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 function App() {
   return (
@@ -28,6 +29,9 @@ function App() {
           />
           <Route path="/posts/:id" element={<BlogPost />} />
           <Route path="/groups/:name" element={<Group />} />
+
+          {/* 404 Page */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </div>

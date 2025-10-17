@@ -72,9 +72,7 @@ export default function Comment({ comment }) {
       try {
         await fetchReplies();
       } finally {
-        setTimeout(() => {
-          setLoadingReplies(false);
-        }, 250);
+        setLoadingReplies(false);
       }
     };
 
@@ -132,7 +130,7 @@ export default function Comment({ comment }) {
         </div>
 
         {showReplies && !loadingReplies && (
-          <div className="mt-2 border-t border-gray-200/80 pl-10">
+          <div className="pl-10">
             <div className="flex items-center justify-end mt-2">
               <button
                 className="  px-3 py-1 w-28 rounded-full text-gray-600 hover:bg-orange-200 transition-colors duration-300 ease-in-out flex items-center justify-between"

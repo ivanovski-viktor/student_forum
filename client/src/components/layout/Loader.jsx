@@ -13,7 +13,7 @@ export default function Loader() {
     setVisible(true);
     setOpacity("opacity-100");
 
-    const randomDelay = Math.floor(Math.random() * (800 - 400 + 1)) + 400;
+    const randomDelay = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
 
     const timer = setTimeout(() => {
       // Fade out

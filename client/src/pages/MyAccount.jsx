@@ -10,6 +10,7 @@ import logout from "../helper-functions/logout";
 
 import ProfileImage from "../components/users/ProfileImage";
 import { useFetch } from "../hooks/useFetch";
+import NotFound from "./NotFound";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -34,10 +35,9 @@ export default function MyAccount() {
 
   if (loading) return <InlineLoader />;
 
-  if (error) return <div>Error: {error}</div>;
+  if (error) return <NotFound text={error} largeText="" />;
 
-  const { profile_image_url, id, username, email, created_at, password } =
-    userData.user;
+  const { profile_image_url, id, username, email, created_at } = userData.user;
 
   return (
     <div className="container mx-auto px-6 md:px-8 py-10 md:py-16">

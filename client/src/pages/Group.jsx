@@ -11,17 +11,18 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { formatRelativeTime } from "../helper-functions/timeFormat";
 import MainLayout from "../components/layout/MainLayout";
+import BlogPosts from "../components/blogs/BlogPosts";
 
 const apiUrl = import.meta.env.VITE_API_URL;
-
 export default function Group() {
   const { name } = useParams();
+  const groupUrl = `${apiUrl}/groups/${name}`;
 
   const {
     data: groupData,
     loading: loadingGroupData,
     error: groupError,
-  } = useFetch(`${apiUrl}/groups/${name}`);
+  } = useFetch(groupUrl);
 
   if (loadingGroupData) return <InlineLoader />;
   if (groupError) return <p>Error: {groupError}</p>;
@@ -30,7 +31,10 @@ export default function Group() {
 
   return (
     <MainLayout>
-      <div>{JSON.stringify(group)}</div>
+      <div>
+        <div>{JSON.stringify(group)}</div>
+        <BlogPosts url={`${groupUrl}/posts`} />
+      </div>
       <div>test</div>
     </MainLayout>
   );

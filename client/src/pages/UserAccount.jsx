@@ -12,6 +12,7 @@ import logout from "../helper-functions/logout";
 
 import ProfileImage from "../components/users/ProfileImage";
 import { useFetch } from "../hooks/useFetch";
+import NotFound from "./NotFound";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -38,7 +39,7 @@ export default function UserAccount() {
 
   // Handle loading + error
   if (loading) return <InlineLoader />;
-  if (error) return <div>Error: {error}</div>;
+  if (error) return <NotFound text="Корисникот не постои!" />;
   if (currentUserError) console.warn("Auth check failed:", currentUserError);
 
   const { profile_image_url, username, email, created_at } = userData.user;

@@ -31,3 +31,7 @@ h6 {
 body {
   @apply font-normal text-xs lg:text-sm;
 }
+
+.text-gradient {
+  @apply text-transparent bg-gradient-to-r from-orange-600 to-black bg-clip-text;
+}
