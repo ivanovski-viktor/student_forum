@@ -1,8 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
 import LinkUnderline from "../ui/LinkUnderline";
+import { RiHome5Line } from "react-icons/ri";
 
 export default function Home({ children }) {
   // Requires 2 children
@@ -13,8 +12,9 @@ export default function Home({ children }) {
       {/* nav menu */}
       <div className="col-span-2 border-r border-gray-200 bg-orange-200/10">
         <div className="p-5">
-          <Link to="/">
-            <FontAwesomeIcon icon={faHome} /> Home
+          <Link to="/" className=" flex items-center gap-2">
+            <RiHome5Line className="text-lg" />
+            Home
           </Link>
         </div>
       </div>
@@ -43,7 +43,7 @@ export default function Home({ children }) {
               </li>
               <li>Student Forum © 2025. All rights reserved.</li>
               <li className="flex items-center justify-start gap-3">
-                <FontAwesomeIcon icon={faHome} />
+                <RiHome5Line />
               </li>
             </ul>
           </div>

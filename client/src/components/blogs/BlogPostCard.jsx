@@ -1,13 +1,10 @@
-import { formatRelativeTime } from "../../helper-functions/timeFormat";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowUp,
-  faArrowDown,
-  faCommentDots,
-  faUserGroup,
-  faClockFour,
-} from "@fortawesome/free-solid-svg-icons";
+  RiArrowUpFill,
+  RiArrowDownFill,
+  RiMessage2Line,
+  RiGroup2Fill,
+} from "react-icons/ri";
 import CreatedAt from "../ui/CreatedAt";
 
 export default function BlogPostCard({ post }) {
@@ -21,7 +18,7 @@ export default function BlogPostCard({ post }) {
         <div className="flex items-center gap-2">
           {!post.group_name ? (
             <span className="text-sm text-gray-600 mb-1 inline-flex gap-1 items-center">
-              <FontAwesomeIcon icon={faUserGroup} />
+              <RiGroup2Fill className="text-lg" />
               <span>/general</span>
             </span>
           ) : (
@@ -29,7 +26,7 @@ export default function BlogPostCard({ post }) {
               to={`/groups/${post.group_name}`}
               className="text-sm text-orange-600 hover:underline mb-1 inline-flex gap-1 items-center relative z-10"
             >
-              <FontAwesomeIcon icon={faUserGroup} />
+              <RiGroup2Fill className="text-lg" />
               <span>/{post.group_name}</span>
             </Link>
           )}
@@ -46,15 +43,15 @@ export default function BlogPostCard({ post }) {
 
         <div className="flex flex-wrap gap-4 text-sm text-gray-600 items-center ">
           <span className="flex items-center gap-1 relative z-10">
-            <FontAwesomeIcon icon={faArrowUp} />
+            <RiArrowUpFill />
             {post.upvotes}
           </span>
           <span className="flex items-center gap-1 relative z-10">
-            <FontAwesomeIcon icon={faArrowDown} />
+            <RiArrowDownFill />
             {post.downvotes}
           </span>
           <span className="flex items-center gap-1">
-            <FontAwesomeIcon icon={faCommentDots} />
+            <RiMessage2Line />
             {post.comment_count} comments
           </span>
         </div>

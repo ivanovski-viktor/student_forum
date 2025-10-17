@@ -5,8 +5,7 @@ import InlineLoader from "../layout/InlineLoader";
 import userPlaceholder from "../../assets/user-placeholder.png";
 import ReplyToComment from "./ReplyToComment";
 import Reply from "./Reply";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { RiArrowDownFill } from "react-icons/ri";
 import CreatedAt from "../ui/CreatedAt";
 
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -136,8 +135,7 @@ export default function Comment({ comment }) {
                 className="  px-3 py-1 w-28 rounded-full text-gray-600 hover:bg-orange-200 transition-colors duration-300 ease-in-out flex items-center justify-between"
                 onClick={() => setShowReplyToComment((prev) => !prev)}
               >
-                <FontAwesomeIcon
-                  icon={faChevronDown}
+                <RiArrowDownFill
                   className={`transition-transform duration-200 ease-in-out${
                     showReplyToComment ? " rotate-180" : "rotate-0"
                   }`}

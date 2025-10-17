@@ -1,6 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { formatRelativeTime } from "../../helper-functions/timeFormat";
-import { faClock, faDotCircle } from "@fortawesome/free-solid-svg-icons";
 
 export default function CreatedAt({ time }) {
   return (

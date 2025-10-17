@@ -1,15 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { useFetch } from "../hooks/useFetch";
 import InlineLoader from "../components/layout/InlineLoader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowUp,
-  faArrowDown,
-  faCommentDots,
-  faUserGroup,
-  faClockFour,
-} from "@fortawesome/free-solid-svg-icons";
-import { formatRelativeTime } from "../helper-functions/timeFormat";
 import MainLayout from "../components/layout/MainLayout";
 import BlogPosts from "../components/blogs/BlogPosts";
 

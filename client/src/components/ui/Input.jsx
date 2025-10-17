@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 
 export default function Input({
   type,
@@ -36,9 +35,9 @@ export default function Input({
       <button
         type="button"
         onClick={handlePasswordVisibility}
-        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-400 transition-colors duration-200 ease-in-out cursor-pointer"
+        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-400 transition-colors duration-200 ease-in-out cursor-pointer text-lg"
       >
-        <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+        {showPassword ? <RiEyeLine /> : <RiEyeOffLine />}
       </button>
     </div>
   ) : (

@@ -2,14 +2,7 @@ import { useEffect, useState } from "react";
 import {} from "react-router-dom";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import InlineLoader from "../components/layout/InlineLoader";
-import UploadProfileImage from "../components/users/UploadProfileImage";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRightLong } from "@fortawesome/free-solid-svg-icons";
 import { formatDateTime } from "../helper-functions/timeFormat";
-import LinkUnderline from "../components/ui/LinkUnderline";
-
-import logout from "../helper-functions/logout";
-
 import ProfileImage from "../components/users/ProfileImage";
 import { useFetch } from "../hooks/useFetch";
 import NotFound from "./NotFound";
