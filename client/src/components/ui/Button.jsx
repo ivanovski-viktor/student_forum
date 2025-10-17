@@ -6,7 +6,7 @@ export default function Button({
   ...rest
 }) {
   let className =
-    "bg-orange-600 mt-3 text-white py-2 px-6 rounded-full hover:bg-white hover:text-orange-600 border-2 border-transparent hover:border-orange-600 transition duration-200 ease-in-out cursor-pointer " +
+    "bg-primary mt-3 text-white py-2 px-6 rounded-full hover:bg-white hover:text-primary border-2 border-transparent hover:border-primary transition duration-200 ease-in-out cursor-pointer " +
     extraClass;
 
   return buttonType === "form" ? (

@@ -72,7 +72,7 @@ export default function CommentOnPost() {
           text="Продолжи"
         />
       </form>
-      {error && <p className="text-red-500 text-xs">{error}</p>}
+      {error && <p className="text-error text-xs">{error}</p>}
     </div>
   );
 }

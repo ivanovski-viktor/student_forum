@@ -20,17 +20,17 @@ export default function Reply({ reply }) {
 
   if (userLoading) return null;
   if (userError)
-    return <div className="text-xs text-red-500">Error loading user</div>;
+    return <div className="text-xs text-error">Error loading user</div>;
 
   return (
-    <div key={id} className="mt-2 border-t pt-3 border-gray-200/80">
+    <div key={id} className="mt-2 border-t pt-3 border-stroke">
       <div className="flex items-center gap-1">
         <Link
-          className="transition-colors duration-200 ease-in-out hover:text-orange-600 flex items-center gap-2"
+          className="transition-colors duration-200 ease-in-out hover:text-primary flex items-center gap-2"
           to={`/users/${user_id}`}
         >
           <img
-            className="rounded-full w-8 h-8 object-cover bg-orange-600"
+            className="rounded-full w-8 h-8 object-cover bg-primary"
             src={profile_image_url || userPlaceholder}
             alt="profile"
           />

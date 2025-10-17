@@ -3,6 +3,8 @@ import {
   RiArrowDownFill,
   RiMessage2Line,
   RiGroup2Fill,
+  RiPencilFill,
+  RiDeleteBinFill,
 } from "react-icons/ri";
 
 import CreatedAt from "../ui/CreatedAt";
@@ -10,15 +12,15 @@ import CreatedAt from "../ui/CreatedAt";
 export default function BlogPostMain({ post }) {
   return (
     <div>
-      <div>
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {!post.group_name ? (
-            <span className="text-sm text-gray-600 mb-1 inline-flex gap-1 items-center">
+            <span className="text-sm text-foreground-light mb-1 inline-flex gap-1 items-center">
               <RiGroup2Fill className="text-lg" />
               <span>/general</span>
             </span>
           ) : (
-            <span className="text-sm text-gray-600 mb-1 inline-flex gap-1 items-center">
+            <span className="text-sm text-foreground-light mb-1 inline-flex gap-1 items-center">
               <RiGroup2Fill className="text-lg" />
 
               <span>/{post.group_name}</span>
@@ -27,12 +29,25 @@ export default function BlogPostMain({ post }) {
 
           <CreatedAt time={post.created_at} />
         </div>
-        <div></div>
+        <div className="flex items-center gap-2">
+          <button className="icon-link relative group">
+            <RiPencilFill />
+            <div className="bg-box0 px-2 py-1 rounded-sm absolute bottom-[110%] left-0 opacity-0 group-hover:opacity-100 text-background text-[10px] max-lg:hidden pointer-events-none">
+              Измени
+            </div>
+          </button>
+          <button className="icon-link icon-link--hvr-red relative group">
+            <RiDeleteBinFill />
+            <div className="bg-box0 px-2 py-1 rounded-sm absolute bottom-[110%] left-0 opacity-0 group-hover:opacity-100 text-background text-[10px] max-lg:hidden pointer-events-none">
+              Избриши
+            </div>
+          </button>
+        </div>
       </div>
-      <h2 className="text-gray-900 mb-2">{post.title}</h2>
-      <p className="text-gray-700 mb-4 text-sm">{post.description}</p>
+      <h2 className="mb-2">{post.title}</h2>
+      <p className="text-foreground-light mb-4 text-sm">{post.description}</p>
 
-      <div className="flex flex-wrap gap-4 text-sm text-gray-600 items-center">
+      <div className="flex flex-wrap gap-4 text-sm text-foreground-light items-center">
         <span className="flex items-center gap-1">
           <RiArrowUpFill />
           {post.upvotes}

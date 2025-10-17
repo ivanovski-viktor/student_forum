@@ -10,10 +10,10 @@ export default function InlineLoader({ small = false }) {
   return (
     <div className="flex items-center justify-center">
       <div
-        className={`${circleSize} border-transparent text-orange-600 text-4xl animate-spin flex items-center justify-center border-t-orange-600 rounded-full`}
+        className={`${circleSize} border-transparent text-primary text-4xl animate-spin flex items-center justify-center border-t-primary rounded-full`}
       >
         <div
-          className={`${innerCircleSize} border-transparent text-green-600 text-2xl animate-spin flex items-center justify-center border-t-green-400 rounded-full`}
+          className={`${innerCircleSize} border-transparent text-secondary text-2xl animate-spin flex items-center justify-center border-t-green-400 rounded-full`}
         ></div>
       </div>
     </div>

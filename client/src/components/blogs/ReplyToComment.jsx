@@ -50,7 +50,7 @@ export default function ReplyToComment({ handleReplyAdded, commentId }) {
   if (!checked) return null;
   if (!isAuthenticated) {
     return (
-      <div className="flex items-center justify-between pl-5 py-3 border-gray-200/80 rounded-md text-xs border-b">
+      <div className="flex items-center justify-between pl-5 py-3 border-stroke/80 rounded-md text-xs border-b">
         <span>Најави се за да одговориш...</span>
         <LinkUnderline to="/login" text="Кон најава" />
       </div>
@@ -72,7 +72,7 @@ export default function ReplyToComment({ handleReplyAdded, commentId }) {
           text="Продолжи"
         />
       </form>
-      {error && <p className="text-red-500 text-xs">{error}</p>}
+      {error && <p className="text-error text-xs">{error}</p>}
     </div>
   );
 }

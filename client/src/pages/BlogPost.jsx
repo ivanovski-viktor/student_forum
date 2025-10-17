@@ -39,7 +39,9 @@ export default function BlogPost() {
 
           {loadingCommentsData && <InlineLoader />}
           {comments.length < 1 && (
-            <div className="text-gray-600">Напиши го првиот коментар...</div>
+            <div className="text-foreground-light">
+              Напиши го првиот коментар...
+            </div>
           )}
           {comments && <CommentSection comments={comments} />}
         </div>

@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 export default function LinkUnderline({
   link,
   text,
-  colorClass = "text-green-600",
-  bgClass = "bg-green-600",
+  colorClass = "text-secondary",
+  bgClass = "bg-secondary",
   ...rest
 }) {
-  const color = colorClass || "green-600";
+  const color = colorClass || "secondary";
 
   return (
     <Link

@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+/* Global colors */
+
+@theme {
+  --color-primary: #f54900;
+  --color-secondary: #00a63e;
+  --color-background: #ffffff;
+  --color-foreground: #0f0f0f;
+  --color-foreground-light: #99a1af;
+  --color-box: rgba(0, 0, 0, 0.02);
+  --color-stroke: #e5e7eb;
+  --color-error: #dc2626;
+  --color-success: #00a63e;
+}
+
+/* Apply styles */
 h1,
 h2,
 h3,
@@ -29,9 +44,16 @@ h6 {
 }
 
 body {
-  @apply font-normal text-xs lg:text-sm;
+  @apply font-normal text-xs lg:text-sm bg-background text-foreground;
 }
 
 .text-gradient {
-  @apply text-transparent bg-gradient-to-r from-orange-600 to-black bg-clip-text;
+  @apply text-transparent bg-gradient-to-r from-primary to-foreground bg-clip-text;
+}
+
+.icon-link {
+  @apply text-foreground-light hover:text-primary transition-colors duration-200 ease-in-out cursor-pointer text-lg w-4 h-4 flex items-center justify-center;
+}
+.icon-link.icon-link--hvr-red {
+  @apply hover:text-error;
 }

@@ -10,7 +10,7 @@ export default function Home({ children }) {
   return (
     <div className="grid grid-cols-12 min-h-screen">
       {/* nav menu */}
-      <div className="col-span-2 border-r border-gray-200 bg-orange-200/10">
+      <div className="col-span-2 border-r border-stroke bg-box">
         <div className="p-5">
           <Link to="/" className=" flex items-center gap-2">
             <RiHome5Line className="text-lg" />
@@ -26,13 +26,13 @@ export default function Home({ children }) {
       <div className="col-span-4 p-5 pl-0">
         <div className="sticky top-5 min-h-[85svh] gap-5 flex flex-col items-stretch justify-between">
           {childArray[1] && (
-            <div className="bg-orange-200/10 rounded-xl p-5 transition-all duration-200 flex h-86 max-h-[50svh] flex-col items-start">
+            <div className="bg-box rounded-xl p-5 transition-all duration-200 flex h-86 max-h-[50svh] flex-col items-start">
               <ul className="w-full overflow-y-auto">{childArray[1]}</ul>
             </div>
           )}
 
           <div>
-            <ul className="text-sm text-gray-600 space-y-4">
+            <ul className="text-sm text-foreground-light space-y-4">
               <li>
                 Developed by:{" "}
                 <LinkUnderline

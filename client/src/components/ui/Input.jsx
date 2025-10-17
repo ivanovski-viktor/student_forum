@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
+import { RiEyeFill, RiEyeOffFill } from "react-icons/ri";
 
 export default function Input({
   type,
@@ -13,7 +13,7 @@ export default function Input({
   const [showPassword, setShowPassword] = useState(false);
 
   const inputClass =
-    "py-2 px-4 border-2 text-gray-800 placeholder:text-gray-400 border-gray-400 rounded-full w-full";
+    "py-2 px-4 border-2 text-gray-800 placeholder:text-foreground-light border-foreground-light rounded-full w-full";
 
   function handlePasswordVisibility(e) {
     e.preventDefault(); // prevent button from submitting if inside form
@@ -35,9 +35,9 @@ export default function Input({
       <button
         type="button"
         onClick={handlePasswordVisibility}
-        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-400 transition-colors duration-200 ease-in-out cursor-pointer text-lg"
+        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-foreground-light hover:text-orange-400 transition-colors duration-200 ease-in-out cursor-pointer text-lg"
       >
-        {showPassword ? <RiEyeLine /> : <RiEyeOffLine />}
+        {showPassword ? <RiEyeFill /> : <RiEyeOffFill />}
       </button>
     </div>
   ) : (

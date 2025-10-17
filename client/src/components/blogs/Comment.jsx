@@ -85,18 +85,18 @@ export default function Comment({ comment }) {
   };
 
   return (
-    <div className="border border-gray-200 p-4 rounded-md">
+    <div className="border border-stroke p-4 rounded-md">
       {userLoading && <InlineLoader />}
       {userError && <div>Error: {userError}</div>}
 
       <div>
         <div className=" flex items-center gap-1">
           <Link
-            className="transition-colors duration-200 ease-in-out hover:text-orange-600 flex items-center gap-2"
+            className="transition-colors duration-200 ease-in-out hover:text-primary flex items-center gap-2"
             to={`/users/${userId}`}
           >
             <img
-              className="rounded-full w-8 h-8 object-cover bg-orange-600"
+              className="rounded-full w-8 h-8 object-cover bg-primary"
               src={profileImageUrl || userPlaceholder}
               alt="profile"
             />
@@ -110,7 +110,7 @@ export default function Comment({ comment }) {
           <p className="mt-2 pl-10">{content}</p>
           <button
             onClick={() => setShowReplies((prev) => !prev)}
-            className="text-xs text-gray-600 underline cursor-pointer hover:opacity-60 transition-opacity duration-200 flex items-center gap-1 "
+            className="text-xs text-foreground-light underline cursor-pointer hover:opacity-60 transition-opacity duration-200 flex items-center gap-1 "
           >
             {loadingReplies ? (
               <InlineLoader small={true} />
@@ -132,7 +132,7 @@ export default function Comment({ comment }) {
           <div className="pl-10">
             <div className="flex items-center justify-end mt-2">
               <button
-                className="  px-3 py-1 w-28 rounded-full text-gray-600 hover:bg-orange-200 transition-colors duration-300 ease-in-out flex items-center justify-between"
+                className="  px-3 py-1 w-28 rounded-full text-foreground-light hover:bg-orange-200 transition-colors duration-300 ease-in-out flex items-center justify-between"
                 onClick={() => setShowReplyToComment((prev) => !prev)}
               >
                 <RiArrowDownFill
