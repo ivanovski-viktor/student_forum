@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Global colors */
+/* ==========================  GLOBAL COLORS  ========================== */
 
 @theme {
   --color-primary: #f54900;
@@ -14,46 +14,89 @@
   --color-success: #00a63e;
 }
 
-/* Apply styles */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  @apply font-semibold;
+/* ==========================  BASE STYLES  ========================== */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold;
+  }
+
+  h1 {
+    @apply text-2xl lg:text-3xl;
+  }
+  h2 {
+    @apply text-xl lg:text-2xl;
+  }
+  h3 {
+    @apply text-lg lg:text-xl;
+  }
+  h4 {
+    @apply text-base lg:text-lg;
+  }
+  h5 {
+    @apply text-sm lg:text-base;
+  }
+  h6 {
+    @apply text-xs lg:text-sm;
+  }
+
+  body {
+    @apply font-normal text-xs lg:text-sm bg-background text-foreground;
+  }
 }
 
-h1 {
-  @apply text-2xl lg:text-3xl;
-}
-h2 {
-  @apply text-xl lg:text-2xl;
-}
-h3 {
-  @apply text-lg lg:text-xl;
-}
-h4 {
-  @apply text-base lg:text-lg;
-}
-h5 {
-  @apply text-sm lg:text-base;
-}
-h6 {
-  @apply text-xs lg:text-sm;
-}
+/* ==========================  COMPONENTS  ========================== */
+@layer components {
+  /* Buttons */
+  .btn {
+    @apply mt-3 py-2 px-6 rounded-full border-2 transition duration-200 ease-in-out cursor-pointer;
+  }
+  .btn.btn--primary {
+    @apply bg-primary text-white hover:bg-white hover:text-primary border-transparent hover:border-primary;
+  }
 
-body {
-  @apply font-normal text-xs lg:text-sm bg-background text-foreground;
-}
+  .modify-btn {
+    @apply text-foreground-light hover:text-primary transition-colors duration-200 ease-in-out cursor-pointer text-lg w-4 h-4 flex items-center justify-center;
+  }
+  .modify-btn.modify-btn--hvr-red {
+    @apply hover:text-error;
+  }
 
-.text-gradient {
-  @apply text-transparent bg-gradient-to-r from-primary to-foreground bg-clip-text;
-}
+  .input-btn {
+    @apply absolute right-3 top-1/2 transform -translate-y-1/2 text-foreground-light hover:text-orange-400 transition duration-200 ease-in-out cursor-pointer text-lg;
+  }
+  .input-btn.input-btn--secondary {
+    @apply h-7 w-7 rounded-sm flex items-center justify-center right-1 hover:bg-primary/10 leading-0;
+  }
 
-.icon-link {
-  @apply text-foreground-light hover:text-primary transition-colors duration-200 ease-in-out cursor-pointer text-lg w-4 h-4 flex items-center justify-center;
-}
-.icon-link.icon-link--hvr-red {
-  @apply hover:text-error;
+  /* Inputs */
+  .input {
+    @apply py-2 px-4 border-2 text-gray-800 placeholder:text-foreground-light border-foreground-light rounded-full w-full;
+  }
+  .input.input--secondary {
+    @apply rounded-sm border-stroke;
+  }
+
+  /* Cards */
+  .popup-sm--wrapper {
+    @apply relative;
+  }
+  .popup-sm {
+    @apply bg-foreground/20 px-2 py-1 rounded-sm absolute bottom-[110%] right-0 opacity-0  text-background text-[10px] max-lg:hidden pointer-events-none transition-opacity duration-200 ease-in-out;
+  }
+  .popup-sm--wrapper:hover .popup-sm {
+    @apply opacity-100;
+  }
+  .profile-img {
+    @apply rounded-full w-8 h-8 object-cover bg-foreground/10 border border-foreground-light;
+  }
+
+  /* Decorations */
+  .text-gradient {
+    @apply text-transparent bg-gradient-to-r from-primary to-foreground bg-clip-text shrink-0;
+  }
 }

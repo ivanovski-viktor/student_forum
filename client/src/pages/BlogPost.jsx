@@ -10,18 +10,19 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function BlogPost() {
   const { id } = useParams();
+  const postUrl = `${apiUrl}/posts/${id}`;
 
   const {
     data: postData,
     loading: loadingPostData,
     error: postError,
-  } = useFetch(`${apiUrl}/posts/${id}`);
+  } = useFetch(postUrl);
 
   const {
     data: commentsData,
     loading: loadingCommentsData,
     error: commentsError,
-  } = useFetch(`${apiUrl}/posts/${id}/comments`);
+  } = useFetch(`${postUrl}/comments`);
 
   if (loadingPostData) return <InlineLoader />;
   if (postError) return <NotFound text="Објавата која ја бараш не постои" />;
@@ -33,7 +34,7 @@ export default function BlogPost() {
   return (
     <MainLayout>
       <div>
-        <BlogPostMain post={post} />
+        <BlogPostMain postUrl={postUrl} post={post} />
         <div className="text-sm space-y-2">
           <h5 className="mt-5 !font-normal">Comments:</h5>
 

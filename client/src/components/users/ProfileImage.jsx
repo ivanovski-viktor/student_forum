@@ -20,7 +20,7 @@ export default function ProfileImage({ image_url, uploadImage = false }) {
       ) : (
         <img
           className={`rounded-xl w-full aspect-[1/1.25] object-cover ${
-            image_url ? "" : "pt-10 bg-primary"
+            image_url ? "" : "pt-10 bg-foreground/10"
           }`}
           src={currentImageUrl || userPlaceholder}
           alt="profile image"
@@ -32,7 +32,7 @@ export default function ProfileImage({ image_url, uploadImage = false }) {
     <div>
       <img
         className={`rounded-xl w-full aspect-[1/1.25] object-cover ${
-          image_url ? "" : "pt-10 bg-primary"
+          image_url ? "" : "pt-10 bg-foreground/10"
         }`}
         src={currentImageUrl || userPlaceholder}
         alt="profile image"

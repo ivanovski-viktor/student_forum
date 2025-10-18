@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAuthCheck } from "../../hooks/useAuthCheck";
-import Input from "../ui/Input";
-import Button from "../ui/Button";
-import LinkUnderline from "../ui/LinkUnderline";
+import CommentForm from "./CommentForm";
+import LogInCta from "./LogInCta";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function CommentOnPost() {
@@ -49,30 +48,16 @@ export default function CommentOnPost() {
   if (!checked) return null;
   // Show login prompt for unauthenticated users
   if (!isAuthenticated) {
-    return (
-      <div className="flex items-center justify-between py-4  rounded-md text-sm">
-        <span>Најави се за да коментираш...</span>
-        <LinkUnderline to="/login" text="Кон најава" />
-      </div>
-    );
+    return <LogInCta />;
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit} className="relative">
-        <Input
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          disabled={loading}
-          placeholder="Коментирај..."
-        />
-        <Button
-          extraClass="shrink-0 !mt-0 !py-1.5 px-3 lg:px-4 absolute top-1 right-1 text-xs"
-          buttonType="form"
-          text="Продолжи"
-        />
-      </form>
-      {error && <p className="text-error text-xs">{error}</p>}
-    </div>
+    <CommentForm
+      loading={loading}
+      handleSubmit={handleSubmit}
+      content={content}
+      setContent={setContent}
+      error={error}
+    />
   );
 }

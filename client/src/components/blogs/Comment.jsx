@@ -5,13 +5,18 @@ import InlineLoader from "../layout/InlineLoader";
 import userPlaceholder from "../../assets/user-placeholder.png";
 import ReplyToComment from "./ReplyToComment";
 import Reply from "./Reply";
-import { RiArrowDownFill } from "react-icons/ri";
+import { RiArrowDownFill, RiDeleteBinFill, RiPencilFill } from "react-icons/ri";
 import CreatedAt from "../ui/CreatedAt";
+import ModifyButton from "./ModifyButton";
+import { useDeleteRequest } from "../../hooks/useDeleteRequest";
+import Message from "../ui/Message";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Comment({ comment }) {
   const { id, content, user_id } = comment;
+  const token = localStorage.getItem("token");
+  const commentUrl = `${apiUrl}/comments/${id}`;
 
   const [loadingReplies, setLoadingReplies] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
@@ -37,7 +42,7 @@ export default function Comment({ comment }) {
   useEffect(() => {
     const fetchRepliesCount = async () => {
       try {
-        const res = await fetch(`${apiUrl}/comments/${id}/replies`);
+        const res = await fetch(`${commentUrl}/replies`);
         if (!res.ok) throw new Error("Failed to fetch replies count");
         const json = await res.json();
         setRepliesCount(json.replies?.length || 0);
@@ -51,7 +56,7 @@ export default function Comment({ comment }) {
   // Function to fetch replies when user expands
   const fetchReplies = async () => {
     try {
-      const res = await fetch(`${apiUrl}/comments/${id}/replies`);
+      const res = await fetch(`${commentUrl}/replies`);
       if (!res.ok) throw new Error("Failed to fetch replies");
       const json = await res.json();
       const fetchedReplies = json.replies || [];
@@ -84,26 +89,61 @@ export default function Comment({ comment }) {
     setShowReplies(true);
   };
 
+  // handle delete comment
+  const {
+    exec: handleDeleteComment,
+    loading: loadingDelete,
+    error: errorDelete,
+    success: successDelete,
+  } = useDeleteRequest(commentUrl, token);
+
+  if (successDelete) {
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
+  }
   return (
     <div className="border border-stroke p-4 rounded-md">
       {userLoading && <InlineLoader />}
       {userError && <div>Error: {userError}</div>}
-
+      {errorDelete && <Message type="error" text={errorDelete} />}
+      {successDelete && <Message text="Successfully deleted comment!" />}
       <div>
-        <div className=" flex items-center gap-1">
-          <Link
-            className="transition-colors duration-200 ease-in-out hover:text-primary flex items-center gap-2"
-            to={`/users/${userId}`}
-          >
-            <img
-              className="rounded-full w-8 h-8 object-cover bg-primary"
-              src={profileImageUrl || userPlaceholder}
-              alt="profile"
-            />
-            <h6 className="">{userName}</h6>
-          </Link>
+        <div className="flex items-center justify-between">
+          <div className=" flex items-center gap-1">
+            <Link
+              className="transition-colors duration-200 ease-in-out hover:text-primary flex items-center gap-2"
+              to={`/users/${userId}`}
+            >
+              <img
+                className="profile-img"
+                src={profileImageUrl || userPlaceholder}
+                width={30}
+                height={30}
+                alt="profile"
+              />
+              <h6 className="">{userName}</h6>
+            </Link>
 
-          <CreatedAt time={comment.created_at} />
+            <CreatedAt time={comment.created_at} />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <ModifyButton>
+              <RiPencilFill />
+            </ModifyButton>
+            <ModifyButton
+              onClick={handleDeleteComment}
+              extraClass="modify-btn--hvr-red"
+              popupText="Избриши"
+            >
+              {loadingDelete ? (
+                <InlineLoader small={true} />
+              ) : (
+                <RiDeleteBinFill />
+              )}
+            </ModifyButton>
+          </div>
         </div>
 
         <div className="flex items-center justify-between gap-2">

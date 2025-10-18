@@ -8,8 +8,28 @@ import {
 } from "react-icons/ri";
 
 import CreatedAt from "../ui/CreatedAt";
+import ModifyButton from "./ModifyButton";
+import { useDeleteRequest } from "../../hooks/useDeleteRequest";
+import InlineLoader from "../layout/InlineLoader";
+import Message from "../ui/Message";
+import { useNavigate } from "react-router-dom";
 
-export default function BlogPostMain({ post }) {
+export default function BlogPostMain({ post, postUrl }) {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const {
+    exec: handleDeletePost,
+    loading: loadingDelete,
+    error: errorDelete,
+    success: successDelete,
+  } = useDeleteRequest(postUrl, token);
+
+  if (successDelete) {
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -30,20 +50,24 @@ export default function BlogPostMain({ post }) {
           <CreatedAt time={post.created_at} />
         </div>
         <div className="flex items-center gap-2">
-          <button className="icon-link relative group">
+          <ModifyButton>
             <RiPencilFill />
-            <div className="bg-box0 px-2 py-1 rounded-sm absolute bottom-[110%] left-0 opacity-0 group-hover:opacity-100 text-background text-[10px] max-lg:hidden pointer-events-none">
-              Измени
-            </div>
-          </button>
-          <button className="icon-link icon-link--hvr-red relative group">
-            <RiDeleteBinFill />
-            <div className="bg-box0 px-2 py-1 rounded-sm absolute bottom-[110%] left-0 opacity-0 group-hover:opacity-100 text-background text-[10px] max-lg:hidden pointer-events-none">
-              Избриши
-            </div>
-          </button>
+          </ModifyButton>
+          <ModifyButton
+            onClick={handleDeletePost}
+            extraClass="modify-btn--hvr-red"
+            popupText="Избриши"
+          >
+            {loadingDelete ? (
+              <InlineLoader small={true} />
+            ) : (
+              <RiDeleteBinFill />
+            )}
+          </ModifyButton>
         </div>
       </div>
+      {errorDelete && <Message type="error" text={errorDelete} />}
+      {successDelete && <Message text="Successfully deleted post!" />}
       <h2 className="mb-2">{post.title}</h2>
       <p className="text-foreground-light mb-4 text-sm">{post.description}</p>
 
