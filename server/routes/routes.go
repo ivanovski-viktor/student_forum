@@ -57,9 +57,13 @@ func RegisterRoutes(server *gin.Engine) {
 	}
 
 	// **COMMENTS**
-	// AUTHENTICATED ROUTES
-	authComment := server.Group("/comments").Use(middleware.Authenticate)
+	comment := server.Group("/comments")
 	{
+		comment.GET("/:id", controllers.GetComment)
+		comment.GET("/:id/replies", controllers.GetCommentReplies)
+
+		// AUTHENTICATED ROUTES
+		authComment := comment.Use(middleware.Authenticate)
 		authComment.PUT("/:id", controllers.UpdateComment)
 		authComment.DELETE("/:id", controllers.DeleteComment)
 	}

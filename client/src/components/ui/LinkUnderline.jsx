@@ -1,20 +1,25 @@
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRightLong } from "@fortawesome/free-solid-svg-icons";
-export default function LinkUnderline({ link, text, colorClass, ...rest }) {
+export default function LinkUnderline({
+  link,
+  text,
+  colorClass = "text-secondary",
+  bgClass = "bg-secondary",
+  ...rest
+}) {
+  const color = colorClass || "secondary";
+
   return (
     <Link
-      className={`${
-        colorClass || "text-green-600"
-      } no-underline underline-offset-2 hover:underline mx-auto group`}
+      className={`${colorClass} group inline-flex items-center justify-center`}
       to={link}
       {...rest}
     >
-      {text}{" "}
-      <FontAwesomeIcon
-        className="opacity-0 max-w-0 w-4 transition-all duration-200 ease-in-out group-hover:max-w-4 group-hover:opacity-100 group-hover:ml-0.5"
-        icon={faArrowRightLong}
-      />
+      <span className="relative py-0.5">
+        {text}{" "}
+        <span
+          className={`${bgClass} absolute block h-[1px] w-0 overflow-hidden group-hover:w-full transition-all ease-in-out duration-200 bottom-0 left-0`}
+        ></span>
+      </span>
     </Link>
   );
 }

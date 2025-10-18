@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS comments (
     content TEXT NOT NULL,
     created_at DATETIME NOT NULL,
 
-    FOREIGN KEY(post_id) REFERENCES posts(id),
-    FOREIGN KEY(user_id) REFERENCES users(id),
+    FOREIGN KEY(post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY(parent_id) REFERENCES comments(id) ON DELETE CASCADE
 );

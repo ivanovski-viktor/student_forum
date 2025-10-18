@@ -8,23 +8,32 @@ import BlogPost from "./pages/BlogPost.jsx";
 import MyAccount from "./pages/MyAccount.jsx";
 import UserAccount from "./pages/UserAccount.jsx";
 import ChangePassword from "./pages/ChangePassword.jsx";
+import Group from "./pages/Group.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 function App() {
   return (
     <div>
       <Loader />
-
       <NavBar />
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/users/:id" element={<UserAccount />} />
+          <Route path="/users/me" element={<MyAccount />} />
+          <Route
+            path="/users/me/change-password"
+            element={<ChangePassword />}
+          />
+          <Route path="/posts/:id" element={<BlogPost />} />
+          <Route path="/groups/:name" element={<Group />} />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/users/:id" element={<UserAccount />} />
-        <Route path="/users/me" element={<MyAccount />} />
-        <Route path="/users/me/change-password" element={<ChangePassword />} />
-        <Route path="/posts/:id" element={<BlogPost />} />
-      </Routes>
+          {/* 404 Page */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
     </div>
   );
 }

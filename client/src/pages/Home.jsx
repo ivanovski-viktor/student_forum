@@ -1,13 +1,14 @@
-import BlogPosts from "../components/ui/BlogPosts";
+import BlogPosts from "../components/blogs/BlogPosts";
+import MainLayout from "../components/layout/MainLayout";
+import Groups from "../components/groups/Groups";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Home() {
-  const token = localStorage.getItem("token");
   return (
-    <>
-      <div>Token: {token}</div>
+    <MainLayout>
       <BlogPosts url={`${apiUrl}/posts`} />
-    </>
+      <Groups url={`${apiUrl}/groups`} />
+    </MainLayout>
   );
 }

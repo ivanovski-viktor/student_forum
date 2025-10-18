@@ -8,12 +8,12 @@ import (
 )
 
 type Comment struct {
-	ID        int64     `json:"id"`
-	PostID    int64     `json:"post_id"`
-	UserID    int64     `json:"user_id"`
-	ParentID  *int64    `json:"parent_id,omitempty"`
-	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"created_at"`
+	ID        int64      `json:"id"`
+	PostID    int64      `json:"post_id"`
+	UserID    int64      `json:"user_id"`
+	ParentID  *int64     `json:"parent_id,omitempty"` // only for replies
+	Content   string     `json:"content"`
+	CreatedAt time.Time  `json:"created_at"`
 }
 
 func (c *Comment) Create() error {
@@ -24,13 +24,7 @@ func (c *Comment) Create() error {
 		VALUES (?, ?, ?, ?, ?)
 	`
 
-	stmt, err := db.DB.Prepare(query)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	result, err := stmt.Exec(&c.PostID, &c.UserID, c.ParentID, &c.Content, &c.CreatedAt)
+	result, err := db.DB.Exec(query, c.PostID, c.UserID, c.ParentID, c.Content, c.CreatedAt)
 	if err != nil {
 		return err
 	}
@@ -40,7 +34,12 @@ func (c *Comment) Create() error {
 }
 
 func GetCommentsByPostID(postID int64) ([]Comment, error) {
-	query := `SELECT id, post_id, user_id, parent_id, content, created_at FROM comments WHERE post_id = ? ORDER BY created_at ASC`
+	query := `
+		SELECT id, post_id, user_id, parent_id, content, created_at
+		FROM comments
+		WHERE post_id = ? AND parent_id IS NULL
+		ORDER BY created_at ASC
+	`
 
 	rows, err := db.DB.Query(query, postID)
 	if err != nil {
@@ -49,7 +48,6 @@ func GetCommentsByPostID(postID int64) ([]Comment, error) {
 	defer rows.Close()
 
 	var comments []Comment
-
 	for rows.Next() {
 		var c Comment
 		var parentID sql.NullInt64
@@ -57,11 +55,9 @@ func GetCommentsByPostID(postID int64) ([]Comment, error) {
 		if err := rows.Scan(&c.ID, &c.PostID, &c.UserID, &parentID, &c.Content, &c.CreatedAt); err != nil {
 			return nil, err
 		}
-
 		if parentID.Valid {
 			c.ParentID = &parentID.Int64
 		}
-
 		comments = append(comments, c)
 	}
 
@@ -78,24 +74,42 @@ func GetCommentByID(id int64) (*Comment, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	if parentID.Valid {
 		c.ParentID = &parentID.Int64
 	}
-
 	return &c, nil
+}
+
+func GetCommentReplies(id int64) ([]Comment, error) {
+	query := `SELECT id, post_id, user_id, parent_id, content, created_at FROM comments WHERE parent_id = ?`
+
+	rows, err := db.DB.Query(query, id) 
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var replies []Comment              
+
+	for rows.Next() {                 
+		var c Comment
+		err := rows.Scan(&c.ID, &c.PostID, &c.UserID, &c.ParentID, &c.Content, &c.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		replies = append(replies, c)   
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return replies, nil                
 }
 
 func (c *Comment) Update() error {
 	query := `UPDATE comments SET content = ? WHERE id = ?`
-
-	stmt, err := db.DB.Prepare(query)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(c.Content, c.ID)
+	_, err := db.DB.Exec(query, c.Content, c.ID)
 	return err
 }
 
@@ -105,14 +119,14 @@ func (c *Comment) Delete() error {
 		return err
 	}
 
-	// Delete child comments first
+	// Delete replies first
 	_, err = tx.Exec(`DELETE FROM comments WHERE parent_id = ?`, c.ID)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
 
-	// Delete parent comment
+	// Delete the main comment
 	_, err = tx.Exec(`DELETE FROM comments WHERE id = ?`, c.ID)
 	if err != nil {
 		tx.Rollback()

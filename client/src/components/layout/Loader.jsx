@@ -13,7 +13,7 @@ export default function Loader() {
     setVisible(true);
     setOpacity("opacity-100");
 
-    const randomDelay = Math.floor(Math.random() * (800 - 400 + 1)) + 400;
+    const randomDelay = Math.floor(Math.random() * (1500 - 800 + 1)) + 800;
 
     const timer = setTimeout(() => {
       // Fade out
@@ -35,8 +35,8 @@ export default function Loader() {
     <div
       className={`flex-col gap-4 flex items-center justify-center h-screen fixed top-0 left-0 w-screen bg-white transition-opacity duration-300 ease-out z-50 ${opacity}`}
     >
-      <div className="w-20 h-20 border-4 border-transparent text-orange-600 text-4xl animate-spin flex items-center justify-center border-t-orange-600 rounded-full">
-        <div className="w-14 h-14 border-4 border-transparent text-green-600 text-2xl animate-spin flex items-center justify-center border-t-green-400 rounded-full"></div>
+      <div className="w-20 h-20 border-4 border-transparent text-primary text-4xl animate-spin flex items-center justify-center border-t-primary rounded-full">
+        <div className="w-14 h-14 border-4 border-transparent text-secondary text-2xl animate-spin flex items-center justify-center border-t-green-400 rounded-full"></div>
       </div>
     </div>
   );

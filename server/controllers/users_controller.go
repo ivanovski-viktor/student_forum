@@ -29,7 +29,7 @@ func RegisterUser(c *gin.Context) {
 		if validation.HandleStrongPasswordError(err, c) {
 			return
 		}
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data!"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid user credentials!"})
 		return
 	}
 
@@ -66,7 +66,7 @@ func LoginUser(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Unable to parse request data!"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid login credentials!"})
 		return
 	}
 
@@ -142,7 +142,7 @@ func ChangeUserPassword(c *gin.Context) {
 		if validation.HandleStrongPasswordError(err, c) {
 			return
 		}
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data!"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid user credentials!"})
 		return
 	}
 

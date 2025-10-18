@@ -1,6 +1,5 @@
 import { useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { RiPencilFill } from "react-icons/ri";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -55,9 +54,9 @@ export default function UploadProfileImage({
       <button
         type="button"
         onClick={handleButtonClick}
-        className="text-xs absolute top-2 right-2 text-white transition-opacity duration-200 ease-in-out hover:opacity-60 cursor-pointer bg-orange-500 w-6 h-6 rounded-full"
+        className="text-base absolute top-2 right-2 text-white transition-opacity duration-200 ease-in-out hover:opacity-60 cursor-pointer bg-orange-500 w-6 h-6 rounded-full flex items-center justify-center"
       >
-        <FontAwesomeIcon icon={faPen} />
+        <RiPencilFill />
       </button>
 
       <input

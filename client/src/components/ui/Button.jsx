@@ -1,6 +1,11 @@
-export default function Button({ buttonType, text, link, ...rest }) {
-  let className =
-    "bg-orange-600 mt-3 text-white py-2 rounded-full hover:bg-white hover:text-orange-600 border-2 border-transparent hover:border-orange-600 transition duration-200 ease-in-out cursor-pointer";
+export default function Button({
+  buttonType,
+  extraClass = "",
+  text,
+  link,
+  ...rest
+}) {
+  let className = "btn btn--primary " + extraClass;
 
   return buttonType === "form" ? (
     <button type="submit" className={className} {...rest}>

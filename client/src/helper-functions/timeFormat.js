@@ -13,26 +13,21 @@ export function formatDateTime(dateString) {
 }
 
 export function formatRelativeTime(dateString) {
-  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
   const date = new Date(dateString);
   const now = new Date();
 
   const seconds = Math.floor((now - date) / 1000);
 
-  const ranges = {
-    year: 31536000,
-    month: 2592000,
-    week: 604800,
-    day: 86400,
-    hour: 3600,
-    minute: 60,
-    second: 1,
-  };
-
-  for (const [unit, value] of Object.entries(ranges)) {
-    if (seconds >= value || unit === "second") {
-      const diff = Math.floor(seconds / value);
-      return rtf.format(-diff, unit);
-    }
-  }
+  if (seconds < 3) return "now";
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months}mo ago`;
+  const years = Math.floor(months / 12);
+  return `${years}y ago`;
 }
