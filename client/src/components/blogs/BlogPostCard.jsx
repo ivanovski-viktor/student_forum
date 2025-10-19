@@ -1,11 +1,7 @@
 import { Link } from "react-router-dom";
-import {
-  RiArrowUpFill,
-  RiArrowDownFill,
-  RiMessage2Line,
-  RiGroup2Fill,
-} from "react-icons/ri";
+import { RiGroup2Fill } from "react-icons/ri";
 import CreatedAt from "../ui/CreatedAt";
+import BlogPostStatsBar from "./BlogPostStatsBar";
 
 export default function BlogPostCard({ post }) {
   return (
@@ -34,27 +30,14 @@ export default function BlogPostCard({ post }) {
         </div>
 
         <Link to={`/posts/${post.id}`}>
-          <h3 className="hover:text-primary transition-colors duration-200 ease-in-out mb-2 relative z-10">
+          <h3 className="hover:text-primary transition-colors duration-200 ease-in-out mb-3 mt-3 relative z-10">
             {post.title}
           </h3>
         </Link>
 
         <p className="text-foreground-light mb-4 ">{post.description}</p>
 
-        <div className="flex flex-wrap gap-4 text-sm text-foreground-light items-center ">
-          <span className="flex items-center gap-1 relative z-10">
-            <RiArrowUpFill />
-            {post.upvotes}
-          </span>
-          <span className="flex items-center gap-1 relative z-10">
-            <RiArrowDownFill />
-            {post.downvotes}
-          </span>
-          <span className="flex items-center gap-1">
-            <RiMessage2Line />
-            {post.comment_count} comments
-          </span>
-        </div>
+        <BlogPostStatsBar post={post} />
       </div>
     </li>
   );

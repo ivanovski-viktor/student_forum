@@ -41,7 +41,7 @@ export default function MyAccount() {
   return (
     <div className="container mx-auto px-6 md:px-8 py-10 md:py-16">
       <div className=" max-w-2xl mx-auto p-6 sm:p-10 border shadow-2xl shadow-stroke border-orange-100 bg-white rounded-xl ">
-        <h2 className="mb-6 text-center">Мој Профил</h2>
+        <h2 className="mb-6 text-center">Мој Профил {id}</h2>
         <div className="flex flex-col items-center justify-center sm:grid sm:grid-cols-6 ">
           <div className="sm:col-span-2 max-sm:w-[280px] max-w-full">
             <ProfileImage image_url={profile_image_url} uploadImage={true} />

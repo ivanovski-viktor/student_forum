@@ -21,7 +21,7 @@ export function useFetch(url, options) {
     } finally {
       setLoading(false);
     }
-  }, [url]); // <-- only url, not options
+  }, [url]);
 
   useEffect(() => {
     fetchData();

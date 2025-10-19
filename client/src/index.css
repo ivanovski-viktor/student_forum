@@ -7,7 +7,7 @@
   --color-secondary: #00a63e;
   --color-background: #ffffff;
   --color-foreground: #0f0f0f;
-  --color-foreground-light: #99a1af;
+  --color-foreground-light: #575757;
   --color-box: rgba(0, 0, 0, 0.02);
   --color-stroke: #e5e7eb;
   --color-error: #dc2626;
@@ -61,6 +61,10 @@
 
   .modify-btn {
     @apply text-foreground-light hover:text-primary transition-colors duration-200 ease-in-out cursor-pointer text-lg w-4 h-4 flex items-center justify-center;
+
+    &.active {
+      @apply text-primary;
+    }
   }
   .modify-btn.modify-btn--hvr-red {
     @apply hover:text-error;
@@ -71,6 +75,23 @@
   }
   .input-btn.input-btn--secondary {
     @apply h-7 w-7 rounded-sm flex items-center justify-center right-1 hover:bg-primary/10 leading-0;
+  }
+
+  .vote-btn {
+    @apply flex items-center overflow-x-clip justify-center gap-0.5 relative z-10 px-0.5 transition-colors duration-200 ease-in-out rounded-full h-6 w-10 cursor-pointer bg-transparent hover:bg-foreground/10;
+    &.active {
+      @apply bg-foreground/25;
+    }
+  }
+
+  .btn-underline {
+    @apply text-xs underline underline-offset-2 cursor-pointer hover:opacity-60 transition-opacity duration-200 flex items-center gap-1 text-foreground-light;
+  }
+  .btn-underline.btn-underline--error {
+    @apply text-error;
+  }
+  .btn-underline.btn-underline--success {
+    @apply text-success;
   }
 
   /* Inputs */
