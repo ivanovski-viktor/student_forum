@@ -19,6 +19,13 @@ export function useDeleteRequest(url, token) {
         headers,
       });
 
+      // session expired
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/login"; // redirect
+        return;
+      }
+
       if (!response.ok) {
         const err = await response.json();
         throw new Error(err.message || "Failed to delete");
