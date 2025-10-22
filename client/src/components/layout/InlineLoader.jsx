@@ -13,7 +13,7 @@ export default function InlineLoader({ small = false }) {
         className={`${circleSize} border-transparent text-primary text-4xl animate-spin flex items-center justify-center border-t-primary rounded-full`}
       >
         <div
-          className={`${innerCircleSize} border-transparent text-secondary text-2xl animate-spin flex items-center justify-center border-t-green-400 rounded-full`}
+          className={`${innerCircleSize} border-transparent text-secondary text-2xl animate-spin flex items-center justify-center border-t-secondary-light rounded-full`}
         ></div>
       </div>
     </div>

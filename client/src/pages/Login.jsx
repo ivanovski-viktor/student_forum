@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthUser } from "../context/AuthUserContext";
+
 import Input from "../components/ui/Input";
 import Form from "../components/ui/Form";
 import Button from "../components/ui/Button";
@@ -10,6 +12,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Login() {
   const navigate = useNavigate();
+  const { checkAuth } = useAuthUser();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -28,7 +31,7 @@ export default function Login() {
       const response = await fetch(`${apiUrl}/users/login`, {
         method: "POST",
         headers: {
-          "Content-Type": "raw",
+          "Content-Type": "application/json", // ✅ fix: must be JSON, not "raw"
         },
         body: JSON.stringify({
           email: formData.email,
@@ -37,22 +40,23 @@ export default function Login() {
       });
 
       if (!response.ok) {
-        // Try to get error message from response
         const errorData = await response.json();
         setMessage({
           type: "error",
-          text: errorData.message || response.statusText,
+          text: errorData.message || "Login failed",
         });
         return;
       }
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
+
+      await checkAuth();
       navigate("/");
     } catch (error) {
       setMessage({
         type: "error",
-        text: error.message || response.statusText,
+        text: error.message || "Something went wrong",
       });
     }
   }
@@ -64,9 +68,9 @@ export default function Login() {
           type="email"
           name="email"
           placeholder="Е-Пошта"
-          value={formData.username}
+          value={formData.email}
           onChange={handleChange}
-          required={true}
+          required
         />
         <Input
           type="password"
@@ -74,7 +78,7 @@ export default function Login() {
           placeholder="Лозинка"
           value={formData.password}
           onChange={handleChange}
-          required={true}
+          required
         />
 
         <Button buttonType="form" text="Продолжи" />

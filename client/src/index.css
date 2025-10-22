@@ -5,9 +5,10 @@
 @theme {
   --color-primary: #f54900;
   --color-secondary: #00a63e;
+  --color-secondary-light: #05df72;
   --color-background: #ffffff;
   --color-foreground: #0f0f0f;
-  --color-foreground-light: #99a1af;
+  --color-foreground-light: #575757;
   --color-box: rgba(0, 0, 0, 0.02);
   --color-stroke: #e5e7eb;
   --color-error: #dc2626;
@@ -56,11 +57,15 @@
     @apply mt-3 py-2 px-6 rounded-full border-2 transition duration-200 ease-in-out cursor-pointer;
   }
   .btn.btn--primary {
-    @apply bg-primary text-white hover:bg-white hover:text-primary border-transparent hover:border-primary;
+    @apply bg-primary text-white hover:bg-background hover:text-primary border-transparent hover:border-primary;
   }
 
   .modify-btn {
     @apply text-foreground-light hover:text-primary transition-colors duration-200 ease-in-out cursor-pointer text-lg w-4 h-4 flex items-center justify-center;
+
+    &.active {
+      @apply text-primary;
+    }
   }
   .modify-btn.modify-btn--hvr-red {
     @apply hover:text-error;
@@ -70,7 +75,24 @@
     @apply absolute right-3 top-1/2 transform -translate-y-1/2 text-foreground-light hover:text-orange-400 transition duration-200 ease-in-out cursor-pointer text-lg;
   }
   .input-btn.input-btn--secondary {
-    @apply h-7 w-7 rounded-sm flex items-center justify-center right-1 hover:bg-primary/10 leading-0;
+    @apply h-7 w-7 rounded-md flex items-center justify-center right-1 hover:bg-primary/10 leading-0;
+  }
+
+  .vote-btn {
+    @apply flex items-center overflow-x-clip justify-center gap-0.5 relative z-10 px-0.5 transition-colors duration-200 ease-in-out rounded-full h-6 w-10 cursor-pointer bg-transparent hover:bg-foreground/10;
+    &.active {
+      @apply bg-foreground/25;
+    }
+  }
+
+  .btn-underline {
+    @apply text-xs underline underline-offset-2 cursor-pointer hover:opacity-60 transition-opacity duration-200 flex items-center gap-1 text-foreground-light;
+  }
+  .btn-underline.btn-underline--error {
+    @apply text-error;
+  }
+  .btn-underline.btn-underline--success {
+    @apply text-success;
   }
 
   /* Inputs */
@@ -78,7 +100,7 @@
     @apply py-2 px-4 border-2 text-gray-800 placeholder:text-foreground-light border-foreground-light rounded-full w-full;
   }
   .input.input--secondary {
-    @apply rounded-sm border-stroke;
+    @apply rounded-md border-stroke;
   }
 
   /* Cards */
@@ -86,7 +108,7 @@
     @apply relative;
   }
   .popup-sm {
-    @apply bg-foreground/20 px-2 py-1 rounded-sm absolute bottom-[110%] right-0 opacity-0  text-background text-[10px] max-lg:hidden pointer-events-none transition-opacity duration-200 ease-in-out;
+    @apply bg-foreground/20 px-2 py-1 rounded-md absolute bottom-[110%] right-0 opacity-0  text-background text-[10px] max-lg:hidden pointer-events-none transition-opacity duration-200 ease-in-out;
   }
   .popup-sm--wrapper:hover .popup-sm {
     @apply opacity-100;
@@ -99,4 +121,20 @@
   .text-gradient {
     @apply text-transparent bg-gradient-to-r from-primary to-foreground bg-clip-text shrink-0;
   }
+}
+
+/* ==========================  EXTERNAL LIBRARIES  ========================== */
+
+/* Lexkit richtext editor */
+.lexkit-list-ul {
+  @apply list-disc list-inside;
+}
+.lexkit-list-ol {
+  @apply list-decimal list-inside;
+}
+.lexkit-text-bold {
+  @apply font-bold;
+}
+.lexkit-text-italic {
+  @apply italic;
 }

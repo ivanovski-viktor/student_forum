@@ -152,9 +152,45 @@ func VoteOnPost(c *gin.Context) {
 	}
 
 	if err := models.CastPostVote(userId, postId, input.VoteType); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to cast vote", "err": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to cast vote", "error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Vote recorded"})
+}
+
+func GetUserVote(c *gin.Context) {
+	postId, err := utils.ParseParamToInt("id", c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid post ID"})
+		return
+	}
+
+	userId := c.GetInt64("userId")
+
+	voteType, err := models.GetUserVote(userId, postId); 
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to get vote", "error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"vote_type": voteType })
+}
+
+func DeleteUserVote(c *gin.Context) {
+	postId, err := utils.ParseParamToInt("id", c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid post ID"})
+		return
+	}
+
+	userId := c.GetInt64("userId")
+
+	err = models.DeleteUserVote(userId, postId); 
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete vote", "error": err.Error()})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }

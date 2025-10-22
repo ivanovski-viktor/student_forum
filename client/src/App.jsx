@@ -10,11 +10,11 @@ import UserAccount from "./pages/UserAccount.jsx";
 import ChangePassword from "./pages/ChangePassword.jsx";
 import Group from "./pages/Group.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import { useState } from "react";
 
 function App() {
   return (
     <div>
-      <Loader />
       <NavBar />
       <main>
         <Routes>

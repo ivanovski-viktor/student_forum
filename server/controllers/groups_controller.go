@@ -157,7 +157,7 @@ func DeleteGroup(c *gin.Context) {
 
 	err = group.Delete()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete group", "err": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete group", "error": err.Error()})
 		return
 	}
 

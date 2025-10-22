@@ -1,18 +1,25 @@
 import { Link } from "react-router-dom";
 import { useFetch } from "../../hooks/useFetch";
-import InlineLoader from "../layout/InlineLoader";
 import userPlaceholder from "../../assets/user-placeholder.png";
 import CreatedAt from "../ui/CreatedAt";
 import { useDeleteRequest } from "../../hooks/useDeleteRequest";
-import ModifyButton from "./ModifyButton";
-import { RiDeleteBinFill, RiPencilFill } from "react-icons/ri";
 import Message from "../ui/Message";
+import ModifyButtons from "../ui/ModifyButtons";
+import { useEffect, useState } from "react";
+import { useUpdateRequest } from "../../hooks/useUpdateRequest";
+import CommentContent from "./CommentContent";
 
 const apiUrl = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem("token");
 
 export default function Reply({ reply }) {
-  const { id, user_id, content } = reply;
-  const token = localStorage.getItem("token");
+  const [replyObj, setReplyObj] = useState(reply);
+  const [editReply, setEditReply] = useState(false);
+
+  const { id, user_id, content } = replyObj;
+
+  const [contentData, setContentData] = useState(content);
+
   const replyUrl = `${apiUrl}/comments/${id}`;
 
   const {
@@ -38,12 +45,27 @@ export default function Reply({ reply }) {
     }, 2000);
   }
 
+  // handle update reply
+  const {
+    exec: handleUpdateReply,
+    error: errorUpdate,
+    loading: loadingUpdate,
+    success: successUpdate,
+  } = useUpdateRequest(replyUrl, token, { ...replyObj, content: contentData });
+
+  useEffect(() => {
+    if (successUpdate) {
+      setReplyObj((prev) => ({ ...prev, content: contentData }));
+      setEditReply(false);
+    }
+  }, [successUpdate]);
+
   if (userLoading) return null;
   if (userError)
     return <div className="text-xs text-error">Error loading user</div>;
 
   return (
-    <div key={id} className="mt-2 border-t pt-3 border-stroke">
+    <div className="mt-4 border-t pt-4 border-stroke">
       {errorDelete && <Message type="error" text={errorDelete} />}
       {successDelete && <Message text="Successfully deleted reply!" />}
 
@@ -64,25 +86,30 @@ export default function Reply({ reply }) {
           </Link>
           <CreatedAt time={reply.created_at} />
         </div>
-        <div className="flex items-center gap-2">
-          <ModifyButton>
-            <RiPencilFill />
-          </ModifyButton>
-          <ModifyButton
-            onClick={handleDeleteReply}
-            extraClass="modify-btn--hvr-red"
-            popupText="Избриши"
-          >
-            {loadingDelete ? (
-              <InlineLoader small={true} />
-            ) : (
-              <RiDeleteBinFill />
-            )}
-          </ModifyButton>
-        </div>
+        <ModifyButtons
+          token={token}
+          userId={user_id}
+          onClickDelete={handleDeleteReply}
+          loadingDelete={loadingDelete}
+          onClickEdit={() => {
+            setEditReply((prev) => !prev);
+            setContentData(replyObj.content);
+          }}
+          editing={editReply}
+        />
       </div>
 
-      <p className="mt-1 text-sm pl-10">{content}</p>
+      <CommentContent
+        handleUpdateComment={handleUpdateReply}
+        loadingUpdate={loadingUpdate}
+        errorUpdate={errorUpdate}
+        successUpdate={successUpdate}
+        editComment={editReply}
+        setEditComment={setEditReply}
+        commentObj={replyObj}
+        contentData={contentData}
+        setContentData={setContentData}
+      />
     </div>
   );
 }

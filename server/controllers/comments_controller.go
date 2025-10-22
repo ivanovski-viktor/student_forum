@@ -164,7 +164,7 @@ func DeleteComment(c *gin.Context) {
 	}
 
 	if err := comment.Delete(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete comment", "err": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete comment", "error": err.Error()})
 		return
 	}
 

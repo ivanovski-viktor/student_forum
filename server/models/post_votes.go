@@ -60,3 +60,43 @@ func updatePostVoteCount(postID int64, voteType int, delta int) error {
 	_, err := db.DB.Exec(query, delta, postID)
 	return err
 }
+
+func GetUserVote(userID int64, postID int64) (*int, error) {
+	query := `SELECT vote_type FROM post_votes
+		WHERE user_id = ? AND post_id = ?`
+
+	var voteType int;
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+	err = stmt.QueryRow(userID, postID).Scan(&voteType)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &voteType, nil;
+}
+
+func DeleteUserVote(userID int64, postID int64) error {
+	query := `DELETE FROM post_votes
+		WHERE user_id = ? AND post_id = ?`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(userID, postID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

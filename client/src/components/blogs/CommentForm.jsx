@@ -10,8 +10,8 @@ export default function CommentForm({
   placeholder = "Коментирај...",
 }) {
   return (
-    <div>
-      <form onSubmit={handleSubmit} className="relative mt-2">
+    <div className="mt-2">
+      <form onSubmit={handleSubmit} className="relative ">
         <Input
           className="input input--secondary"
           value={content}

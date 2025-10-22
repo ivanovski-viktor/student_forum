@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function useDeleteRequest(url, token) {
+export function useUpdateRequest(url, token, data) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -15,8 +15,9 @@ export function useDeleteRequest(url, token) {
       if (token) headers["Authorization"] = token;
 
       const response = await fetch(url, {
-        method: "DELETE",
+        method: "PUT",
         headers,
+        body: JSON.stringify(data),
       });
 
       // session expired
@@ -28,7 +29,7 @@ export function useDeleteRequest(url, token) {
 
       if (!response.ok) {
         const err = await response.json();
-        throw new Error(err.message || "Failed to delete");
+        throw new Error(err.message || "Failed to update");
       }
 
       setSuccess(true);

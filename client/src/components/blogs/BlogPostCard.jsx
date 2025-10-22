@@ -1,13 +1,25 @@
 import { Link } from "react-router-dom";
-import {
-  RiArrowUpFill,
-  RiArrowDownFill,
-  RiMessage2Line,
-  RiGroup2Fill,
-} from "react-icons/ri";
+import { RiGroup2Fill } from "react-icons/ri";
 import CreatedAt from "../ui/CreatedAt";
+import { useMemo } from "react";
+import BlogPostStatsBar from "./BlogPostStatsBar";
+
+function filterText(html, maxLength = 300) {
+  if (!html) return "";
+
+  // Strip HTML
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  const text = div.textContent || div.innerText || "";
+
+  // Truncate
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + "...";
+}
 
 export default function BlogPostCard({ post }) {
+  const truncatedText = filterText(post.description, 200);
+
   return (
     <li>
       <div className="bg-box border border-stroke rounded-xl p-5 hover:bg-box hover:shadow-sm transition-all duration-200 flex flex-col items-start relative">
@@ -34,27 +46,14 @@ export default function BlogPostCard({ post }) {
         </div>
 
         <Link to={`/posts/${post.id}`}>
-          <h3 className="hover:text-primary transition-colors duration-200 ease-in-out mb-2 relative z-10">
+          <h3 className="hover:text-primary transition-colors duration-200 ease-in-out mb-3 mt-3 relative z-10">
             {post.title}
           </h3>
         </Link>
 
-        <p className="text-foreground-light mb-4 ">{post.description}</p>
+        <p className="mb-4 text-foreground-light">{truncatedText}</p>
 
-        <div className="flex flex-wrap gap-4 text-sm text-foreground-light items-center ">
-          <span className="flex items-center gap-1 relative z-10">
-            <RiArrowUpFill />
-            {post.upvotes}
-          </span>
-          <span className="flex items-center gap-1 relative z-10">
-            <RiArrowDownFill />
-            {post.downvotes}
-          </span>
-          <span className="flex items-center gap-1">
-            <RiMessage2Line />
-            {post.comment_count} comments
-          </span>
-        </div>
+        <BlogPostStatsBar post={post} />
       </div>
     </li>
   );
