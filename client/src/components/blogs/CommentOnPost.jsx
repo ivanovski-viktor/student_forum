@@ -1,54 +1,38 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { useAuthCheck } from "../../hooks/useAuthCheck";
+import { useParams } from "react-router-dom";
 import CommentForm from "./CommentForm";
 import LogInCta from "./LogInCta";
+import { usePostRequest } from "../../hooks/usePostRequest";
+import { useAuthUser } from "../../context/AuthUserContext";
+
 const apiUrl = import.meta.env.VITE_API_URL;
 
-export default function CommentOnPost() {
+export default function CommentOnPost({ onCommentPosted }) {
   const { id } = useParams();
-  const { isAuthenticated, checked } = useAuthCheck({
-    redirectIfUnauthenticated: true,
-  });
+  const { isAuthenticated, checkedAuth } = useAuthUser();
 
   const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+
+  const { exec, loading, error } = usePostRequest(
+    `${apiUrl}/posts/${id}/comments`,
+    localStorage.getItem("token")
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!content.trim()) return;
 
-    setLoading(true);
-    setError(null);
-
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${apiUrl}/posts/${id}/comments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-        body: JSON.stringify({ content }),
-      });
-
-      if (!res.ok) throw new Error("Failed to post comment");
-
+    const res = await exec({ content });
+    if (res) {
       setContent("");
-      window.location.reload();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      onCommentPosted?.(res); // call parent callback if provided
     }
   };
 
-  // Wait for auth check
-  if (!checked) return null;
-  // Show login prompt for unauthenticated users
+  if (!checkedAuth) return null;
+
   if (!isAuthenticated) {
-    return <LogInCta />;
+    return <LogInCta text="Најави се за да коментираш..." />;
   }
 
   return (

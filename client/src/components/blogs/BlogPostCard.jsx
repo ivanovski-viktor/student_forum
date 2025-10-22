@@ -1,9 +1,25 @@
 import { Link } from "react-router-dom";
 import { RiGroup2Fill } from "react-icons/ri";
 import CreatedAt from "../ui/CreatedAt";
+import { useMemo } from "react";
 import BlogPostStatsBar from "./BlogPostStatsBar";
 
+function filterText(html, maxLength = 300) {
+  if (!html) return "";
+
+  // Strip HTML
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  const text = div.textContent || div.innerText || "";
+
+  // Truncate
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + "...";
+}
+
 export default function BlogPostCard({ post }) {
+  const truncatedText = filterText(post.description, 200);
+
   return (
     <li>
       <div className="bg-box border border-stroke rounded-xl p-5 hover:bg-box hover:shadow-sm transition-all duration-200 flex flex-col items-start relative">
@@ -35,7 +51,7 @@ export default function BlogPostCard({ post }) {
           </h3>
         </Link>
 
-        <p className="text-foreground-light mb-4 ">{post.description}</p>
+        <p className="mb-4 text-foreground-light">{truncatedText}</p>
 
         <BlogPostStatsBar post={post} />
       </div>

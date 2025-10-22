@@ -1,4 +1,5 @@
 import { RiGroup2Fill } from "react-icons/ri";
+import DOMPurify from "dompurify";
 
 import CreatedAt from "../ui/CreatedAt";
 import { useDeleteRequest } from "../../hooks/useDeleteRequest";
@@ -52,9 +53,12 @@ export default function BlogPostMain({ post, postUrl }) {
       {errorDelete && <Message type="error" text={errorDelete} />}
       {successDelete && <Message text="Successfully deleted post!" />}
       <h2 className="my-4">{post.title}</h2>
-      <p className="text-foreground-light mb-4 mt-6  text-sm">
-        {post.description}
-      </p>
+      <div
+        className="mb-4 mt-6 text-sm"
+        dangerouslySetInnerHTML={{
+          __html: DOMPurify.sanitize(post.description),
+        }}
+      />
 
       <BlogPostStatsBar post={post} />
     </div>

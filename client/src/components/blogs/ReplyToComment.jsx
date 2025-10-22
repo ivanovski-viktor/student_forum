@@ -1,16 +1,14 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useAuthCheck } from "../../hooks/useAuthCheck";
 import CommentForm from "./CommentForm";
 import LogInCta from "./LogInCta";
+import { useAuthUser } from "../../context/AuthUserContext";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function ReplyToComment({ handleReplyAdded, commentId }) {
   const { id } = useParams();
-  const { isAuthenticated, checked } = useAuthCheck({
-    redirectIfUnauthenticated: true,
-  });
+  const { isAuthenticated, checkedAuth } = useAuthUser();
 
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,9 +44,9 @@ export default function ReplyToComment({ handleReplyAdded, commentId }) {
   };
 
   // Wait for auth check
-  if (!checked) return null;
+  if (!checkedAuth) return null;
   if (!isAuthenticated) {
-    return <LogInCta />;
+    return <LogInCta text="Најави се за да одговориш..." />;
   }
 
   return (

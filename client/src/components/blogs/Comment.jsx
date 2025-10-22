@@ -114,7 +114,7 @@ export default function Comment({ comment }) {
     setShowReplies(true);
   };
 
-  if (userLoading) return <InlineLoader />;
+  if (userLoading) return null;
   if (userError)
     return <div className="text-xs text-error">Error loading user</div>;
 

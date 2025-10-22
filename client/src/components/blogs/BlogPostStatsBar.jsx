@@ -4,13 +4,13 @@ import { useFetch } from "../../hooks/useFetch";
 import { useDeleteRequest } from "../../hooks/useDeleteRequest";
 import { usePostRequest } from "../../hooks/usePostRequest";
 import { useNavigate } from "react-router-dom";
-import { useAuthCheck } from "../../hooks/useAuthCheck";
 import InlineLoader from "../layout/InlineLoader";
+import { useAuthUser } from "../../context/AuthUserContext";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function BlogPostStatsBar({ post }) {
   const navigate = useNavigate();
-  const { isAuthenticated, checked } = useAuthCheck();
+  const { isAuthenticated, checkedAuth } = useAuthUser();
   const token = localStorage.getItem("token");
 
   const [activeVote, setActiveVote] = useState(null);
@@ -35,7 +35,7 @@ export default function BlogPostStatsBar({ post }) {
 
   function handlePostVote(vote) {
     // Wait until auth check is done
-    if (!checked) return;
+    if (!checkedAuth) return;
 
     // Redirect to login if user is not authenticated
     if (!isAuthenticated) {
