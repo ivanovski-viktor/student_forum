@@ -19,7 +19,7 @@ func RegisterRoutes(server *gin.Engine) {
 		authUser := user.Group("/me").Use(middleware.Authenticate)
 		authUser.GET("", controllers.GetAuthenticatedUser)
 		authUser.PATCH("/change-password", controllers.ChangeUserPassword)
-		authUser.POST("/profile-picture", controllers.UploadProfilePicture)
+		authUser.POST("/profile-image", controllers.UploadProfileImage)
 	}
 
 	// **GROUPS**
@@ -38,6 +38,7 @@ func RegisterRoutes(server *gin.Engine) {
 		authGroup.DELETE("/:name", controllers.DeleteGroup)
 		authGroup.POST("/:name/join", controllers.JoinGroup)
 		authGroup.POST("/:name/posts", controllers.CreatePostInGroup)
+		authGroup.POST("/:name/group-image", controllers.UploadGroupImage)
 	}
 
 	// **POSTS**

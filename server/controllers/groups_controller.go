@@ -1,10 +1,14 @@
 package controllers
 
 import (
+	"fmt"
+	"math"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ivanovski-viktor/student_forum/server/models"
+	"github.com/ivanovski-viktor/student_forum/server/utils"
 )
 
 func CreateGroup(c *gin.Context) {
@@ -103,14 +107,43 @@ func JoinGroup(c *gin.Context) {
 func GetPostsForGroup(c *gin.Context) {
 	groupName := c.Param("name")
 
-	posts, err := models.GetPostsByGroupName(groupName)
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 {
+		limit = 10
+	}
+
+	offset := (page - 1) * limit
+
+	// Get paginated posts for the group
+	posts, err := models.GetPostsByGroupName(groupName, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to get posts"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"posts": posts})
+	// Get total post count for the group
+	totalCount, err := models.GetTotalPostsCountByGroup(groupName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to get total count"})
+		return
+	}
+
+	totalPages := int(math.Ceil(float64(totalCount) / float64(limit)))
+
+	c.JSON(http.StatusOK, gin.H{
+		"posts":       posts,
+		"page":        page,
+		"limit":       limit,
+		"total_posts": totalCount,
+		"total_pages": totalPages,
+	})
 }
+
 
 func CreatePostInGroup(c *gin.Context) {
 	groupName := c.Param("name")
@@ -163,3 +196,51 @@ func DeleteGroup(c *gin.Context) {
 
 	c.Status(http.StatusNoContent)
 }
+
+func UploadGroupImage(c *gin.Context) {
+	groupName := c.Param("name")
+	userId := c.GetInt64("userId")
+
+	file, fileHeader, err := c.Request.FormFile("group_image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Image is required"})
+		return
+	}
+
+	group, err := models.GetGroupByName(groupName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Group not found"})
+		return
+	}
+
+	if group.CreatorID != userId {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Not authorized"})
+		return
+	}
+
+	folderPath := fmt.Sprintf("group_images/%s", groupName)
+
+	//Delete old image
+	err = utils.DeleteFolderContents(folderPath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to delete old group image."})
+		return
+	}
+
+	// Upload to Cloudinary
+	imageURL, err := utils.UploadFileToCloudinary(file, fileHeader, folderPath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload image" + err.Error()})
+		return
+	}
+
+	group.GroupImageURL = imageURL
+	err = group.UpdateGroupImage()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Uploaded image successfully", "group_image_url": imageURL})
+}
+// TODO ADD UPLOAD LIMIT FOR IMAGES THAT GET UPLOADED TO CLOUDINARY

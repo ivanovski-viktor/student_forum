@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"math"
 	"net/http"
 	"strconv"
 
@@ -32,7 +33,6 @@ func CreatePost(c *gin.Context) {
 }
 
 func GetAllPosts(c *gin.Context) {
-
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 
@@ -45,20 +45,31 @@ func GetAllPosts(c *gin.Context) {
 
 	offset := (page - 1) * limit
 
+	// Get paginated posts
 	posts, err := models.GetAll(limit, offset)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting posts!"})
 		return
 	}
 
-	if len(posts) < 1 {
-		c.JSON(http.StatusOK, gin.H{"posts": []models.Post{}})
+	// ✅ Get total count
+	totalCount, err := models.GetTotalPostsCount()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting total count!"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"posts": posts})
+	totalPages := int(math.Ceil(float64(totalCount) / float64(limit)))
+
+	c.JSON(http.StatusOK, gin.H{
+		"posts":       posts,
+		"page":        page,
+		"limit":       limit,
+		"total_posts": totalCount,
+		"total_pages": totalPages,
+	})
 }
+
 
 func GetPost(c *gin.Context) {
 

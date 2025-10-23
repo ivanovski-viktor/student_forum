@@ -10,7 +10,7 @@ import (
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 )
 
-func UploadImageToCloudinary(file multipart.File, fileHeader *multipart.FileHeader, folderPath string) (string, error) {
+func UploadFileToCloudinary(file multipart.File, fileHeader *multipart.FileHeader, folderPath string) (string, error) {
 	defer file.Close()
 
 	// Init Cloudinary using CLOUDINARY_URL from env
@@ -19,9 +19,9 @@ func UploadImageToCloudinary(file multipart.File, fileHeader *multipart.FileHead
 		return "", fmt.Errorf("cloudinary init failed: %v", err)
 	}
 
-	// Upload the image
+	// Upload the file
 	uploadParams := uploader.UploadParams{
-		Folder: folderPath, // example: "profile_pictures"
+		Folder: folderPath, // example: "profile_images"
 	}
 
 	uploadResult, err := cld.Upload.Upload(context.Background(), file, uploadParams)

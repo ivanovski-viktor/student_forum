@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS groups (
     description TEXT,
     creator_id INTEGER NOT NULL,
     created_at DATETIME NOT NULL,
+    group_image_url TEXT,
 
     FOREIGN KEY (creator_id) REFERENCES users(id)
 );

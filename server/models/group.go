@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/ivanovski-viktor/student_forum/server/db"
@@ -11,6 +12,7 @@ type Group struct {
 	Description string    `json:"description" binding:"required"`
 	CreatorID   int64     `json:"creator_id"`
 	CreatedAt   time.Time `json:"created_at"`
+	GroupImageURL string    `json:"group_image_url,omitempty"`
 }
 
 func (g *Group) Create() error {
@@ -29,24 +31,33 @@ func (g *Group) Create() error {
 
 func GetGroupByName(name string) (*Group, error) {
 	stmt, err := db.DB.Prepare(`
-		SELECT name, description, creator_id, created_at
+		SELECT name, description, creator_id, created_at, group_image_url
 		FROM groups WHERE name = ?`)
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	var group Group
-	err = stmt.QueryRow(name).Scan(&group.Name, &group.Description, &group.CreatorID, &group.CreatedAt)
+	var g Group
+	var groupImage sql.NullString
+
+	err = stmt.QueryRow(name).Scan(&g.Name, &g.Description, &g.CreatorID, &g.CreatedAt, &groupImage)
 	if err != nil {
 		return nil, err
 	}
-	return &group, nil
+
+	if groupImage.Valid {
+		g.GroupImageURL = groupImage.String
+	} else {
+		g.GroupImageURL = ""
+	}
+
+	return &g, nil
 }
 
 func GetAllGroups() ([]Group, error) {
 	stmt, err := db.DB.Prepare(`
-		SELECT name, description, creator_id, created_at
+		SELECT name, description, creator_id, created_at, group_image_url
 		FROM groups ORDER BY created_at DESC`)
 	if err != nil {
 		return nil, err
@@ -62,9 +73,19 @@ func GetAllGroups() ([]Group, error) {
 	var groups []Group
 	for rows.Next() {
 		var g Group
-		if err := rows.Scan(&g.Name, &g.Description, &g.CreatorID, &g.CreatedAt); err != nil {
+		var groupImage sql.NullString
+		
+		err := rows.Scan(&g.Name, &g.Description, &g.CreatorID, &g.CreatedAt, &groupImage)
+		if err != nil {
 			return nil, err
 		}
+
+		if groupImage.Valid {
+			g.GroupImageURL = groupImage.String
+		} else {
+			g.GroupImageURL = ""
+		}
+
 		groups = append(groups, g)
 	}
 	return groups, nil
@@ -90,5 +111,16 @@ func (g *Group) Delete() error {
 	defer stmt.Close()
 
 	_, err = stmt.Exec(g.Name)
+	return err
+}
+func (g *Group) UpdateGroupImage() error {
+	query := "UPDATE groups SET group_image_url = ? WHERE name = ?"
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(g.GroupImageURL, g.Name)
 	return err
 }
