@@ -3,6 +3,7 @@ import { useFetch } from "../hooks/useFetch";
 import InlineLoader from "../components/layout/InlineLoader";
 import MainLayout from "../components/layout/MainLayout";
 import BlogPosts from "../components/blogs/BlogPosts";
+import NotFound from "./NotFound";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 export default function Group() {
@@ -16,15 +17,14 @@ export default function Group() {
   } = useFetch(groupUrl);
 
   if (loadingGroupData) return <InlineLoader />;
-  if (groupError) return <p>Error: {groupError}</p>;
+  if (groupError) return <NotFound />;
   const group = groupData?.group;
-  if (!group) return <p>No Group found.</p>;
 
   return (
     <MainLayout>
       <div>
         <div>{JSON.stringify(group)}</div>
-        <BlogPosts url={`${groupUrl}/posts`} />
+        <BlogPosts group={group.name} url={`${groupUrl}/posts`} />
       </div>
       <div>test</div>
     </MainLayout>

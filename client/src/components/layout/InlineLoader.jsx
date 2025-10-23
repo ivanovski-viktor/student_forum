@@ -8,7 +8,7 @@ export default function InlineLoader({ small = false }) {
   }
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center h-20">
       <div
         className={`${circleSize} border-transparent text-primary text-4xl animate-spin flex items-center justify-center border-t-primary rounded-full`}
       >

@@ -20,12 +20,12 @@ export default function UploadProfileImage({
 
     const token = localStorage.getItem("token");
     const formData = new FormData();
-    formData.append("profile_picture", file);
+    formData.append("profile_image", file);
 
     setIsUploading?.(true);
 
     try {
-      const response = await fetch(`${apiUrl}/users/me/profile-picture`, {
+      const response = await fetch(`${apiUrl}/users/me/profile-image`, {
         method: "POST",
         headers: {
           Authorization: token,

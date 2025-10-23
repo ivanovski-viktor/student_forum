@@ -27,22 +27,28 @@
     @apply font-semibold;
   }
 
-  h1 {
+  h1,
+  .h1 {
     @apply text-2xl lg:text-3xl;
   }
-  h2 {
+  h2,
+  .h2 {
     @apply text-xl lg:text-2xl;
   }
-  h3 {
+  h3,
+  .h3 {
     @apply text-lg lg:text-xl;
   }
-  h4 {
+  h4,
+  .h4 {
     @apply text-base lg:text-lg;
   }
-  h5 {
+  h5,
+  .h5 {
     @apply text-sm lg:text-base;
   }
-  h6 {
+  h6,
+  .h6 {
     @apply text-xs lg:text-sm;
   }
 
@@ -117,7 +123,12 @@
   .profile-img {
     @apply rounded-full w-8 h-8 object-cover bg-foreground/10 border border-foreground-light;
   }
-
+  .group-img {
+    @apply rounded-full w-8 h-8 object-cover bg-foreground/10 border border-foreground-light;
+    &.group-img--large {
+      @apply w-12 h-12;
+    }
+  }
   /* Decorations */
   .text-gradient {
     @apply text-transparent bg-gradient-to-r from-primary to-foreground bg-clip-text shrink-0;

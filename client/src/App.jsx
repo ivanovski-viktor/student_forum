@@ -11,6 +11,7 @@ import ChangePassword from "./pages/ChangePassword.jsx";
 import Group from "./pages/Group.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import { useState } from "react";
+import AllGroups from "./pages/AllGroups.jsx";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <NavBar />
       <main>
         <Routes>
+          {/* User routes */}
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
@@ -27,9 +29,11 @@ function App() {
             path="/users/me/change-password"
             element={<ChangePassword />}
           />
+          {/* Posts */}
           <Route path="/posts/:id" element={<BlogPost />} />
+          {/* Groups */}
+          <Route path="/groups" element={<AllGroups />} />
           <Route path="/groups/:name" element={<Group />} />
-
           {/* 404 Page */}
           <Route path="*" element={<NotFound />} />
         </Routes>

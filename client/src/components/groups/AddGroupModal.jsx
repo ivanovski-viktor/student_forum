@@ -3,23 +3,22 @@
 import { useState } from "react";
 import Modal from "react-modal";
 import Input from "../ui/Input";
-import RichTextEditor from "../ui/LexEditor";
-import { usePostRequest } from "../../hooks/usePostRequest";
 import Message from "../ui/Message";
 import Button from "../ui/Button";
 import { X } from "lucide-react";
+import { usePostRequest } from "../../hooks/usePostRequest";
 
 Modal.setAppElement("#root");
 
-export default function AddBlogPostModal({ isOpen, onClose, url }) {
+export default function AddGroupModal({ isOpen, onClose, url }) {
   const token = localStorage.getItem("token");
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [errorMessage, setErrorMessage] = useState({});
 
   const {
-    exec: createPost,
+    exec: createGroup,
     loading,
     success,
     error,
@@ -27,39 +26,33 @@ export default function AddBlogPostModal({ isOpen, onClose, url }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setErrorMessage({});
 
-    // Frontend validation
-    if (!title.trim()) {
-      setErrorMessage({ type: "title", text: "Please enter a title" });
+    if (!name.trim()) {
+      setErrorMessage({ type: "name", text: "Please enter a group name" });
       return;
     }
-    if (!content.trim() || content === "<p></p>") {
-      setErrorMessage({ type: "content", text: "Please enter content" });
+    if (!description.trim()) {
+      setErrorMessage({
+        type: "description",
+        text: "Please enter a description",
+      });
       return;
     }
 
-    // Submit post
-    const post = await createPost({ title, description: content });
-    if (post) {
-      // Clear state
-      setTitle("");
-      setContent("");
-      setErrorMessage({});
+    const groupData = { name, description };
 
-      // Wait 2s then reload page
+    const group = await createGroup(groupData); // 👈 send JSON, not FormData
+
+    if (group) {
+      setName("");
+      setDescription("");
+
       setTimeout(() => {
-        // Close modal
         onClose();
         window.location.reload();
       }, 2000);
     }
-  };
-
-  const handleInputChange = (setter) => (e) => {
-    setter(e.target.value);
-    setErrorMessage({}); // Clear error when typing
   };
 
   return (
@@ -74,8 +67,9 @@ export default function AddBlogPostModal({ isOpen, onClose, url }) {
       className="relative w-full max-w-lg mx-auto my-20 bg-background rounded-xl border border-stroke shadow-2xl outline-none z-50"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-5 p-6 sm:p-10">
+        {/* Header */}
         <div className="flex justify-between items-center mb-4">
-          <h2>Креирај објава</h2>
+          <h2>Креирај група</h2>
           <button
             type="button"
             onClick={onClose}
@@ -85,39 +79,51 @@ export default function AddBlogPostModal({ isOpen, onClose, url }) {
           </button>
         </div>
 
-        {/* Title */}
+        {/* Group Name */}
         <div>
           <Input
-            id="blog-title-input"
+            id="group-name"
             type="text"
-            value={title}
-            placeholder="Наслов на објавата..."
+            value={name}
+            placeholder="Име на групата..."
             className="input input--secondary outline-0"
-            required={false}
-            onChange={handleInputChange(setTitle)}
+            onChange={(e) => {
+              setName(e.target.value);
+              setErrorMessage({});
+            }}
           />
-          {errorMessage.type === "title" && (
-            <Message simple={true} type="error" text={errorMessage.text} />
+          {errorMessage.type === "name" && (
+            <Message simple type="error" text={errorMessage.text} />
           )}
         </div>
 
-        {/* Content */}
+        {/* Description */}
         <div>
-          <RichTextEditor setContent={setContent} />
-          {errorMessage.type === "content" && (
-            <Message simple={true} type="error" text={errorMessage.text} />
+          <textarea
+            id="group-description"
+            value={description}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              setErrorMessage({});
+            }}
+            placeholder="Опис на групата..."
+            className="input input--secondary outline-0 min-h-32"
+          />
+          {errorMessage.type === "description" && (
+            <Message simple type="error" text={errorMessage.text} />
           )}
         </div>
 
+        {/* Buttons */}
         {!success && (
           <Button
             buttonType="form"
-            text={loading ? "Објавува..." : "Објави"}
+            text={loading ? "Креирање..." : "Креирај"}
             disabled={loading}
           />
         )}
 
-        {success && <Message text="Post submitted successfully!" />}
+        {success && <Message text="Групата е успешно креирана!" />}
         {error && <Message type="error" text={error} />}
       </form>
     </Modal>
