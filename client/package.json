@@ -24,6 +24,7 @@
     "dompurify": "^3.3.0",
     "html-truncate": "^1.2.2",
     "lexical": "^0.37.0",
+    "lucide-react": "^0.546.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",

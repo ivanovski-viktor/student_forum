@@ -1,5 +1,6 @@
-import { PiArrowFatLinesRightFill } from "react-icons/pi";
 import Input from "../ui/Input";
+
+import { CircleArrowRight } from "lucide-react";
 
 export default function CommentForm({
   loading,
@@ -20,8 +21,8 @@ export default function CommentForm({
           placeholder={placeholder}
         />
 
-        <button className="input-btn input-btn--secondary" type="submit">
-          <PiArrowFatLinesRightFill />
+        <button className="input-btn input-btn--icon" type="submit">
+          <CircleArrowRight size={24} />
         </button>
       </form>
       {error && <p className="text-error text-xs">{error}</p>}

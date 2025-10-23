@@ -7,7 +7,7 @@ import RichTextEditor from "../ui/LexEditor";
 import { usePostRequest } from "../../hooks/usePostRequest";
 import Message from "../ui/Message";
 import Button from "../ui/Button";
-import { RiCloseLargeLine } from "react-icons/ri";
+import { X } from "lucide-react";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -83,7 +83,7 @@ export default function AddBlogPostModal({ isOpen, onClose }) {
             onClick={onClose}
             className="text-foreground-light hover:text-foreground text-xl font-bold transition-colors duration-200 ease-in-out"
           >
-            <RiCloseLargeLine />
+            <X />
           </button>
         </div>
 

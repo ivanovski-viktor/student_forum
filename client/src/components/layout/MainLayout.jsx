@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import LinkUnderline from "../ui/LinkUnderline";
-import { RiHome5Line } from "react-icons/ri";
+import { House } from "lucide-react";
 
 export default function Home({ children }) {
   // Requires 2 children
@@ -13,7 +13,9 @@ export default function Home({ children }) {
       <div className="col-span-2 border-r border-stroke bg-box">
         <div className="p-5">
           <Link to="/" className=" flex items-center gap-2">
-            <RiHome5Line className="text-lg" />
+            <div className="text-lg">
+              <House size={20} />
+            </div>
             Home
           </Link>
         </div>
@@ -43,7 +45,7 @@ export default function Home({ children }) {
               </li>
               <li>Student Forum © 2025. All rights reserved.</li>
               <li className="flex items-center justify-start gap-3">
-                <RiHome5Line />
+                <House size={20} />
               </li>
             </ul>
           </div>

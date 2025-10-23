@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { RiPencilFill } from "react-icons/ri";
+import { Pencil } from "lucide-react";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -56,7 +56,7 @@ export default function UploadProfileImage({
         onClick={handleButtonClick}
         className="text-base absolute top-2 right-2 text-white transition-opacity duration-200 ease-in-out hover:opacity-60 cursor-pointer bg-orange-500 w-6 h-6 rounded-full flex items-center justify-center"
       >
-        <RiPencilFill />
+        <Pencil size={14} />
       </button>
 
       <input

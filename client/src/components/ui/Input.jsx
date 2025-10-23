@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { RiEyeFill, RiEyeOffFill } from "react-icons/ri";
+
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Input({
   type,
@@ -35,7 +36,7 @@ export default function Input({
         onClick={handlePasswordVisibility}
         className="input-btn"
       >
-        {showPassword ? <RiEyeFill /> : <RiEyeOffFill />}
+        {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
       </button>
     </div>
   ) : (

@@ -3,13 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import InlineLoader from "../components/layout/InlineLoader";
 import { formatDateTime } from "../helper-functions/timeFormat";
 import LinkUnderline from "../components/ui/LinkUnderline";
-import { RiArrowRightSLine } from "react-icons/ri";
 
 import logout from "../helper-functions/logout";
 
 import ProfileImage from "../components/users/ProfileImage";
 import { useFetch } from "../hooks/useFetch";
 import NotFound from "./NotFound";
+
+import { LogOut } from "lucide-react";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -86,7 +87,9 @@ export default function MyAccount() {
             className="text-primary no-underline underline-offset-2 hover:underline mx-auto cursor-pointer group"
           >
             Logout
-            <RiArrowRightSLine className="opacity-0 max-w-0 w-4 text-2xl transition-all duration-200 ease-in-out group-hover:max-w-4 group-hover:opacity-100 group-hover:ml-1 inline-block" />
+            <div className="opacity-0 max-w-0 w-4 text-2xl transition-all duration-200 ease-in-out group-hover:max-w-4 group-hover:opacity-100 group-hover:ml-1 inline-block">
+              <LogOut size={11} />
+            </div>
           </button>
         </div>
       </div>

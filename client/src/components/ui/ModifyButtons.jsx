@@ -1,8 +1,8 @@
 import ModifyButton from "./ModifyButton";
-import { RiDeleteBinFill, RiPencilFill } from "react-icons/ri";
 
 import InlineLoader from "../layout/InlineLoader";
 import { useFetch } from "../../hooks/useFetch";
+import { Pencil, Trash2 } from "lucide-react";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -31,14 +31,14 @@ export default function ModifyButtons({
   return (
     <div className="flex items-center gap-2">
       <ModifyButton active={editing} onClick={onClickEdit}>
-        {loadingEdit ? <InlineLoader small={true} /> : <RiPencilFill />}
+        {loadingEdit ? <InlineLoader small={true} /> : <Pencil size={20} />}
       </ModifyButton>
       <ModifyButton
         onClick={onClickDelete}
         extraClass="modify-btn--hvr-red"
         popupText="Избриши"
       >
-        {loadingDelete ? <InlineLoader small={true} /> : <RiDeleteBinFill />}
+        {loadingDelete ? <InlineLoader small={true} /> : <Trash2 size={20} />}
       </ModifyButton>
     </div>
   );

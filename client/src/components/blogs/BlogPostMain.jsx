@@ -1,4 +1,3 @@
-import { RiGroup2Fill } from "react-icons/ri";
 import DOMPurify from "dompurify";
 
 import CreatedAt from "../ui/CreatedAt";
@@ -7,6 +6,7 @@ import Message from "../ui/Message";
 import { useNavigate } from "react-router-dom";
 import ModifyButtons from "../ui/ModifyButtons";
 import BlogPostStatsBar from "./BlogPostStatsBar";
+import { Users } from "lucide-react";
 
 export default function BlogPostMain({ post, postUrl }) {
   const navigate = useNavigate();
@@ -30,13 +30,16 @@ export default function BlogPostMain({ post, postUrl }) {
         <div className="flex items-center gap-2">
           {!post.group_name ? (
             <span className="text-sm text-foreground-light mb-1 inline-flex gap-1 items-center">
-              <RiGroup2Fill className="text-lg" />
+              <div className="text-lg">
+                <Users size={20} />
+              </div>
               <span>/general</span>
             </span>
           ) : (
             <span className="text-sm text-foreground-light mb-1 inline-flex gap-1 items-center">
-              <RiGroup2Fill className="text-lg" />
-
+              <div className="text-lg">
+                <Users size={20} />
+              </div>
               <span>/{post.group_name}</span>
             </span>
           )}

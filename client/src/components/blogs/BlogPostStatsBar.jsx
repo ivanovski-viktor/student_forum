@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { RiArrowUpFill, RiArrowDownFill, RiMessage2Line } from "react-icons/ri";
 import { useFetch } from "../../hooks/useFetch";
 import { useDeleteRequest } from "../../hooks/useDeleteRequest";
 import { usePostRequest } from "../../hooks/usePostRequest";
 import { useNavigate } from "react-router-dom";
 import InlineLoader from "../layout/InlineLoader";
 import { useAuthUser } from "../../context/AuthUserContext";
+import { ArrowDown, ArrowUp, MessageCircleMore } from "lucide-react";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function BlogPostStatsBar({ post }) {
@@ -14,24 +14,31 @@ export default function BlogPostStatsBar({ post }) {
   const token = localStorage.getItem("token");
 
   const [activeVote, setActiveVote] = useState(null);
+  const [voteLoading, setVoteLoading] = useState(false);
   const [upvotes, setUpvotes] = useState(post.upvotes);
   const [downvotes, setDownvotes] = useState(post.downvotes);
 
   const voteUrl = `${apiUrl}/posts/${post.id}/vote`;
 
-  const { data: voteData, loading: voteLoading } = useFetch(voteUrl, {
-    headers: { "Content-Type": "application/json", Authorization: token },
-  });
+  if (isAuthenticated) {
+    const { data: voteData, loading: voteLoading } = useFetch(voteUrl, {
+      headers: { "Content-Type": "application/json", Authorization: token },
+    });
 
+    const userVote = voteData?.vote_type;
+    // Initialize active vote based on user data from API
+    useEffect(() => {
+      setVoteLoading(true);
+      if (userVote) {
+        setActiveVote(userVote);
+        setVoteLoading(false);
+      } else {
+        setVoteLoading(false);
+      }
+    }, [userVote]);
+  }
   const { exec: deleteVote } = useDeleteRequest(voteUrl, token);
   const { exec: postVote } = usePostRequest(voteUrl, token);
-
-  const userVote = voteData?.vote_type;
-
-  // Initialize active vote based on user data from API
-  useEffect(() => {
-    if (userVote) setActiveVote(userVote);
-  }, [userVote]);
 
   function handlePostVote(vote) {
     // Wait until auth check is done
@@ -71,7 +78,9 @@ export default function BlogPostStatsBar({ post }) {
             onClick={() => handlePostVote(1)}
             className={`vote-btn ${activeVote === 1 && "active"}`}
           >
-            <RiArrowUpFill className="shrink-0" />
+            <div className="shrink-0">
+              <ArrowUp size={12} />
+            </div>
             {voteLoading ? (
               <InlineLoader small={true} />
             ) : (
@@ -83,7 +92,9 @@ export default function BlogPostStatsBar({ post }) {
             onClick={() => handlePostVote(-1)}
             className={`vote-btn ${activeVote === -1 && "active"}`}
           >
-            <RiArrowDownFill className="shrink-0" />
+            <div className="shrink-0">
+              <ArrowDown size={12} />
+            </div>
             {voteLoading ? (
               <InlineLoader small={true} />
             ) : (
@@ -92,7 +103,7 @@ export default function BlogPostStatsBar({ post }) {
           </button>
         </div>
         <span className="flex items-center gap-1">
-          <RiMessage2Line />
+          <MessageCircleMore size={18} />
           <span className="text-xs">{post.comment_count}</span>
         </span>
       </div>

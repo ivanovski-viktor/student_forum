@@ -3,9 +3,10 @@
 /* ==========================  GLOBAL COLORS  ========================== */
 
 @theme {
-  --color-primary: #f54900;
-  --color-secondary: #00a63e;
-  --color-secondary-light: #05df72;
+  --color-primary: oklch(64.6% 0.222 41.116);
+  --color-primary-light: oklch(75% 0.183 55.934);
+  --color-secondary: oklch(62.7% 0.194 149.214);
+  --color-secondary-light: oklch(79.2% 0.209 151.711);
   --color-background: #ffffff;
   --color-foreground: #0f0f0f;
   --color-foreground-light: #575757;
@@ -72,10 +73,10 @@
   }
 
   .input-btn {
-    @apply absolute right-3 top-1/2 transform -translate-y-1/2 text-foreground-light hover:text-orange-400 transition duration-200 ease-in-out cursor-pointer text-lg;
+    @apply absolute right-3 top-1/2 transform -translate-y-1/2 text-foreground-light hover:text-primary-light transition duration-200 ease-in-out cursor-pointer text-lg;
   }
-  .input-btn.input-btn--secondary {
-    @apply h-7 w-7 rounded-md flex items-center justify-center right-1 hover:bg-primary/10 leading-0;
+  .input-btn.input-btn--icon {
+    @apply h-8 w-16 border-stroke border-2 text-2xl rounded-md flex items-center justify-center right-1 hover:bg-primary/10 leading-0 hover:border-primary-light;
   }
 
   .vote-btn {
