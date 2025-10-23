@@ -47,9 +47,9 @@ func (p *Post) Create() error {
 }
 
 // Get all posts
-func GetAll() ([]Post, error) {
+func GetAll(limit, offset int) ([]Post, error) {
 	query := `
-		SELECT 
+	SELECT 
 		p.id, p.title, p.description, p.created_at, p.updated_at,
 		p.user_id, p.group_name,
 		COUNT(DISTINCT CASE WHEN v.vote_type = 1 THEN v.user_id END) AS upvotes,
@@ -59,10 +59,11 @@ func GetAll() ([]Post, error) {
 	LEFT JOIN post_votes v ON p.id = v.post_id
 	LEFT JOIN comments c ON p.id = c.post_id
 	GROUP BY p.id
-	ORDER BY p.created_at DESC;
-	`
+	ORDER BY p.created_at DESC
+	LIMIT ? OFFSET ?;
+`
 
-	rows, err := db.DB.Query(query)
+	rows, err := db.DB.Query(query, limit, offset)
 	if err != nil {
 		return nil, err
 	}

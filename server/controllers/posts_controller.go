@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ivanovski-viktor/student_forum/server/models"
@@ -32,7 +33,19 @@ func CreatePost(c *gin.Context) {
 
 func GetAllPosts(c *gin.Context) {
 
-	posts, err := models.GetAll()
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 {
+		limit = 10
+	}
+
+	offset := (page - 1) * limit
+
+	posts, err := models.GetAll(limit, offset)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting posts!"})
