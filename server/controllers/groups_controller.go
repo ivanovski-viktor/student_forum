@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,20 @@ func CreateGroup(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data"})
 		return
 	}
+
+	//Validation for group name
+	name := group.Name
+	if len(name) < 3 || len(name) > 20 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Group name must be between 3 and 20 characters."})
+		return
+	}
+
+	matched, _ := regexp.MatchString(`^[a-zA-Z0-9]+$`, name)
+	if !matched {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Group name can only contain letters and numbers."})
+		return
+	}
+
 
 	userId := c.GetInt64("userId")
 	group.CreatorID = userId
