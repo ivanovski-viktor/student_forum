@@ -8,6 +8,7 @@ import { usePostRequest } from "../../hooks/usePostRequest";
 import Message from "../ui/Message";
 import Button from "../ui/Button";
 import { X } from "lucide-react";
+import MultiFileUploader from "../ui/MultiFileUploader";
 
 Modal.setAppElement("#root");
 
@@ -16,6 +17,7 @@ export default function AddBlogPostModal({ isOpen, onClose, url }) {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [files, setFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState({});
 
   const {
@@ -108,6 +110,8 @@ export default function AddBlogPostModal({ isOpen, onClose, url }) {
             <Message simple={true} type="error" text={errorMessage.text} />
           )}
         </div>
+
+        <MultiFileUploader files={files} setFiles={setFiles} />
 
         {!success && (
           <Button

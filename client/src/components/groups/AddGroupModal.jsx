@@ -7,6 +7,7 @@ import Message from "../ui/Message";
 import Button from "../ui/Button";
 import { X } from "lucide-react";
 import { usePostRequest } from "../../hooks/usePostRequest";
+import ImageUploader from "../ui/ImageUploader";
 
 Modal.setAppElement("#root");
 
@@ -15,6 +16,9 @@ export default function AddGroupModal({ isOpen, onClose, url }) {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState(null);
+  const [cover, setCover] = useState(null);
+
   const [errorMessage, setErrorMessage] = useState({});
 
   const {
@@ -66,7 +70,7 @@ export default function AddGroupModal({ isOpen, onClose, url }) {
       }}
       className="relative w-full max-w-lg mx-auto my-20 bg-background rounded-xl border border-stroke shadow-2xl outline-none z-50"
     >
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5 p-6 sm:p-10">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-6 sm:p-10">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h2>Креирај група</h2>
@@ -112,6 +116,10 @@ export default function AddGroupModal({ isOpen, onClose, url }) {
           {errorMessage.type === "description" && (
             <Message simple type="error" text={errorMessage.text} />
           )}
+        </div>
+        <div className="grid grid-cols-2 gap-5">
+          <ImageUploader file={image} setFile={setImage} />
+          <ImageUploader file={cover} setFile={setCover} />
         </div>
 
         {/* Buttons */}
