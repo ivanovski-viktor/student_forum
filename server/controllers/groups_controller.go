@@ -218,7 +218,7 @@ func UploadGroupImage(c *gin.Context) {
 		return
 	}
 
-	folderPath := fmt.Sprintf("group_images/%s", groupName)
+	folderPath := fmt.Sprintf("group_media/%s/images", groupName)
 
 	//Delete old image
 	err = utils.DeleteFolderContents(folderPath)
@@ -243,4 +243,49 @@ func UploadGroupImage(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Uploaded image successfully", "group_image_url": imageURL})
 }
-// TODO ADD UPLOAD LIMIT FOR IMAGES THAT GET UPLOADED TO CLOUDINARY
+func UploadCoverImage(c *gin.Context) {
+	groupName := c.Param("name")
+	userId := c.GetInt64("userId")
+
+	file, fileHeader, err := c.Request.FormFile("group_cover")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Image is required"})
+		return
+	}
+
+	group, err := models.GetGroupByName(groupName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Group not found"})
+		return
+	}
+
+	if group.CreatorID != userId {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Not authorized"})
+		return
+	}
+
+	folderPath := fmt.Sprintf("group_media/%s/cover-images", groupName)
+
+	//Delete old image
+	err = utils.DeleteFolderContents(folderPath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to delete old group cover image."})
+		return
+	}
+
+	// Upload to Cloudinary
+	imageURL, err := utils.UploadFileToCloudinary(file, fileHeader, folderPath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload cover image" + err.Error()})
+		return
+	}
+
+	group.GroupImageURL = imageURL
+	err = group.UpdateCoverImage()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save cover image"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Uploaded image successfully", "group_cover_url": imageURL})
+}

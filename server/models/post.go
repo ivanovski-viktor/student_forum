@@ -19,17 +19,11 @@ type Post struct {
 	Downvotes    int        `json:"downvotes"`
 	CommentCount int        `json:"comment_count"`
 	Media		[]Media 	`json:"media,omitempty"`
-	Documents	[]Document  `json:"documents,omitempty"`
 }
 
 type Media struct {
     URL  string `json:"url,omitempty"`
     Type string `json:"type,omitempty"`
-}
-
-type Document struct {
-    URL  string `json:"url,omitempty"`
-    Type string `json:"type,omitempty"` 
 }
 
 // Create post

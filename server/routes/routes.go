@@ -39,6 +39,7 @@ func RegisterRoutes(server *gin.Engine) {
 		authGroup.POST("/:name/join", controllers.JoinGroup)
 		authGroup.POST("/:name/posts", controllers.CreatePostInGroup)
 		authGroup.POST("/:name/group-image", controllers.UploadGroupImage)
+		authGroup.POST("/:name/group-cover", controllers.UploadCoverImage)
 	}
 
 	// **POSTS**

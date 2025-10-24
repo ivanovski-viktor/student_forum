@@ -13,6 +13,7 @@ type Group struct {
 	CreatorID   int64     `json:"creator_id"`
 	CreatedAt   time.Time `json:"created_at"`
 	GroupImageURL string    `json:"group_image_url,omitempty"`
+	GroupCoverURL string    `json:"group_cover_url,omitempty"`
 }
 
 func (g *Group) Create() error {
@@ -31,7 +32,7 @@ func (g *Group) Create() error {
 
 func GetGroupByName(name string) (*Group, error) {
 	stmt, err := db.DB.Prepare(`
-		SELECT name, description, creator_id, created_at, group_image_url
+		SELECT name, description, creator_id, created_at, group_image_url, group_cover_url
 		FROM groups WHERE name = ?`)
 	if err != nil {
 		return nil, err
@@ -40,8 +41,9 @@ func GetGroupByName(name string) (*Group, error) {
 
 	var g Group
 	var groupImage sql.NullString
+	var groupCover sql.NullString
 
-	err = stmt.QueryRow(name).Scan(&g.Name, &g.Description, &g.CreatorID, &g.CreatedAt, &groupImage)
+	err = stmt.QueryRow(name).Scan(&g.Name, &g.Description, &g.CreatorID, &g.CreatedAt, &groupImage, &groupCover)
 	if err != nil {
 		return nil, err
 	}
@@ -51,13 +53,19 @@ func GetGroupByName(name string) (*Group, error) {
 	} else {
 		g.GroupImageURL = ""
 	}
+	if groupCover.Valid {
+		g.GroupCoverURL = groupCover.String
+	} else {
+		g.GroupCoverURL = ""
+	}
+
 
 	return &g, nil
 }
 
 func GetAllGroups() ([]Group, error) {
 	stmt, err := db.DB.Prepare(`
-		SELECT name, description, creator_id, created_at, group_image_url
+		SELECT name, description, creator_id, created_at, group_image_url, group_cover_url
 		FROM groups ORDER BY created_at DESC`)
 	if err != nil {
 		return nil, err
@@ -74,8 +82,9 @@ func GetAllGroups() ([]Group, error) {
 	for rows.Next() {
 		var g Group
 		var groupImage sql.NullString
+		var groupCover sql.NullString
 		
-		err := rows.Scan(&g.Name, &g.Description, &g.CreatorID, &g.CreatedAt, &groupImage)
+		err := rows.Scan(&g.Name, &g.Description, &g.CreatorID, &g.CreatedAt, &groupImage, &groupCover)
 		if err != nil {
 			return nil, err
 		}
@@ -84,6 +93,11 @@ func GetAllGroups() ([]Group, error) {
 			g.GroupImageURL = groupImage.String
 		} else {
 			g.GroupImageURL = ""
+		}
+		if groupCover.Valid {
+			g.GroupCoverURL = groupCover.String
+		} else {
+			g.GroupCoverURL = ""
 		}
 
 		groups = append(groups, g)
@@ -115,6 +129,17 @@ func (g *Group) Delete() error {
 }
 func (g *Group) UpdateGroupImage() error {
 	query := "UPDATE groups SET group_image_url = ? WHERE name = ?"
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(g.GroupImageURL, g.Name)
+	return err
+}
+func (g *Group) UpdateCoverImage() error {
+	query := "UPDATE groups SET group_cover_url = ? WHERE name = ?"
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
 		return err
