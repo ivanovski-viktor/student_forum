@@ -1,15 +1,18 @@
 package models
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/ivanovski-viktor/student_forum/server/db"
 )
 
 type GroupUser struct {
-	UserID    int64     `json:"user_id"`
-	GroupName string    `json:"group_name"`
-	JoinedAt  time.Time `json:"joined_at"`
+	UserID    		int64     `json:"user_id"`
+	GroupName 		string    `json:"group_name"`
+	JoinedAt  		time.Time `json:"joined_at"`
+	Username 		string 	`json:"username"`
+	ProfileImageUrl	string `json:"profile_image_url,omitempty"`
 }
 
 func JoinGroup(userID int64, groupName string) error {
@@ -74,8 +77,15 @@ func GetGroupsForUser(userID int64) ([]GroupUser, error) {
 
 func GetUsersInGroup(groupName string) ([]GroupUser, error) {
 	query := `
-		SELECT user_id, group_name, joined_at FROM groups_users
-		WHERE group_name = ?
+		SELECT
+			gu.user_id,
+			gu.group_name,
+			gu.joined_at,
+			u.username,
+			u.profile_image_url
+		FROM groups_users gu
+		JOIN users u ON gu.user_id = u.id
+		WHERE gu.group_name = ?
 	`
 
 	rows, err := db.DB.Query(query, groupName)
@@ -86,11 +96,21 @@ func GetUsersInGroup(groupName string) ([]GroupUser, error) {
 
 	var groupUsers []GroupUser
 
+	
 	for rows.Next() {
 		var gu GroupUser
-		if err := rows.Scan(&gu.UserID, &gu.GroupName, &gu.JoinedAt); err != nil {
+		var groupUserImg sql.NullString
+
+		if err := rows.Scan(&gu.UserID, &gu.GroupName, &gu.JoinedAt, &gu.Username, &groupUserImg); err != nil {
 			return nil, err
 		}
+
+		if groupUserImg.Valid {
+			gu.ProfileImageUrl = groupUserImg.String
+		} else {
+			gu.ProfileImageUrl = ""
+		}
+
 		groupUsers = append(groupUsers, gu)
 	}
 

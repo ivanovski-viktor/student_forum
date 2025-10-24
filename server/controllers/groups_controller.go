@@ -159,6 +159,21 @@ func GetPostsForGroup(c *gin.Context) {
 	})
 }
 
+func GetUsersInGroup( c *gin.Context) {
+	groupName := c.Param("name");
+
+	groupUsers, err := models.GetUsersInGroup(groupName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to get group users", "err": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"groupUsers": groupUsers,
+	})
+
+}
+
 
 func CreatePostInGroup(c *gin.Context) {
 	groupName := c.Param("name")
@@ -168,6 +183,17 @@ func CreatePostInGroup(c *gin.Context) {
 	_, err := models.GetGroupByName(groupName)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Group not found"})
+		return
+	}
+
+	inGroup, err := models.IsUserInGroup(userId, groupName) 
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{ "message": err.Error()})
+		return
+	}
+
+	if !inGroup {
+		c.JSON(http.StatusUnauthorized, gin.H{ "message": "Not a group member"})
 		return
 	}
 

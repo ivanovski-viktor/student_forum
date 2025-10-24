@@ -28,6 +28,7 @@ func RegisterRoutes(server *gin.Engine) {
 		group.GET("", controllers.GetAllGroups)
 		group.GET("/:name", controllers.GetGroup)
 		group.GET("/:name/posts", controllers.GetPostsForGroup)
+		group.GET("/:name/users", controllers.GetUsersInGroup)
 	}
 
 	// AUTHENTICATED ROUTES
