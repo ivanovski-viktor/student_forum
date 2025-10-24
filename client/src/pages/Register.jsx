@@ -59,7 +59,7 @@ export default function Register() {
       const data = await response.json();
       setMessage({
         type: "success",
-        text: "Registration successful! Welcome, " + data.username,
+        text: "Registration successful! Welcome, " + formData.username,
       });
 
       setTimeout(() => {

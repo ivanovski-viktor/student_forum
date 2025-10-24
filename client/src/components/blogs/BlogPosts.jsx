@@ -46,11 +46,11 @@ export default function BlogPosts({ group, url }) {
     <div>
       {isAuthenticated && (
         <>
-          <div className="flex items-center justify-between mb-5">
-            <h2>Објави во /{group}</h2>
+          <div className="flex items-center justify-between my-5">
+            <h2 className="h3">Објави во {group}</h2>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="btn btn--primary inline-flex items-center gap-1"
+              className="btn btn--primary inline-flex items-center gap-1 m-0"
             >
               Објави
             </button>

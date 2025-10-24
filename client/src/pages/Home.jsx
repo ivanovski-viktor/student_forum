@@ -9,7 +9,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 export default function Home() {
   return (
     <MainLayout>
-      <BlogPosts group="general" url={`${apiUrl}/posts`} />
+      <BlogPosts group="g/general" url={`${apiUrl}/posts`} />
 
       <Groups url={`${apiUrl}/groups`} />
     </MainLayout>

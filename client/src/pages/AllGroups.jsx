@@ -16,11 +16,11 @@ export default function AllGroups() {
       <div className="">
         {isAuthenticated && (
           <>
-            <div className="flex items-center justify-between mb-5">
-              <h2>Креирај група</h2>
+            <div className="flex items-center justify-between my-5">
+              <h2 className="h3">Креирај група</h2>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="btn btn--primary inline-flex items-center gap-1"
+                className="btn btn--primary inline-flex items-center gap-1 m-0"
               >
                 Креирај
               </button>
