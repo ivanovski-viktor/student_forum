@@ -5,11 +5,22 @@ import MainLayout from "../components/layout/MainLayout";
 import BlogPosts from "../components/blogs/BlogPosts";
 import NotFound from "./NotFound";
 import { Image, Users } from "lucide-react";
+import Button from "../components/ui/Button";
+import { useAuthUser } from "../context/AuthUserContext";
+import GroupUsers from "../components/groups/GroupUsers";
+import Banner from "../components/ui/Banner";
+import { usePostRequest } from "../hooks/usePostRequest";
+import { useState } from "react";
+import { useDeleteRequest } from "../hooks/useDeleteRequest";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 export default function Group() {
   const { name } = useParams();
+  const token = localStorage.getItem("token");
+  const { authUser, isAuthenticated, checkAuth } = useAuthUser();
   const groupUrl = `${apiUrl}/groups/${name}`;
+
+  const [groupMember, setGroupMember] = useState(false);
 
   const {
     data: groupData,
@@ -17,31 +28,37 @@ export default function Group() {
     error: groupError,
   } = useFetch(groupUrl);
 
+  const { exec: joinGroup } = usePostRequest(`${groupUrl}/join`, token);
+  const { exec: leaveGroup } = useDeleteRequest(`${groupUrl}/leave`, token);
+
+  async function handleGroupToggle() {
+    await checkAuth();
+
+    if (!isAuthenticated) return;
+
+    if (groupMember) {
+      await leaveGroup();
+      setGroupMember(false);
+      window.location.reload();
+    } else {
+      await joinGroup();
+      setGroupMember(true);
+      window.location.reload();
+    }
+  }
+
   if (loadingGroupData) return <InlineLoader />;
   if (groupError) return <NotFound />;
   const group = groupData?.group;
 
+  const isCreator = group?.creator_id === authUser?.user?.id;
+
   return (
     <MainLayout>
       <>
-        <div>
-          <div className="p-8 pb-12 border border-stroke rounded-xl shadow-sm relative min-h-36 overflow-hidden">
-            {group.group_cover_url ? (
-              <img
-                className="absolute top-0 left-0 w-full h-full object-cover"
-                src={group?.group_cover_url}
-                alt="Group cover image."
-              />
-            ) : (
-              <Image className="absolute top-0 left-0 w-full h-full object-cover" />
-            )}
-
-            <div className="absolute top-0 left-0 w-full h-full bg-foreground/40"></div>
-            <p className="relative font-semibold text-balance text-background text-lg">
-              {group.description ? group.description : "ГРУПАТА НЕМА ОПИС..."}
-            </p>
-          </div>
-          <div className="pt-5 pl-6 relative flex items-center gap-4">
+        <Banner img_url={group.group_cover_url} text={group.description} />
+        <div className="pt-5 pl-6 relative flex items-center gap-4 justify-between">
+          <div className="relative flex items-center gap-4">
             {group.group_image_url ? (
               <img
                 className="group-img group-img--large"
@@ -55,11 +72,38 @@ export default function Group() {
             )}
             <h5>g/{group.name}</h5>
           </div>
+          {isAuthenticated && !isCreator ? (
+            groupMember ? (
+              <Button
+                onClick={handleGroupToggle}
+                buttonType="button"
+                text="Напушти"
+                extraClass="btn--secondary disabled"
+              />
+            ) : (
+              <Button
+                onClick={handleGroupToggle}
+                buttonType="button"
+                text="Придружи се"
+                extraClass="btn--secondary"
+              />
+            )
+          ) : !isAuthenticated ? (
+            <Button link="/login" text="Придружи се" />
+          ) : null}
         </div>
 
-        <BlogPosts group="групата" url={`${groupUrl}/posts`} />
+        <BlogPosts
+          group="групата"
+          url={`${groupUrl}/posts`}
+          groupMember={groupMember}
+        />
       </>
-      <div>test</div>
+      <GroupUsers
+        url={`${groupUrl}/users`}
+        authUser={authUser}
+        setGroupMember={setGroupMember}
+      />
     </MainLayout>
   );
 }

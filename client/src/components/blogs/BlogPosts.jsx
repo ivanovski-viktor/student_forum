@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import BlogPostCard from "./BlogPostCard";
 import { useAuthUser } from "../../context/AuthUserContext";
 
-export default function BlogPosts({ group, url }) {
+export default function BlogPosts({ group, url, groupMember }) {
   const { authUser, isAuthenticated } = useAuthUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [blogsPage, setBlogsPage] = useState(1);
@@ -47,20 +47,29 @@ export default function BlogPosts({ group, url }) {
       {isAuthenticated && (
         <>
           <div className="flex items-center justify-between my-5">
-            <h2 className="h3">Објави во {group}</h2>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="btn btn--primary inline-flex items-center gap-1 m-0"
-            >
-              Објави
-            </button>
+            {groupMember ? (
+              <h2 className="h3">Објави во {group}</h2>
+            ) : (
+              <h2 className="h3">Придружи се за да коментираш во {group}</h2>
+            )}
+
+            {groupMember && (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="btn btn--primary inline-flex items-center gap-1 m-0"
+              >
+                Објави
+              </button>
+            )}
           </div>
 
-          <AddBlogPostModal
-            url={url}
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-          />
+          {groupMember && (
+            <AddBlogPostModal
+              url={url}
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+            />
+          )}
         </>
       )}
 
