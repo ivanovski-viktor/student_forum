@@ -38,6 +38,7 @@ func RegisterRoutes(server *gin.Engine) {
 		authGroup.PUT("/:name", controllers.UpdateGroup)
 		authGroup.DELETE("/:name", controllers.DeleteGroup)
 		authGroup.POST("/:name/join", controllers.JoinGroup)
+		authGroup.DELETE("/:name/leave", controllers.LeaveGroup)
 		authGroup.POST("/:name/posts", controllers.CreatePostInGroup)
 		authGroup.POST("/:name/group-image", controllers.UploadGroupImage)
 		authGroup.POST("/:name/group-cover", controllers.UploadCoverImage)

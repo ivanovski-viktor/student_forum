@@ -118,6 +118,18 @@ func JoinGroup(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully joined group"})
 }
+func LeaveGroup(c *gin.Context) {
+	groupName := c.Param("name")
+	userId := c.GetInt64("userId")
+
+	err := models.LeaveGroup(userId, groupName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to leave group"})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
 
 func GetPostsForGroup(c *gin.Context) {
 	groupName := c.Param("name")
