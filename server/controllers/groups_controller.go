@@ -276,7 +276,7 @@ func UploadGroupImage(c *gin.Context) {
 	//Delete old image
 	err = utils.DeleteFolderContents(folderPath)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to delete old group image."})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to delete old group image."})
 		return
 	}
 
@@ -322,7 +322,7 @@ func UploadCoverImage(c *gin.Context) {
 	//Delete old image
 	err = utils.DeleteFolderContents(folderPath)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to delete old group cover image."})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to delete old group cover image."})
 		return
 	}
 

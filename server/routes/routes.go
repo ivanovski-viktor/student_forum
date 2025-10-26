@@ -60,6 +60,7 @@ func RegisterRoutes(server *gin.Engine) {
 		authPost.GET("/:id/vote", controllers.GetUserVote)
 		authPost.DELETE("/:id/vote", controllers.DeleteUserVote)
 		authPost.POST("/:id/comments", controllers.CreateComment)
+		authPost.POST("/:id/media", controllers.UploadPostMedia)
 	}
 
 	// **COMMENTS**

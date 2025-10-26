@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/ivanovski-viktor/student_forum/server/db"
@@ -224,4 +225,21 @@ func GetTotalPostsCountByGroup(name string) (int, error) {
 		return 0, err
 	}
 	return count, nil
+}
+func (p *Post) UpdateMedia(media []Media) error {
+    // Convert slice to JSON
+    mediaJSON, err := json.Marshal(media)
+    if err != nil {
+        return err
+    }
+
+    query := "UPDATE posts SET media = ? WHERE id = ?"
+    stmt, err := db.DB.Prepare(query)
+    if err != nil {
+        return err
+    }
+    defer stmt.Close()
+
+    _, err = stmt.Exec(string(mediaJSON), p.ID)
+    return err
 }

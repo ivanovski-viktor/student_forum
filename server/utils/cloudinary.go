@@ -41,11 +41,31 @@ func DeleteFolderContents(folderPath string) error {
 
 	ctx := context.Background()
 
+	// Clear folder images
 	_, err = cld.Admin.DeleteAssetsByPrefix(ctx, admin.DeleteAssetsByPrefixParams{
-		Prefix: []string{folderPath + "/"},
-	})
+        Prefix: []string{folderPath + "/"},
+		AssetType: "image",
+    })
 	if err != nil {
-		return fmt.Errorf("failed to delete assets in folder '%s': %w", folderPath, err)
+		return fmt.Errorf("failed to delete images in folder '%s': %w", folderPath, err)
+	}
+	
+	// Clear folder videos
+	_, err = cld.Admin.DeleteAssetsByPrefix(ctx, admin.DeleteAssetsByPrefixParams{
+        Prefix: []string{folderPath + "/"},
+		AssetType: "video",
+    })
+	if err != nil {
+		return fmt.Errorf("failed to delete videos in folder '%s': %w", folderPath, err)
+	}
+	
+	// Clear folder raw flikles
+	_, err = cld.Admin.DeleteAssetsByPrefix(ctx, admin.DeleteAssetsByPrefixParams{
+        Prefix: []string{folderPath + "/"},
+		AssetType: "raw",
+    })
+	if err != nil {
+		return fmt.Errorf("failed to delete raw files in folder '%s': %w", folderPath, err)
 	}
 
 	return nil

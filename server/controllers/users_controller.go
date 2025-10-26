@@ -194,7 +194,7 @@ func UploadProfileImage(c *gin.Context) {
 	//Delete old profile image
 	err = utils.DeleteFolderContents(folderPath)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to delete old profile image."})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to delete old profile image."})
 		return
 	}
 
