@@ -55,7 +55,7 @@ export default function AddGroupModal({ isOpen, onClose, url }) {
       setTimeout(() => {
         onClose();
         window.location.reload();
-      }, 2000);
+      }, 1500);
     }
   };
 

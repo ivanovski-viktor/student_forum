@@ -1,15 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import Form from "../components/ui/Form";
 import LinkUnderline from "../components/ui/LinkUnderline";
 import Message from "../components/ui/Message";
+import { useAuthUser } from "../context/AuthUserContext";
+import { usePageLoading } from "../context/PageLoadingContext";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Register() {
+  const { pageLoading, setPageLoading } = usePageLoading();
+  useEffect(() => {
+    if (pageLoading) {
+      setPageLoading(false);
+    }
+  }, [pageLoading]);
+
+  const { isAuthenticated } = useAuthUser();
   const navigate = useNavigate();
+  // Navigate when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/users/me", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const [formData, setFormData] = useState({
     username: "",

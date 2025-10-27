@@ -5,12 +5,16 @@ import LogInCta from "../ui/LogInCta";
 import { useEffect, useState } from "react";
 import BlogPostCard from "./BlogPostCard";
 import { useAuthUser } from "../../context/AuthUserContext";
+import { useLocation } from "react-router-dom";
+import { usePageLoading } from "../../context/PageLoadingContext";
 
 export default function BlogPosts({ group, url, groupMember }) {
-  const { authUser, isAuthenticated } = useAuthUser();
+  const { pageLoading, setPageLoading } = usePageLoading();
+  const { authUser, isAuthenticated, checkAuth } = useAuthUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [blogsPage, setBlogsPage] = useState(1);
   const [posts, setPosts] = useState([]);
+  const location = useLocation();
   const [totalPages, setTotalPages] = useState(1); // default 1
 
   const urlPaginated = `${url}?page=${blogsPage}`;
@@ -18,10 +22,12 @@ export default function BlogPosts({ group, url, groupMember }) {
 
   // Append new posts when data changes
   useEffect(() => {
+    if (!data) return;
     if (data?.posts) {
       setPosts((prev) => [...prev, ...data.posts]);
       if (data.total_pages) setTotalPages(data.total_pages);
     }
+    setPageLoading(false);
   }, [data]);
 
   // Infinite scroll
@@ -41,7 +47,6 @@ export default function BlogPosts({ group, url, groupMember }) {
   }, [blogsPage, totalPages]);
 
   if (error) return <p>Error: {error}</p>;
-
   return (
     <div>
       {isAuthenticated && (
@@ -53,7 +58,7 @@ export default function BlogPosts({ group, url, groupMember }) {
               <h2 className="h3">Придружи се за да коментираш во {group}</h2>
             )}
 
-            {groupMember && (
+            {(groupMember || location.pathname === "/") && (
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="btn btn--primary inline-flex items-center gap-1 m-0"
@@ -63,7 +68,7 @@ export default function BlogPosts({ group, url, groupMember }) {
             )}
           </div>
 
-          {groupMember && (
+          {(groupMember || location.pathname === "/") && (
             <AddBlogPostModal
               url={url}
               isOpen={isModalOpen}

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import ModifyButtons from "../ui/ModifyButtons";
 import BlogPostStatsBar from "./BlogPostStatsBar";
 import { Users } from "lucide-react";
+import BlogPostMedia from "./BlogPostMedia";
 
 export default function BlogPostMain({ post, postUrl }) {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function BlogPostMain({ post, postUrl }) {
   if (successDelete) {
     setTimeout(() => {
       navigate("/");
-    }, 2000);
+    }, 1500);
   }
 
   return (
@@ -56,6 +57,7 @@ export default function BlogPostMain({ post, postUrl }) {
       {errorDelete && <Message type="error" text={errorDelete} />}
       {successDelete && <Message text="Successfully deleted post!" />}
       <h2 className="my-4">{post.title}</h2>
+      <BlogPostMedia media={post?.media} />
       <div
         className="mb-4 mt-6 text-sm"
         dangerouslySetInnerHTML={{

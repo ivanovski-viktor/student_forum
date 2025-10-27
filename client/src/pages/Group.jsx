@@ -10,8 +10,9 @@ import { useAuthUser } from "../context/AuthUserContext";
 import GroupUsers from "../components/groups/GroupUsers";
 import Banner from "../components/ui/Banner";
 import { usePostRequest } from "../hooks/usePostRequest";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDeleteRequest } from "../hooks/useDeleteRequest";
+import { usePageLoading } from "../context/PageLoadingContext";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 export default function Group() {
@@ -50,7 +51,6 @@ export default function Group() {
   if (loadingGroupData) return <InlineLoader />;
   if (groupError) return <NotFound />;
   const group = groupData?.group;
-
   const isCreator = group?.creator_id === authUser?.user?.id;
 
   return (

@@ -15,7 +15,6 @@ export default function GroupUsers({ url, authUser, setGroupMember }) {
   const users = data?.groupUsers || [];
 
   setGroupMember(users.some((user) => user.user_id === authUser?.user?.id));
-
   return (
     <div className="h-full w-full flex flex-col">
       <ul

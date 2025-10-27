@@ -12,7 +12,11 @@ export default function Home({ children }) {
       {/* nav menu */}
       <div className="col-span-2 border-r border-stroke bg-box">
         <div className="p-5">
-          <Link to="/" className=" flex items-center gap-2">
+          <Link
+            to="/"
+            onClick={() => startLoading()}
+            className=" flex items-center gap-2"
+          >
             <div className="text-lg">
               <House size={20} />
             </div>

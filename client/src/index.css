@@ -15,7 +15,14 @@
   --color-error: #dc2626;
   --color-success: #00a63e;
 }
-
+/* 🌙 Dark theme overrides */
+[data-theme="dark"] {
+  --color-background: #0f0f0f;
+  --color-foreground: #f8f8f8;
+  --color-foreground-light: #c0c0c0;
+  --color-box: rgba(255, 255, 255, 0.05);
+  --color-stroke: #333;
+}
 /* ==========================  BASE STYLES  ========================== */
 @layer base {
   h1,
@@ -109,7 +116,7 @@
 
   /* Inputs */
   .input {
-    @apply py-2 px-4 border-2 text-gray-800 placeholder:text-foreground-light border-foreground-light rounded-full w-full;
+    @apply py-2 px-4 border-2 text-foreground placeholder:text-foreground-light border-foreground-light rounded-full w-full;
   }
   .input.input--secondary {
     @apply rounded-md border-stroke;
@@ -176,7 +183,55 @@
 
     &:disabled,
     &[aria-disabled="true"] {
-      @apply opacity-50 cursor-not-allowed bg-gray-100;
+      @apply opacity-50 cursor-not-allowed;
+    }
+  }
+}
+/* swiper */
+.blog-slider {
+  @apply bg-background aspect-video w-full rounded-xl
+    overflow-hidden border-2 border-stroke;
+  .swiper {
+    @apply h-full;
+  }
+  .blog-slider__media {
+    @apply block h-full w-full object-contain object-center overflow-hidden;
+  }
+  .swiper-pagination {
+    @apply bg-transparent !w-auto !left-1/2 !-translate-x-1/2 px-1 pb-1 rounded-full !bottom-[initial] !top-5 !text-transparent !fill-transparent transition-colors duration-200 ease-in-out;
+
+    .swiper-pagination-bullet {
+      @apply bg-transparent transition-colors duration-200 ease-in-out;
+    }
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    @apply bg-transparent rounded-full text-transparent transition-colors duration-200 ease-in-out;
+
+    svg {
+      @apply w-5 h-5 pl-1;
+    }
+  }
+
+  .swiper-button-prev {
+    @apply !left-5;
+  }
+  .swiper-button-next {
+    @apply !right-5;
+  }
+
+  /* hide if not hovered */
+  &:hover {
+    .swiper-button-next,
+    .swiper-button-prev {
+      @apply bg-black  text-white;
+    }
+    .swiper-pagination {
+      @apply bg-black !text-white !fill-white;
+    }
+    .swiper-pagination-bullet {
+      @apply !bg-white;
     }
   }
 }

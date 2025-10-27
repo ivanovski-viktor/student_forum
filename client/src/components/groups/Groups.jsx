@@ -3,10 +3,19 @@ import { useFetch } from "../../hooks/useFetch";
 import InlineLoader from "../layout/InlineLoader";
 import { Users } from "lucide-react";
 import LinkUnderline from "../ui/LinkUnderline";
+import { usePageLoading } from "../../context/PageLoadingContext";
+import { useEffect } from "react";
 
 export default function Groups({ url }) {
+  const { pageLoading, setPageLoading } = usePageLoading();
   const location = useLocation();
   const { data: groupsData, loading, error } = useFetch(url);
+
+  useEffect(() => {
+    if (pageLoading === true && groupsData) {
+      setPageLoading(false);
+    }
+  }, [pageLoading, groupsData]);
 
   if (loading) return <InlineLoader />;
   if (error) return <p>Error: {error}</p>;

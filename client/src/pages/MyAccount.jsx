@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import InlineLoader from "../components/layout/InlineLoader";
 import { formatDateTime } from "../helper-functions/timeFormat";
 import LinkUnderline from "../components/ui/LinkUnderline";
@@ -11,19 +10,13 @@ import { useFetch } from "../hooks/useFetch";
 import NotFound from "./NotFound";
 
 import { LogOut } from "lucide-react";
+import { usePageLoading } from "../context/PageLoadingContext";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function MyAccount() {
-  const navigate = useNavigate();
+  const { pageLoading, setPageLoading } = usePageLoading();
   const token = localStorage.getItem("token");
-
-  // Redirect if no token
-  useEffect(() => {
-    if (token == null) {
-      navigate("/login");
-    }
-  }, [token, navigate]);
 
   const {
     data: userData,
@@ -32,6 +25,17 @@ export default function MyAccount() {
   } = useFetch(`${apiUrl}/users/me`, {
     headers: { "Content-Type": "application/json", Authorization: token },
   });
+
+  // Redirect if no token
+  useEffect(() => {
+    if (token == null) {
+      window.location.href = "/login";
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (userData) setPageLoading(false);
+  }, userData);
 
   if (loading) return <InlineLoader />;
 

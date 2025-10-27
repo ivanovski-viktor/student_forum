@@ -8,11 +8,12 @@ import ModifyButtons from "../ui/ModifyButtons";
 import { useEffect, useState } from "react";
 import { useUpdateRequest } from "../../hooks/useUpdateRequest";
 import CommentContent from "./CommentContent";
+import InlineLoader from "../layout/InlineLoader";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 const token = localStorage.getItem("token");
 
-export default function Reply({ reply }) {
+export default function Reply({ reply, refetchReplies }) {
   const [replyObj, setReplyObj] = useState(reply);
   const [editReply, setEditReply] = useState(false);
 
@@ -39,12 +40,6 @@ export default function Reply({ reply }) {
     success: successDelete,
   } = useDeleteRequest(replyUrl, token);
 
-  if (successDelete) {
-    setTimeout(() => {
-      window.location.reload();
-    }, 2000);
-  }
-
   // handle update reply
   const {
     exec: handleUpdateReply,
@@ -58,7 +53,10 @@ export default function Reply({ reply }) {
       setReplyObj((prev) => ({ ...prev, content: contentData }));
       setEditReply(false);
     }
-  }, [successUpdate]);
+    if (successDelete) {
+      refetchReplies();
+    }
+  }, [successUpdate, successDelete, refetchReplies]);
 
   if (userLoading) return null;
   if (userError)
@@ -67,8 +65,6 @@ export default function Reply({ reply }) {
   return (
     <div className="mt-4 border-t pt-4 border-stroke">
       {errorDelete && <Message type="error" text={errorDelete} />}
-      {successDelete && <Message text="Successfully deleted reply!" />}
-
       <div className=" flex items-center justify-between">
         <div className="flex items-center gap-1">
           <Link

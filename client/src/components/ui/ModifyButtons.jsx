@@ -27,7 +27,7 @@ export default function ModifyButtons({
     authUserId = authUserData?.user?.id;
   }
 
-  if (token === null || authUserId !== userId) return null;
+  if (authUserId !== userId) return null;
   return (
     <div className="flex items-center gap-2">
       <ModifyButton active={editing} onClick={onClickEdit}>

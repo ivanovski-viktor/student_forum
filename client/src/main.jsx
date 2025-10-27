@@ -9,11 +9,11 @@ import PageLoadingContextProvider from "./context/PageLoadingContext.jsx";
 createRoot(document.getElementById("root")).render(
   // <StrictMode>
   <BrowserRouter basename="/">
-    <AuthUserContextProvider>
-      <PageLoadingContextProvider>
+    <PageLoadingContextProvider>
+      <AuthUserContextProvider>
         <App />
-      </PageLoadingContextProvider>
-    </AuthUserContextProvider>
+      </AuthUserContextProvider>
+    </PageLoadingContextProvider>
   </BrowserRouter>
   // </StrictMode>
 );

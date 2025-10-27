@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthUser } from "../context/AuthUserContext";
 
@@ -7,12 +7,27 @@ import Form from "../components/ui/Form";
 import Button from "../components/ui/Button";
 import LinkUnderline from "../components/ui/LinkUnderline";
 import Message from "../components/ui/Message";
+import { usePageLoading } from "../context/PageLoadingContext";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Login() {
+  const { pageLoading, setPageLoading } = usePageLoading();
   const navigate = useNavigate();
-  const { checkAuth } = useAuthUser();
+  const { isAuthenticated, checkAuth } = useAuthUser();
+
+  useEffect(() => {
+    if (pageLoading) {
+      setPageLoading(false);
+    }
+  }, [pageLoading]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/users/me", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -51,8 +66,8 @@ export default function Login() {
       const data = await response.json();
       localStorage.setItem("token", data.token);
 
-      await checkAuth();
-      navigate("/");
+      navigate("/users/me", { replace: true });
+      checkAuth();
     } catch (error) {
       setMessage({
         type: "error",

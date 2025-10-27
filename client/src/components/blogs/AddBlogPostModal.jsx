@@ -50,12 +50,11 @@ export default function AddBlogPostModal({ isOpen, onClose, url }) {
       setContent("");
       setErrorMessage({});
 
-      // Wait 2s then reload page
       setTimeout(() => {
         // Close modal
         onClose();
         window.location.reload();
-      }, 2000);
+      }, 1500);
     }
   };
 
