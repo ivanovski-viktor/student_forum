@@ -10,7 +10,7 @@ import (
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 )
 
-func UploadImageToCloudinary(file multipart.File, fileHeader *multipart.FileHeader, folderPath string) (string, error) {
+func UploadFileToCloudinary(file multipart.File, fileHeader *multipart.FileHeader, folderPath string) (string, error) {
 	defer file.Close()
 
 	// Init Cloudinary using CLOUDINARY_URL from env
@@ -19,9 +19,9 @@ func UploadImageToCloudinary(file multipart.File, fileHeader *multipart.FileHead
 		return "", fmt.Errorf("cloudinary init failed: %v", err)
 	}
 
-	// Upload the image
+	// Upload the file
 	uploadParams := uploader.UploadParams{
-		Folder: folderPath, // example: "profile_pictures"
+		Folder: folderPath, // example: "profile_images"
 	}
 
 	uploadResult, err := cld.Upload.Upload(context.Background(), file, uploadParams)
@@ -41,11 +41,31 @@ func DeleteFolderContents(folderPath string) error {
 
 	ctx := context.Background()
 
+	// Clear folder images
 	_, err = cld.Admin.DeleteAssetsByPrefix(ctx, admin.DeleteAssetsByPrefixParams{
-		Prefix: []string{folderPath + "/"},
-	})
+        Prefix: []string{folderPath + "/"},
+		AssetType: "image",
+    })
 	if err != nil {
-		return fmt.Errorf("failed to delete assets in folder '%s': %w", folderPath, err)
+		return fmt.Errorf("failed to delete images in folder '%s': %w", folderPath, err)
+	}
+	
+	// Clear folder videos
+	_, err = cld.Admin.DeleteAssetsByPrefix(ctx, admin.DeleteAssetsByPrefixParams{
+        Prefix: []string{folderPath + "/"},
+		AssetType: "video",
+    })
+	if err != nil {
+		return fmt.Errorf("failed to delete videos in folder '%s': %w", folderPath, err)
+	}
+	
+	// Clear folder raw flikles
+	_, err = cld.Admin.DeleteAssetsByPrefix(ctx, admin.DeleteAssetsByPrefixParams{
+        Prefix: []string{folderPath + "/"},
+		AssetType: "raw",
+    })
+	if err != nil {
+		return fmt.Errorf("failed to delete raw files in folder '%s': %w", folderPath, err)
 	}
 
 	return nil

@@ -19,7 +19,7 @@ func RegisterRoutes(server *gin.Engine) {
 		authUser := user.Group("/me").Use(middleware.Authenticate)
 		authUser.GET("", controllers.GetAuthenticatedUser)
 		authUser.PATCH("/change-password", controllers.ChangeUserPassword)
-		authUser.POST("/profile-picture", controllers.UploadProfilePicture)
+		authUser.POST("/profile-image", controllers.UploadProfileImage)
 	}
 
 	// **GROUPS**
@@ -28,6 +28,7 @@ func RegisterRoutes(server *gin.Engine) {
 		group.GET("", controllers.GetAllGroups)
 		group.GET("/:name", controllers.GetGroup)
 		group.GET("/:name/posts", controllers.GetPostsForGroup)
+		group.GET("/:name/users", controllers.GetUsersInGroup)
 	}
 
 	// AUTHENTICATED ROUTES
@@ -37,7 +38,10 @@ func RegisterRoutes(server *gin.Engine) {
 		authGroup.PUT("/:name", controllers.UpdateGroup)
 		authGroup.DELETE("/:name", controllers.DeleteGroup)
 		authGroup.POST("/:name/join", controllers.JoinGroup)
+		authGroup.DELETE("/:name/leave", controllers.LeaveGroup)
 		authGroup.POST("/:name/posts", controllers.CreatePostInGroup)
+		authGroup.POST("/:name/group-image", controllers.UploadGroupImage)
+		authGroup.POST("/:name/group-cover", controllers.UploadCoverImage)
 	}
 
 	// **POSTS**
@@ -56,6 +60,7 @@ func RegisterRoutes(server *gin.Engine) {
 		authPost.GET("/:id/vote", controllers.GetUserVote)
 		authPost.DELETE("/:id/vote", controllers.DeleteUserVote)
 		authPost.POST("/:id/comments", controllers.CreateComment)
+		authPost.POST("/:id/media", controllers.UploadPostMedia)
 	}
 
 	// **COMMENTS**

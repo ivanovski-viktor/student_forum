@@ -1,13 +1,17 @@
+// useFetch.js
 import { useState, useEffect, useCallback } from "react";
+import { usePageLoading } from "../context/PageLoadingContext";
 
-export function useFetch(url, options) {
+export function useFetch(url, options, pageLoading = false) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { setPageLoading } = usePageLoading();
 
   const fetchData = useCallback(async () => {
     if (!url) return;
 
+    if (pageLoading) setPageLoading(true);
     setLoading(true);
     setError(null);
 
@@ -20,8 +24,9 @@ export function useFetch(url, options) {
       setError(err.message);
     } finally {
       setLoading(false);
+      if (pageLoading) setPageLoading(false);
     }
-  }, [url]);
+  }, [url, JSON.stringify(options), pageLoading, setPageLoading]);
 
   useEffect(() => {
     fetchData();

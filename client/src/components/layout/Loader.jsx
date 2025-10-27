@@ -1,20 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function Loader({ loading }) {
-  const [visible, setVisible] = useState(loading);
-  const [opacity, setOpacity] = useState("opacity-100");
+  const [visible, setVisible] = useState(true);
+  const firstRender = useRef(true);
 
   useEffect(() => {
-    if (loading) {
-      // show loader immediately
-      setVisible(true);
-      setOpacity("opacity-100");
-    } else {
-      // fade out
-      setOpacity("opacity-0");
-      // remove from DOM after transition (300ms matches tailwind duration-300)
+    if (!loading) {
       const timer = setTimeout(() => setVisible(false), 300);
       return () => clearTimeout(timer);
+    } else {
+      setVisible(true);
     }
   }, [loading]);
 
@@ -22,7 +17,16 @@ export default function Loader({ loading }) {
 
   return (
     <div
-      className={`flex-col gap-4 flex items-center justify-center h-screen fixed top-0 left-0 w-screen bg-background transition-opacity duration-300 ease-out z-99 ${opacity}`}
+      className={`fixed inset-0 flex items-center justify-center h-screen w-screen bg-background z-[99] ${
+        firstRender.current
+          ? "opacity-100"
+          : `transition-opacity duration-300 ease-out ${
+              loading ? "opacity-100" : "opacity-0"
+            }`
+      }`}
+      ref={() => {
+        firstRender.current = false;
+      }}
     >
       <div className="w-20 h-20 border-4 border-transparent text-primary text-4xl animate-spin flex items-center justify-center border-t-primary rounded-full">
         <div className="w-14 h-14 border-4 border-transparent text-secondary text-2xl animate-spin flex items-center justify-center border-t-secondary-light rounded-full"></div>

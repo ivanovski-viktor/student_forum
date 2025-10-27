@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import LinkUnderline from "../ui/LinkUnderline";
-import { RiHome5Line } from "react-icons/ri";
+import { House } from "lucide-react";
 
 export default function Home({ children }) {
   // Requires 2 children
@@ -12,8 +12,14 @@ export default function Home({ children }) {
       {/* nav menu */}
       <div className="col-span-2 border-r border-stroke bg-box">
         <div className="p-5">
-          <Link to="/" className=" flex items-center gap-2">
-            <RiHome5Line className="text-lg" />
+          <Link
+            to="/"
+            onClick={() => startLoading()}
+            className=" flex items-center gap-2"
+          >
+            <div className="text-lg">
+              <House size={20} />
+            </div>
             Home
           </Link>
         </div>
@@ -26,24 +32,24 @@ export default function Home({ children }) {
       <div className="col-span-4 p-5 pl-0">
         <div className="sticky top-5 min-h-[85svh] gap-5 flex flex-col items-stretch justify-between">
           {childArray[1] && (
-            <div className="bg-box rounded-xl p-5 transition-all duration-200 flex h-86 max-h-[50svh] flex-col items-start">
-              <ul className="w-full overflow-y-auto">{childArray[1]}</ul>
+            <div className="bg-box rounded-xl p-5 transition-all duration-200 flex h-86 max-h-[50svh]">
+              {childArray[1]}
             </div>
           )}
 
           <div>
-            <ul className="text-sm text-foreground-light space-y-4">
+            <ul className="text-sm text-foreground-light space-y-4 ">
               <li>
                 Developed by:{" "}
                 <LinkUnderline
                   target="_blank"
                   link="https://www.linkedin.com/in/viktor-ivanovski-a47b8426a/"
-                  text={"Viktor Ivanovski."}
+                  text="Viktor Ivanovski."
                 />
               </li>
               <li>Student Forum © 2025. All rights reserved.</li>
               <li className="flex items-center justify-start gap-3">
-                <RiHome5Line />
+                <House size={20} />
               </li>
             </ul>
           </div>

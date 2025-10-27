@@ -6,86 +6,101 @@ import {
   historyExtension,
   listExtension,
   RichText,
+  linkExtension,
 } from "@lexkit/editor";
-import { useEffect } from "react"; // 1. Define extensions
+import { Link, Link2, Link2Off, List, ListOrdered } from "lucide-react";
+import { useEffect } from "react";
 
+// 1. Define extensions
 const extensions = [
   boldExtension,
   italicExtension,
   listExtension,
   historyExtension,
-]; // 2. Create the editor system
+  linkExtension,
+];
+
+// 2. Create the editor system
 const { Provider, useEditor } = createEditorSystem(extensions); // Toolbar Component
 function Toolbar() {
   const { commands, activeStates } = useEditor();
-  const buttonClasses = (isActive, isDisabled) =>
-    [
-      " px-2 py-1 text-xs sm:px-3 sm:py-1.5 rounded-md sm:text-sm font-medium transition-colors text-sm",
-      isDisabled
-        ? "opacity-50 cursor-not-allowed bg-gray-100"
-        : isActive
-        ? "bg-primary/10 text-primary border border-primary"
-        : "hover:bg-primary/10 border border-stroke text-foreground",
-    ].join(" ");
+
   return (
-    <div className="flex flex-wrap gap-1 sm:gap-2 border-b border-stroke p-2 bg-box rounded-t-md">
-      {" "}
+    <div className="flex  flex-wrap gap-1 sm:gap-1.5 lg:justify-evenly border-b border-stroke p-2 bg-box rounded-t-md">
       <button
         type="button"
+        className={`lex-button ${activeStates.bold ? "active" : ""}`}
         onClick={() => commands.toggleBold()}
-        className={buttonClasses(activeStates.bold)}
         title="Bold (Ctrl+B)"
       >
-        {" "}
-        <b>B</b>{" "}
-      </button>{" "}
+        <b>B</b>
+      </button>
+
       <button
         type="button"
+        className={`lex-button ${activeStates.italic ? "active" : ""}`}
         onClick={() => commands.toggleItalic()}
-        className={buttonClasses(activeStates.italic)}
         title="Italic (Ctrl+I)"
       >
-        {" "}
-        <i>I</i>{" "}
-      </button>{" "}
+        <i>I</i>
+      </button>
+
       <button
         type="button"
+        className={`lex-button ${activeStates.unorderedList ? "active" : ""}`}
         onClick={() => commands.toggleUnorderedList()}
-        className={buttonClasses(activeStates.unorderedList)}
         title="Bullet List"
       >
-        {" "}
-        • List{" "}
-      </button>{" "}
+        <List size={16} />
+      </button>
+
       <button
         type="button"
+        className={`lex-button ${activeStates.orderedList ? "active" : ""}`}
         onClick={() => commands.toggleOrderedList()}
-        className={buttonClasses(activeStates.orderedList)}
         title="Numbered List"
       >
-        {" "}
-        1. List{" "}
-      </button>{" "}
+        <ListOrdered size={16} />
+      </button>
+
       <button
         type="button"
-        onClick={() => commands.undo()}
+        className={`lex-button ${activeStates.isLink ? "active" : ""}`}
+        onClick={() => commands.insertLink()}
+        title="Insert Link"
+      >
+        <Link2 size={16} />
+      </button>
+
+      <button
+        type="button"
+        className="lex-button"
+        disabled={!activeStates.isLink}
+        onClick={() => commands.removeLink()}
+        title="Remove Link"
+      >
+        <Link2Off size={16} />
+      </button>
+
+      <button
+        type="button"
+        className="lex-button"
         disabled={!activeStates.canUndo}
-        className={buttonClasses(false, !activeStates.canUndo)}
+        onClick={() => commands.undo()}
         title="Undo (Ctrl+Z)"
       >
-        {" "}
-        ↶{" "}
-      </button>{" "}
+        ↶
+      </button>
+
       <button
         type="button"
-        onClick={() => commands.redo()}
+        className="lex-button"
         disabled={!activeStates.canRedo}
-        className={buttonClasses(false, !activeStates.canRedo)}
+        onClick={() => commands.redo()}
         title="Redo (Ctrl+Y)"
       >
-        {" "}
-        ↷{" "}
-      </button>{" "}
+        ↷
+      </button>
     </div>
   );
 } // Editor Component

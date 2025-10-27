@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"fmt"
+	"math"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ivanovski-viktor/student_forum/server/models"
@@ -31,21 +34,43 @@ func CreatePost(c *gin.Context) {
 }
 
 func GetAllPosts(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 
-	posts, err := models.GetAll()
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 {
+		limit = 10
+	}
 
+	offset := (page - 1) * limit
+
+	// Get paginated posts
+	posts, err := models.GetAll(limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting posts!"})
 		return
 	}
 
-	if len(posts) < 1 {
-		c.JSON(http.StatusOK, gin.H{"posts": []models.Post{}})
+	// ✅ Get total count
+	totalCount, err := models.GetTotalPostsCount()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting total count!"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"posts": posts})
+	totalPages := int(math.Ceil(float64(totalCount) / float64(limit)))
+
+	c.JSON(http.StatusOK, gin.H{
+		"posts":       posts,
+		"page":        page,
+		"limit":       limit,
+		"total_posts": totalCount,
+		"total_pages": totalPages,
+	})
 }
+
 
 func GetPost(c *gin.Context) {
 
@@ -133,64 +158,88 @@ func UpdatePost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"post": post})
 }
 
-func VoteOnPost(c *gin.Context) {
-	postId, err := utils.ParseParamToInt("id", c)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid post ID"})
-		return
-	}
-
+func UploadPostMedia(c *gin.Context) {
+    postId, err := utils.ParseParamToInt("id", c)
 	userId := c.GetInt64("userId")
 
-	var input struct {
-		VoteType int `json:"vote_type"` // 1 = upvote, -1 = downvote
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
+        return
+    }
+
+    form, err := c.MultipartForm()
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse multipart form"})
+        return
+    }
+
+    files := form.File["post_media"]
+    if len(files) == 0 {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "No media files uploaded"})
+        return
+    }
+
+    if len(files) > 3 {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "You can upload a maximum of 3 files"})
+        return
+    }
+
+    post, err := models.GetPostById(postId)
+    if err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
+        return
+    }
+
+	if post.UserID != userId {
+		 c.JSON(http.StatusUnauthorized, gin.H{"message": "Not Authorized"})
+		 return
 	}
 
-	if err := c.ShouldBindJSON(&input); err != nil || (input.VoteType != 1 && input.VoteType != -1) {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "vote_type must be 1 or -1"})
-		return
-	}
 
-	if err := models.CastPostVote(userId, postId, input.VoteType); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to cast vote", "error": err.Error()})
-		return
-	}
+    folderPath := fmt.Sprintf("post_media/%d", postId)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Vote recorded"})
-}
+    // Delete all existing media in the folder before uploading new files
 
-func GetUserVote(c *gin.Context) {
-	postId, err := utils.ParseParamToInt("id", c)
+	err = utils.DeleteFolderContents(folderPath)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid post ID"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	userId := c.GetInt64("userId")
+    uploadedMedia := []models.Media{}
 
-	voteType, err := models.GetUserVote(userId, postId); 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to get vote", "error": err.Error()})
-		return
-	}
+    for _, fileHeader := range files {
+        file, err := fileHeader.Open()
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to open file"})
+            return
+        }
+        defer file.Close()
 
-	c.JSON(http.StatusOK, gin.H{"vote_type": voteType })
-}
+        // Upload to Cloudinary
+        imageURL, err := utils.UploadFileToCloudinary(file, fileHeader, folderPath)
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload file: " + err.Error()})
+            return
+        }
 
-func DeleteUserVote(c *gin.Context) {
-	postId, err := utils.ParseParamToInt("id", c)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid post ID"})
-		return
-	}
+        uploadedMedia = append(uploadedMedia, models.Media{
+            URL:  imageURL,
+            Type: fileHeader.Header.Get("Content-Type"),
+        })
+    }
 
-	userId := c.GetInt64("userId")
+    // Save the new media
+    err = post.UpdateMedia(uploadedMedia)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
 
-	err = models.DeleteUserVote(userId, postId); 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete vote", "error": err.Error()})
-		return
-	}
+    post.Media = uploadedMedia
 
-	c.Status(http.StatusNoContent)
+    c.JSON(http.StatusOK, gin.H{
+        "message": "Uploaded media successfully",
+        "media":   post.Media,
+    })
 }

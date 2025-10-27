@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../components/ui/Input";
 import Form from "../components/ui/Form";
@@ -6,10 +6,12 @@ import Button from "../components/ui/Button";
 import LinkUnderline from "../components/ui/LinkUnderline";
 import logout from "../helper-functions/logout";
 import Message from "../components/ui/Message";
+import { usePageLoading } from "../context/PageLoadingContext";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function ChangePassword() {
+  const { pageLoading, setPageLoading } = usePageLoading();
   const [formData, setFormData] = useState({
     password: "",
     new_password: "",
@@ -17,6 +19,12 @@ export default function ChangePassword() {
   });
   const [message, setMessage] = useState({ type: "", text: "" });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (pageLoading) {
+      setPageLoading(false);
+    }
+  }, [pageLoading]);
 
   function handleChange(e) {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));

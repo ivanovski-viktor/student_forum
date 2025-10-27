@@ -14,7 +14,7 @@ import { useUpdateRequest } from "../../hooks/useUpdateRequest";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-export default function Comment({ comment }) {
+export default function Comment({ comment, refetchPostData }) {
   const token = localStorage.getItem("token");
 
   // --- Local state ---
@@ -24,7 +24,6 @@ export default function Comment({ comment }) {
 
   const [showReplies, setShowReplies] = useState(false);
   const [loadingReplies, setLoadingReplies] = useState(false);
-  const [showReplyToComment, setShowReplyToComment] = useState(false);
   const [replies, setReplies] = useState([]);
   const [repliesCount, setRepliesCount] = useState(0);
 
@@ -66,22 +65,10 @@ export default function Comment({ comment }) {
       setCommentObj((prev) => ({ ...prev, content: contentData }));
       setEditComment(false);
     }
-  }, [successUpdate]);
-
-  // --- Fetch replies count ---
-  useEffect(() => {
-    const fetchRepliesCount = async () => {
-      try {
-        const res = await fetch(`${commentUrl}/replies`);
-        if (!res.ok) throw new Error("Failed to fetch replies count");
-        const json = await res.json();
-        setRepliesCount(json.replies?.length || 0);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchRepliesCount();
-  }, [id]);
+    if (successDelete) {
+      refetchPostData();
+    }
+  }, [successUpdate, successDelete]);
 
   // --- Fetch replies ---
   const fetchReplies = async () => {
@@ -108,6 +95,11 @@ export default function Comment({ comment }) {
     };
     loadReplies();
   }, [showReplies]);
+
+  // show replies count
+  useEffect(() => {
+    fetchReplies();
+  }, [id]);
 
   const handleReplyAdded = () => {
     fetchReplies();
@@ -196,10 +188,11 @@ export default function Comment({ comment }) {
             />
           </div>
           <div>
-            {replies.map((reply, idx) => (
+            {replies.map((reply) => (
               <Reply
-                key={idx}
+                key={reply.id}
                 reply={reply}
+                refetchReplies={fetchReplies}
                 setLoadingReplies={setLoadingReplies}
               />
             ))}

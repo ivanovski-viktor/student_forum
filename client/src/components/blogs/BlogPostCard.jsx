@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
-import { RiGroup2Fill } from "react-icons/ri";
 import CreatedAt from "../ui/CreatedAt";
-import { useMemo } from "react";
 import BlogPostStatsBar from "./BlogPostStatsBar";
+import { Users } from "lucide-react";
 
 function filterText(html, maxLength = 300) {
   if (!html) return "";
@@ -30,7 +29,7 @@ export default function BlogPostCard({ post }) {
         <div className="flex items-center gap-2">
           {!post.group_name ? (
             <span className="text-sm text-foreground-light mb-1 inline-flex gap-1 items-center">
-              <RiGroup2Fill className="text-lg" />
+              <Users size={20} />
               <span>/general</span>
             </span>
           ) : (
@@ -38,7 +37,7 @@ export default function BlogPostCard({ post }) {
               to={`/groups/${post.group_name}`}
               className="text-sm text-primary hover:underline mb-1 inline-flex gap-1 items-center relative z-10"
             >
-              <RiGroup2Fill className="text-lg" />
+              <Users size={20} />
               <span>/{post.group_name}</span>
             </Link>
           )}

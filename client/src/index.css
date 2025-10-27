@@ -3,9 +3,10 @@
 /* ==========================  GLOBAL COLORS  ========================== */
 
 @theme {
-  --color-primary: #f54900;
-  --color-secondary: #00a63e;
-  --color-secondary-light: #05df72;
+  --color-primary: oklch(64.6% 0.222 41.116);
+  --color-primary-light: oklch(75% 0.183 55.934);
+  --color-secondary: oklch(62.7% 0.194 149.214);
+  --color-secondary-light: oklch(79.2% 0.209 151.711);
   --color-background: #ffffff;
   --color-foreground: #0f0f0f;
   --color-foreground-light: #575757;
@@ -14,7 +15,14 @@
   --color-error: #dc2626;
   --color-success: #00a63e;
 }
-
+/* 🌙 Dark theme overrides */
+[data-theme="dark"] {
+  --color-background: #0f0f0f;
+  --color-foreground: #f8f8f8;
+  --color-foreground-light: #c0c0c0;
+  --color-box: rgba(255, 255, 255, 0.05);
+  --color-stroke: #333;
+}
 /* ==========================  BASE STYLES  ========================== */
 @layer base {
   h1,
@@ -26,22 +34,28 @@
     @apply font-semibold;
   }
 
-  h1 {
+  h1,
+  .h1 {
     @apply text-2xl lg:text-3xl;
   }
-  h2 {
+  h2,
+  .h2 {
     @apply text-xl lg:text-2xl;
   }
-  h3 {
+  h3,
+  .h3 {
     @apply text-lg lg:text-xl;
   }
-  h4 {
+  h4,
+  .h4 {
     @apply text-base lg:text-lg;
   }
-  h5 {
+  h5,
+  .h5 {
     @apply text-sm lg:text-base;
   }
-  h6 {
+  h6,
+  .h6 {
     @apply text-xs lg:text-sm;
   }
 
@@ -54,10 +68,15 @@
 @layer components {
   /* Buttons */
   .btn {
-    @apply mt-3 py-2 px-6 rounded-full border-2 transition duration-200 ease-in-out cursor-pointer;
-  }
-  .btn.btn--primary {
-    @apply bg-primary text-white hover:bg-background hover:text-primary border-transparent hover:border-primary;
+    @apply mt-3 py-2 px-6 rounded-full border-2 transition-colors duration-200 ease-in-out cursor-pointer font-medium bg-primary text-white hover:bg-background hover:text-primary border-transparent hover:border-primary;
+
+    &.btn--secondary {
+      @apply bg-background text-foreground hover:bg-primary-light hover:text-foreground  border-primary-light;
+
+      &.disabled {
+        @apply border-stroke hover:bg-background;
+      }
+    }
   }
 
   .modify-btn {
@@ -72,10 +91,10 @@
   }
 
   .input-btn {
-    @apply absolute right-3 top-1/2 transform -translate-y-1/2 text-foreground-light hover:text-orange-400 transition duration-200 ease-in-out cursor-pointer text-lg;
+    @apply absolute right-3 top-1/2 transform -translate-y-1/2 text-foreground-light hover:text-primary-light transition duration-200 ease-in-out cursor-pointer text-lg;
   }
-  .input-btn.input-btn--secondary {
-    @apply h-7 w-7 rounded-md flex items-center justify-center right-1 hover:bg-primary/10 leading-0;
+  .input-btn.input-btn--icon {
+    @apply h-8 w-16 border-stroke border-2 text-2xl rounded-md flex items-center justify-center right-1 hover:bg-primary/10 leading-0 hover:border-primary-light;
   }
 
   .vote-btn {
@@ -97,7 +116,7 @@
 
   /* Inputs */
   .input {
-    @apply py-2 px-4 border-2 text-gray-800 placeholder:text-foreground-light border-foreground-light rounded-full w-full;
+    @apply py-2 px-4 border-2 text-foreground placeholder:text-foreground-light border-foreground-light rounded-full w-full;
   }
   .input.input--secondary {
     @apply rounded-md border-stroke;
@@ -116,7 +135,12 @@
   .profile-img {
     @apply rounded-full w-8 h-8 object-cover bg-foreground/10 border border-foreground-light;
   }
-
+  .group-img {
+    @apply rounded-full w-8 h-8 object-cover bg-foreground/10 border border-foreground-light;
+    &.group-img--large {
+      @apply w-12 h-12;
+    }
+  }
   /* Decorations */
   .text-gradient {
     @apply text-transparent bg-gradient-to-r from-primary to-foreground bg-clip-text shrink-0;
@@ -137,4 +161,77 @@
 }
 .lexkit-text-italic {
   @apply italic;
+}
+.lexkit-link {
+  @apply underline underline-offset-2 text-primary cursor-pointer hover:opacity-70 transition-opacity duration-200 ease-in-out;
+}
+@layer components {
+  .lex-button {
+    @apply px-2 py-1 text-xs sm:px-3 sm:py-1.5 border border-stroke rounded-md sm:text-sm font-medium transition-colors text-sm;
+
+    &:hover:not(:disabled) {
+      @apply hover:bg-primary/10  text-foreground;
+    }
+
+    &:active:not(:disabled) {
+      @apply scale-95;
+    }
+
+    &.active {
+      @apply bg-primary/10 text-primary border border-primary;
+    }
+
+    &:disabled,
+    &[aria-disabled="true"] {
+      @apply opacity-50 cursor-not-allowed;
+    }
+  }
+}
+/* swiper */
+.blog-slider {
+  @apply bg-background aspect-video w-full rounded-xl
+    overflow-hidden border-2 border-stroke;
+  .swiper {
+    @apply h-full;
+  }
+  .blog-slider__media {
+    @apply block h-full w-full object-contain object-center overflow-hidden;
+  }
+  .swiper-pagination {
+    @apply bg-transparent !w-auto !left-1/2 !-translate-x-1/2 px-1 pb-1 rounded-full !bottom-[initial] !top-5 !text-transparent !fill-transparent transition-colors duration-200 ease-in-out;
+
+    .swiper-pagination-bullet {
+      @apply bg-transparent transition-colors duration-200 ease-in-out;
+    }
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    @apply bg-transparent rounded-full text-transparent transition-colors duration-200 ease-in-out;
+
+    svg {
+      @apply w-5 h-5 pl-1;
+    }
+  }
+
+  .swiper-button-prev {
+    @apply !left-5;
+  }
+  .swiper-button-next {
+    @apply !right-5;
+  }
+
+  /* hide if not hovered */
+  &:hover {
+    .swiper-button-next,
+    .swiper-button-prev {
+      @apply bg-black  text-white;
+    }
+    .swiper-pagination {
+      @apply bg-black !text-white !fill-white;
+    }
+    .swiper-pagination-bullet {
+      @apply !bg-white;
+    }
+  }
 }

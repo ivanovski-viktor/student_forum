@@ -174,10 +174,10 @@ func ChangeUserPassword(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Changed password successfully!"})
 }
 
-func UploadProfilePicture(c *gin.Context) {
+func UploadProfileImage(c *gin.Context) {
 	userId := c.GetInt64("userId")
 
-	file, fileHeader, err := c.Request.FormFile("profile_picture")
+	file, fileHeader, err := c.Request.FormFile("profile_image")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Image is required"})
 		return
@@ -189,17 +189,17 @@ func UploadProfilePicture(c *gin.Context) {
 		return
 	}
 
-	folderPath := fmt.Sprintf("profile_pictures/%d", userId)
+	folderPath := fmt.Sprintf("profile_images/%d", userId)
 
 	//Delete old profile image
 	err = utils.DeleteFolderContents(folderPath)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Unable to delete old profile image."})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to delete old profile image."})
 		return
 	}
 
 	// Upload to Cloudinary
-	imageURL, err := utils.UploadImageToCloudinary(file, fileHeader, folderPath)
+	imageURL, err := utils.UploadFileToCloudinary(file, fileHeader, folderPath)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload image" + err.Error()})
 		return

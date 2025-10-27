@@ -1,8 +1,8 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import Loader from "./components/layout/Loader.jsx";
 import Home from "./pages/Home.jsx";
 import Register from "./pages/Register.jsx";
 import Login from "./pages/Login.jsx";
-import Loader from "./components/layout/Loader.jsx";
 import NavBar from "./components/layout/NavBar.jsx";
 import BlogPost from "./pages/BlogPost.jsx";
 import MyAccount from "./pages/MyAccount.jsx";
@@ -10,14 +10,25 @@ import UserAccount from "./pages/UserAccount.jsx";
 import ChangePassword from "./pages/ChangePassword.jsx";
 import Group from "./pages/Group.jsx";
 import NotFound from "./pages/NotFound.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import AllGroups from "./pages/AllGroups.jsx";
+import { usePageLoading } from "./context/PageLoadingContext.jsx";
 
 function App() {
+  const { pageLoading, setPageLoading } = usePageLoading();
+  const location = useLocation();
+
+  // detect route changes
+  useEffect(() => {
+    setPageLoading(true);
+  }, [location.pathname, setPageLoading]);
   return (
-    <div>
+    <>
+      <Loader loading={pageLoading} />
       <NavBar />
       <main>
         <Routes>
+          {/* User routes */}
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
@@ -27,14 +38,16 @@ function App() {
             path="/users/me/change-password"
             element={<ChangePassword />}
           />
+          {/* Posts */}
           <Route path="/posts/:id" element={<BlogPost />} />
+          {/* Groups */}
+          <Route path="/groups" element={<AllGroups />} />
           <Route path="/groups/:name" element={<Group />} />
-
           {/* 404 Page */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-    </div>
+    </>
   );
 }
 

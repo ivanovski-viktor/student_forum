@@ -7,13 +7,13 @@ import AuthUserContextProvider from "./context/AuthUserContext.jsx";
 import PageLoadingContextProvider from "./context/PageLoadingContext.jsx";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter basename="/">
+  // <StrictMode>
+  <BrowserRouter basename="/">
+    <PageLoadingContextProvider>
       <AuthUserContextProvider>
-        <PageLoadingContextProvider>
-          <App />
-        </PageLoadingContextProvider>
+        <App />
       </AuthUserContextProvider>
-    </BrowserRouter>
-  </StrictMode>
+    </PageLoadingContextProvider>
+  </BrowserRouter>
+  // </StrictMode>
 );

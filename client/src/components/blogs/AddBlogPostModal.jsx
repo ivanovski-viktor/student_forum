@@ -7,17 +7,17 @@ import RichTextEditor from "../ui/LexEditor";
 import { usePostRequest } from "../../hooks/usePostRequest";
 import Message from "../ui/Message";
 import Button from "../ui/Button";
-import { RiCloseLargeLine } from "react-icons/ri";
-
-const apiUrl = import.meta.env.VITE_API_URL;
+import { X } from "lucide-react";
+import MultiFileUploader from "../ui/MultiFileUploader";
 
 Modal.setAppElement("#root");
 
-export default function AddBlogPostModal({ isOpen, onClose }) {
+export default function AddBlogPostModal({ isOpen, onClose, url }) {
   const token = localStorage.getItem("token");
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [files, setFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState({});
 
   const {
@@ -25,7 +25,7 @@ export default function AddBlogPostModal({ isOpen, onClose }) {
     loading,
     success,
     error,
-  } = usePostRequest(`${apiUrl}/posts`, token);
+  } = usePostRequest(url, token);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,12 +50,11 @@ export default function AddBlogPostModal({ isOpen, onClose }) {
       setContent("");
       setErrorMessage({});
 
-      // Wait 2s then reload page
       setTimeout(() => {
         // Close modal
         onClose();
         window.location.reload();
-      }, 2000);
+      }, 1500);
     }
   };
 
@@ -83,7 +82,7 @@ export default function AddBlogPostModal({ isOpen, onClose }) {
             onClick={onClose}
             className="text-foreground-light hover:text-foreground text-xl font-bold transition-colors duration-200 ease-in-out"
           >
-            <RiCloseLargeLine />
+            <X />
           </button>
         </div>
 
@@ -110,6 +109,8 @@ export default function AddBlogPostModal({ isOpen, onClose }) {
             <Message simple={true} type="error" text={errorMessage.text} />
           )}
         </div>
+
+        <MultiFileUploader files={files} setFiles={setFiles} />
 
         {!success && (
           <Button

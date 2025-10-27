@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import CommentForm from "./CommentForm";
-import LogInCta from "./LogInCta";
+import LogInCta from "../ui/LogInCta";
 import { useAuthUser } from "../../context/AuthUserContext";
 
 const apiUrl = import.meta.env.VITE_API_URL;

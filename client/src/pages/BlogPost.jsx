@@ -8,12 +8,15 @@ import NotFound from "./NotFound";
 import BlogPostMain from "../components/blogs/BlogPostMain";
 import Comment from "../components/blogs/Comment";
 import Loader from "../components/layout/Loader";
+import { usePageLoading } from "../context/PageLoadingContext";
+import { useEffect } from "react";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 // TODO Make api return user data with username user image also
 
 export default function BlogPost() {
+  const { setPageLoading } = usePageLoading();
   const { id } = useParams();
   const postUrl = `${apiUrl}/posts/${id}`;
 
@@ -32,6 +35,12 @@ export default function BlogPost() {
     error: commentsError,
     refetch: refetchComments,
   } = useFetch(`${postUrl}/comments`);
+
+  useEffect(() => {
+    if (postData && commentsData) {
+      setPageLoading(false);
+    }
+  }, [postData, commentsData]);
 
   function refetchData() {
     refetchPost();
@@ -59,7 +68,13 @@ export default function BlogPost() {
           {comments &&
             [...comments]
               .reverse()
-              .map((comment) => <Comment key={comment.id} comment={comment} />)}
+              .map((comment) => (
+                <Comment
+                  refetchPostData={refetchData}
+                  key={comment.id}
+                  comment={comment}
+                />
+              ))}
         </div>
       </div>
     </MainLayout>

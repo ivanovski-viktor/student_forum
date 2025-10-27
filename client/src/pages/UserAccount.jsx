@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import {} from "react-router-dom";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import InlineLoader from "../components/layout/InlineLoader";
 import { formatDateTime } from "../helper-functions/timeFormat";
 import ProfileImage from "../components/users/ProfileImage";
 import { useFetch } from "../hooks/useFetch";
 import NotFound from "./NotFound";
+import { usePageLoading } from "../context/PageLoadingContext";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function UserAccount() {
+  const { setPageLoading } = usePageLoading();
   const navigate = useNavigate();
   const { id } = useParams();
   const token = localStorage.getItem("token");
@@ -26,8 +27,9 @@ export default function UserAccount() {
   useEffect(() => {
     if (!currentUserData || !id) return;
     if (Number(id) === currentUserData.user?.id) {
-      navigate("/users/me");
+      navigate("/users/me", { replace: true });
     }
+    setPageLoading(false);
   }, [currentUserData, id, navigate]);
 
   // Handle loading + error

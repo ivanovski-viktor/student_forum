@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Button({
   buttonType,
   extraClass = "",
@@ -5,15 +7,27 @@ export default function Button({
   link,
   ...rest
 }) {
-  let className = "btn btn--primary " + extraClass;
+  let className = "btn " + extraClass;
 
-  return buttonType === "form" ? (
-    <button type="submit" className={className} {...rest}>
+  if (buttonType === "form") {
+    return (
+      <button type="submit" className={className} {...rest}>
+        {text}
+      </button>
+    );
+  }
+
+  if (buttonType === "button") {
+    return (
+      <button type="button" className={className} {...rest}>
+        {text}
+      </button>
+    );
+  }
+
+  return (
+    <Link to={link} className={className} {...rest}>
       {text}
-    </button>
-  ) : (
-    <a href={link} className={className} {...rest}>
-      {text}
-    </a>
+    </Link>
   );
 }
