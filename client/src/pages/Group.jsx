@@ -1,4 +1,10 @@
-import { Link, useParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useRevalidator,
+} from "react-router-dom";
 import { useFetch } from "../hooks/useFetch";
 import InlineLoader from "../components/layout/InlineLoader";
 import MainLayout from "../components/layout/MainLayout";
@@ -10,12 +16,14 @@ import { useAuthUser } from "../context/AuthUserContext";
 import GroupUsers from "../components/groups/GroupUsers";
 import Banner from "../components/ui/Banner";
 import { usePostRequest } from "../hooks/usePostRequest";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDeleteRequest } from "../hooks/useDeleteRequest";
 import { usePageLoading } from "../context/PageLoadingContext";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 export default function Group() {
+  const [refreshKey, setRefreshKey] = useState(0);
+
   const { name } = useParams();
   const token = localStorage.getItem("token");
   const { authUser, isAuthenticated, checkAuth } = useAuthUser();
@@ -34,18 +42,16 @@ export default function Group() {
 
   async function handleGroupToggle() {
     await checkAuth();
-
     if (!isAuthenticated) return;
 
     if (groupMember) {
       await leaveGroup();
       setGroupMember(false);
-      window.location.reload();
     } else {
       await joinGroup();
-      setGroupMember(true);
-      window.location.reload();
     }
+
+    setRefreshKey((prev) => prev + 1);
   }
 
   if (loadingGroupData) return <InlineLoader />;
@@ -54,7 +60,7 @@ export default function Group() {
   const isCreator = group?.creator_id === authUser?.user?.id;
 
   return (
-    <MainLayout>
+    <MainLayout key={refreshKey}>
       <>
         <Banner img_url={group.group_cover_url} text={group.description} />
         <div className="pt-5 pl-6 relative flex items-center gap-4 justify-between">

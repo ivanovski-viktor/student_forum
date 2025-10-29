@@ -3,18 +3,23 @@ import { useFetch } from "../../hooks/useFetch";
 import InlineLoader from "../layout/InlineLoader";
 import { User, Users } from "lucide-react";
 import LinkUnderline from "../ui/LinkUnderline";
+import { useEffect } from "react";
 
 export default function GroupUsers({ url, authUser, setGroupMember }) {
   const location = useLocation();
   const { data: data, loading, error } = useFetch(url);
 
+  const users = data?.groupUsers || [];
+
+  useEffect(() => {
+    if (!authUser?.user?.id) return;
+    const isMember = users.some((user) => user.user_id === authUser.user.id);
+    setGroupMember(isMember);
+  }, [users, authUser, setGroupMember]);
+
   if (loading) return <InlineLoader />;
   if (error) return <p>Error: {error}</p>;
 
-  // limit to 6
-  const users = data?.groupUsers || [];
-
-  setGroupMember(users.some((user) => user.user_id === authUser?.user?.id));
   return (
     <div className="h-full w-full flex flex-col">
       <ul

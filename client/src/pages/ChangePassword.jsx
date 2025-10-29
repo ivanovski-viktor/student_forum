@@ -7,24 +7,31 @@ import LinkUnderline from "../components/ui/LinkUnderline";
 import logout from "../helper-functions/logout";
 import Message from "../components/ui/Message";
 import { usePageLoading } from "../context/PageLoadingContext";
+import { usePatchRequest } from "../hooks/usePatchRequest";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function ChangePassword() {
   const { pageLoading, setPageLoading } = usePageLoading();
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
   const [formData, setFormData] = useState({
     password: "",
     new_password: "",
     confirm_password: "",
   });
+
   const [message, setMessage] = useState({ type: "", text: "" });
-  const navigate = useNavigate();
+
+  const { exec, loading, error, success } = usePatchRequest(
+    `${apiUrl}/users/me/change-password`,
+    token
+  );
 
   useEffect(() => {
-    if (pageLoading) {
-      setPageLoading(false);
-    }
-  }, [pageLoading]);
+    if (pageLoading) setPageLoading(false);
+  }, [pageLoading, setPageLoading]);
 
   function handleChange(e) {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -34,51 +41,30 @@ export default function ChangePassword() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      setMessage({ type: "error", text: "Не сте најавени." });
+    if (formData.new_password !== formData.confirm_password) {
+      setMessage({ type: "error", text: "Passwords do not match!" });
       return;
     }
 
-    try {
-      const response = await fetch(`${apiUrl}/users/me/change-password`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-        body: JSON.stringify(formData),
-      });
+    const result = await exec(formData);
 
-      console.log("Raw response:", response);
-
-      const data = await response.json();
-      console.log("Parsed response data:", data);
-
-      if (!response.ok) {
-        setMessage({
-          type: "error",
-          text: data.message || "Неуспешна промена на лозинка.",
-        });
-        return;
-      }
-
+    if (result) {
+      // success
       setMessage({
         type: "success",
         text: "Лозинката е успешно променета. Пренасочување...",
       });
-
       setTimeout(() => {
         logout();
-        navigate("/login");
+        navigate("/login", { replace: true });
       }, 1500);
-    } catch (error) {
-      console.error("Fetch error:", error);
-      setMessage({
-        type: "error",
-        text: "Настана грешка. Обидете се повторно.",
-      });
+    } else {
+      // Use the API message if available
+      if (error) {
+        setMessage({ type: "error", text: error });
+      } else {
+        setMessage({ type: "error", text: "Неуспешна промена на лозинка." });
+      }
     }
   }
 

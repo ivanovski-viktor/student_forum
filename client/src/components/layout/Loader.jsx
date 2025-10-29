@@ -1,28 +1,34 @@
 import { useEffect, useState, useRef } from "react";
 
 export default function Loader({ loading }) {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(true); // in-DOM
+  const [fade, setFade] = useState(true); // opacity
   const firstRender = useRef(true);
 
   useEffect(() => {
+    let delayTimer;
+    let fadeTimer;
+
     if (!loading) {
-      const timer = setTimeout(() => setVisible(false), 300);
-      return () => clearTimeout(timer);
+      delayTimer = setTimeout(() => setFade(false), 300);
+      fadeTimer = setTimeout(() => setVisible(false), 600);
     } else {
       setVisible(true);
+      setFade(true);
     }
+
+    return () => {
+      clearTimeout(delayTimer);
+      clearTimeout(fadeTimer);
+    };
   }, [loading]);
 
   if (!visible) return null;
 
   return (
     <div
-      className={`fixed inset-0 flex items-center justify-center h-screen w-screen bg-background z-[99] ${
-        firstRender.current
-          ? "opacity-100"
-          : `transition-opacity duration-300 ease-out ${
-              loading ? "opacity-100" : "opacity-0"
-            }`
+      className={`fixed inset-0 flex items-center justify-center h-screen w-screen bg-background z-[99] transition-opacity duration-300 ease-out ${
+        firstRender.current ? "opacity-100" : fade ? "opacity-100" : "opacity-0"
       }`}
       ref={() => {
         firstRender.current = false;

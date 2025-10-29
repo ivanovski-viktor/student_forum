@@ -45,13 +45,8 @@ export default function Login() {
     try {
       const response = await fetch(`${apiUrl}/users/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json", // ✅ fix: must be JSON, not "raw"
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
@@ -66,8 +61,14 @@ export default function Login() {
       const data = await response.json();
       localStorage.setItem("token", data.token);
 
+      // Wait for auth context to update first
+      await checkAuth();
+
+      // Stop loader immediately
+      setPageLoading(false);
+
+      // Then navigate
       navigate("/users/me", { replace: true });
-      checkAuth();
     } catch (error) {
       setMessage({
         type: "error",

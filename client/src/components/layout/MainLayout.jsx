@@ -2,8 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import LinkUnderline from "../ui/LinkUnderline";
 import { House } from "lucide-react";
+import { usePageLoading } from "../../context/PageLoadingContext";
 
 export default function Home({ children }) {
+  const { setPageLoading } = usePageLoading();
   // Requires 2 children
   const childArray = React.Children.toArray(children);
 
@@ -14,7 +16,7 @@ export default function Home({ children }) {
         <div className="p-5">
           <Link
             to="/"
-            onClick={() => startLoading()}
+            onClick={() => setPageLoading(true)}
             className=" flex items-center gap-2"
           >
             <div className="text-lg">
