@@ -25,12 +25,14 @@ export default function UserAccount() {
   const { data: userData, loading, error } = useFetch(`${apiUrl}/users/${id}`);
 
   useEffect(() => {
+    if (userData !== false) {
+      setPageLoading(false);
+    }
     if (!currentUserData || !id) return;
     if (Number(id) === currentUserData.user?.id) {
       navigate("/users/me", { replace: true });
     }
-    setPageLoading(false);
-  }, [currentUserData, id, navigate]);
+  }, [userData, id, navigate]);
 
   // Handle loading + error
   if (loading) return <InlineLoader />;

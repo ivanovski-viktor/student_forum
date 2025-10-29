@@ -41,7 +41,7 @@ export default function BlogPostStatsBar({ post }) {
   function handlePostVote(vote) {
     if (!checkedAuth) return;
     if (!isAuthenticated) {
-      navigate("/login");
+      navigate("/login", { replace: true });
       return;
     }
 

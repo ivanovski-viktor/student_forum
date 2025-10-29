@@ -11,38 +11,34 @@ import NotFound from "./NotFound";
 
 import { LogOut } from "lucide-react";
 import { usePageLoading } from "../context/PageLoadingContext";
+import { useNavigate } from "react-router-dom";
+import { useAuthUser } from "../context/AuthUserContext";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function MyAccount() {
   const { pageLoading, setPageLoading } = usePageLoading();
-  const token = localStorage.getItem("token");
+  const { authUser, isAuthenticated, checkAuth } = useAuthUser();
+  const navigate = useNavigate();
 
-  const {
-    data: userData,
-    loading,
-    error,
-  } = useFetch(`${apiUrl}/users/me`, {
-    headers: { "Content-Type": "application/json", Authorization: token },
-  });
-
-  // Redirect if no token
+  // Run checkAuth on mount
   useEffect(() => {
-    if (token == null) {
-      window.location.href = "/login";
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated && pageLoading) {
+      setPageLoading(false);
     }
-  }, [token]);
+    if (authUser === null && !isAuthenticated) {
+      setPageLoading(false);
+      navigate("/login", { replace: true });
+    }
+  }, [authUser, isAuthenticated, navigate, setPageLoading, pageLoading]);
 
-  useEffect(() => {
-    if (userData) setPageLoading(false);
-  }, userData);
+  if (!authUser || !isAuthenticated) return null;
 
-  if (loading) return <InlineLoader />;
-
-  if (error) return <NotFound text={error} largeText="" />;
-
-  const { profile_image_url, id, username, email, created_at } = userData.user;
-
+  const { profile_image_url, id, username, email, created_at } = authUser.user;
   return (
     <div className="container mx-auto px-6 md:px-8 py-10 md:py-16">
       <div className=" max-w-2xl mx-auto p-6 sm:p-10 border shadow-2xl shadow-stroke border-orange-100 bg-background rounded-xl ">

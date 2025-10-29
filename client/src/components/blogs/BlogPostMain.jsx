@@ -21,7 +21,7 @@ export default function BlogPostMain({ post, postUrl }) {
 
   if (successDelete) {
     setTimeout(() => {
-      navigate("/");
+      navigate("/", { replace: true });
     }, 1500);
   }
 
