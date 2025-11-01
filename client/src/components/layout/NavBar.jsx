@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { User } from "lucide-react";
 import ThemeToggle from "../ui/ThemeToggle";
 import { usePageLoading } from "../../context/PageLoadingContext";
+import Search from "../ui/Search";
 
 export default function NavBar() {
   const { setPageLoading } = usePageLoading();
@@ -12,6 +13,9 @@ export default function NavBar() {
         <Link to="/" onClick={() => setPageLoading(true)}>
           Home
         </Link>
+      </div>
+      <div>
+        <Search />
       </div>
       <div className="flex items-center gap-2">
         <ThemeToggle />
