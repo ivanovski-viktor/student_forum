@@ -8,6 +8,9 @@ import (
 
 func RegisterRoutes(server *gin.Engine) {
 
+	// **SEARCH**
+	server.POST("/search", controllers.SearchHandler)
+
 	// **USERS**
 	user := server.Group("/users")
 	{
@@ -29,11 +32,9 @@ func RegisterRoutes(server *gin.Engine) {
 		group.GET("/:name", controllers.GetGroup)
 		group.GET("/:name/posts", controllers.GetPostsForGroup)
 		group.GET("/:name/users", controllers.GetUsersInGroup)
-	}
 
-	// AUTHENTICATED ROUTES
-	authGroup := group.Use(middleware.Authenticate)
-	{
+		// AUTHENTICATED ROUTES
+		authGroup := group.Use(middleware.Authenticate)
 		authGroup.POST("", controllers.CreateGroup)
 		authGroup.PUT("/:name", controllers.UpdateGroup)
 		authGroup.DELETE("/:name", controllers.DeleteGroup)
@@ -44,6 +45,8 @@ func RegisterRoutes(server *gin.Engine) {
 		authGroup.POST("/:name/group-cover", controllers.UploadCoverImage)
 	}
 
+	
+
 	// **POSTS**
 	post := server.Group("/posts")
 	{
@@ -52,7 +55,7 @@ func RegisterRoutes(server *gin.Engine) {
 		post.GET("/:id/comments", controllers.GetCommentsForPost)
 
 		// AUTHENTICATED ROUTES
-		authPost := post.Group("").Use(middleware.Authenticate)
+		authPost := post.Use(middleware.Authenticate)
 		authPost.POST("", controllers.CreatePost)
 		authPost.PUT("/:id", controllers.UpdatePost)
 		authPost.DELETE("/:id", controllers.DeletePost)
