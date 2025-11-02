@@ -41,7 +41,7 @@ export default function ImageUploader({ file, setFile }) {
     <div className="file-uploader">
       <div
         {...getRootProps()}
-        className="p-5 border-stroke border-2 border-dashed rounded-md cursor-pointer"
+        className="p-5 border-stroke border border-dashed rounded-md cursor-pointer"
       >
         <input {...getInputProps()} />
         {isDragActive ? (

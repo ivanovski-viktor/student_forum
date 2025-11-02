@@ -28,10 +28,10 @@ export default function Home({ children }) {
       </div>
 
       {/* main content */}
-      <div className="col-span-6 p-5">{childArray[0]}</div>
+      <div className="col-span-7 p-5">{childArray[0]}</div>
 
       {/* right sidebar */}
-      <div className="col-span-4 p-5 pl-0">
+      <div className="col-span-3 p-5 pl-0">
         <div className="sticky top-5 min-h-[85svh] gap-5 flex flex-col items-stretch justify-between">
           {childArray[1] && (
             <div className="bg-box rounded-xl p-5 transition-all duration-200 flex h-86 max-h-[50svh]">

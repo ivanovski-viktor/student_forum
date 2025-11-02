@@ -25,7 +25,7 @@ export default function ThemeToggle() {
             onChange={toggleTheme}
           />
           {/* Track */}
-          <div className="block w-10 h-6 rounded-full border-2 border-foreground bg-background transition-colors duration-200"></div>
+          <div className="block w-10 h-6 rounded-full border border-foreground bg-background transition-colors duration-200"></div>
           {/* Knob */}
           <div
             className={`absolute left-1 top-1 w-4 h-4 rounded-full transition-transform duration-200 flex items-center justify-center bg-foreground ${

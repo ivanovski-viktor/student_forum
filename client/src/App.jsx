@@ -3,7 +3,7 @@ import Loader from "./components/layout/Loader.jsx";
 import Home from "./pages/Home.jsx";
 import Register from "./pages/Register.jsx";
 import Login from "./pages/Login.jsx";
-import NavBar from "./components/layout/NavBar.jsx";
+import TopBar from "./components/layout/TopBar.jsx";
 import BlogPost from "./pages/BlogPost.jsx";
 import MyAccount from "./pages/MyAccount.jsx";
 import UserAccount from "./pages/UserAccount.jsx";
@@ -25,7 +25,7 @@ function App() {
   return (
     <>
       <Loader loading={pageLoading} />
-      <NavBar />
+      <TopBar />
       <main>
         <Routes>
           {/* User routes */}

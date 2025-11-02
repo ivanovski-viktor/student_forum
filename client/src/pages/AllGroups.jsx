@@ -34,7 +34,7 @@ export default function AllGroups() {
           </>
         )}
         {!isAuthenticated && (
-          <LogInCta text="Најави се за да објавиш нешто..." />
+          <LogInCta text="Најави се за да креираш група..." />
         )}
         <Groups url={`${apiUrl}/groups`} />
       </div>

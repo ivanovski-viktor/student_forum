@@ -68,7 +68,7 @@
 @layer components {
   /* Buttons */
   .btn {
-    @apply mt-3 py-2 px-6 rounded-full border-2 transition-colors duration-200 ease-in-out cursor-pointer font-medium bg-primary text-white hover:bg-background hover:text-primary border-transparent hover:border-primary;
+    @apply mt-3 py-2 px-6 rounded-full border transition-colors duration-200 ease-in-out cursor-pointer font-medium bg-primary text-white hover:bg-background hover:text-primary border-transparent hover:border-primary;
 
     &.btn--secondary {
       @apply bg-background text-foreground hover:bg-primary-light hover:text-foreground  border-primary-light;
@@ -94,7 +94,7 @@
     @apply absolute right-3 top-1/2 transform -translate-y-1/2 text-foreground-light hover:text-primary-light transition duration-200 ease-in-out cursor-pointer text-lg;
   }
   .input-btn.input-btn--icon {
-    @apply h-8 w-16 border-stroke border-2 text-2xl rounded-md flex items-center justify-center right-1 hover:bg-primary/10 leading-0 hover:border-primary-light;
+    @apply h-8 w-16 border-stroke border text-2xl rounded-md flex items-center justify-center right-1 hover:bg-primary/10 leading-0 hover:border-primary-light;
   }
 
   .vote-btn {
@@ -116,7 +116,7 @@
 
   /* Inputs */
   .input {
-    @apply py-2 px-4 border-2 text-foreground placeholder:text-foreground-light border-foreground-light rounded-full w-full;
+    @apply py-2 px-4 border text-foreground placeholder:text-foreground-light border-foreground-light rounded-full w-full;
   }
   .input.input--secondary {
     @apply rounded-md border-stroke;
@@ -190,7 +190,7 @@
 /* swiper */
 .blog-slider {
   @apply bg-background aspect-video w-full rounded-xl
-    overflow-hidden border-2 border-stroke;
+    overflow-hidden border border-stroke;
   .swiper {
     @apply h-full;
   }

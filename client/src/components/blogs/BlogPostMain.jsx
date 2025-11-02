@@ -57,13 +57,13 @@ export default function BlogPostMain({ post, postUrl }) {
       {errorDelete && <Message type="error" text={errorDelete} />}
       {successDelete && <Message text="Successfully deleted post!" />}
       <h2 className="my-4">{post.title}</h2>
-      <BlogPostMedia media={post?.media} />
       <div
         className="mb-4 mt-6 text-sm"
         dangerouslySetInnerHTML={{
           __html: DOMPurify.sanitize(post.description),
         }}
       />
+      <BlogPostMedia media={post?.media} />
 
       <BlogPostStatsBar post={post} />
     </div>

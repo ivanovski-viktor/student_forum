@@ -65,7 +65,7 @@ export default function BlogPostStatsBar({ post }) {
   }
 
   return (
-    <div className="flex flex-wrap gap-4 gap-y-2 text-sm text-foreground items-center">
+    <div className="flex flex-wrap gap-4 gap-y-2 text-sm text-foreground items-center mt-5">
       <div className="flex items-center gap-1 bg-foreground/10 p-1 rounded-full relative">
         <button
           type="button"

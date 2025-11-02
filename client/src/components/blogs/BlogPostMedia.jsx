@@ -7,9 +7,12 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 export default function BlogPostMedia({ media }) {
+  const audioFiles = media?.filter((file) => file.type.includes("audio"));
+
   return (
     media && (
       <>
+        <h6 className="mb-2">Media attachments:</h6>
         <div className="blog-slider">
           <Swiper
             modules={[Navigation, Pagination]}
@@ -48,13 +51,20 @@ export default function BlogPostMedia({ media }) {
           </Swiper>
         </div>
         <div className="mt-3">
-          {media.map(
-            (file) =>
-              file.type.includes("audio") && (
-                <audio className="w-full" src={file.url} controls={true}>
+          {audioFiles && (
+            <>
+              <h6 className="mb-2">Audio attachments: </h6>
+              {audioFiles.map((file) => (
+                <audio
+                  key={file.url}
+                  className="w-full"
+                  src={file.url}
+                  controls
+                >
                   Your browser does not support the audio element.
                 </audio>
-              )
+              ))}
+            </>
           )}
         </div>
       </>

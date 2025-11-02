@@ -3,7 +3,7 @@ export default function InlineLoader({ small = false }) {
   let innerCircleSize = "w-8 h-8 border-4";
 
   if (small) {
-    circleSize = "w-4 h-4 border-2";
+    circleSize = "w-4 h-4 border";
     innerCircleSize = "w-2.5 h-2.5 border";
   }
 
