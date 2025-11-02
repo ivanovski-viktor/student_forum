@@ -14,9 +14,10 @@ type SearchRequest struct {
 }
 
 type SearchResult struct {
-	Type string `json:"type"`
-	ID   int64  `json:"id,omitempty"`
-	Name string `json:"name"`
+	Type     string `json:"type"`
+	ID       int64  `json:"id,omitempty"`
+	Name     string `json:"name"`
+	ImageUrl string `json:"image_url,omitempty"`
 }
 
 func SearchHandler(c *gin.Context) {
@@ -34,9 +35,8 @@ func SearchHandler(c *gin.Context) {
 	searchTerm := "%" + req.Query + "%"
 	results := []SearchResult{}
 
-	// Helper function to search posts and users (have ID)
-	searchWithID := func(sqlStr, resultType string) {
-		rows, err := db.DB.Query(sqlStr, searchTerm)
+	search := func(query, resultType string, hasID, hasImage bool) {
+		rows, err := db.DB.Query(query, searchTerm)
 		if err != nil && err != sql.ErrNoRows {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -44,42 +44,54 @@ func SearchHandler(c *gin.Context) {
 		defer rows.Close()
 
 		for rows.Next() {
-			var id int64
-			var name string
-			if err := rows.Scan(&id, &name); err == nil {
-				results = append(results, SearchResult{Type: resultType, ID: id, Name: name})
-			}
-		}
-	}
+			var r SearchResult
+			r.Type = resultType
 
-	// Helper function to search groups (no ID)
-	searchGroups := func(sqlStr string) {
-		rows, err := db.DB.Query(sqlStr, searchTerm)
-		if err != nil && err != sql.ErrNoRows {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var name string
-			if err := rows.Scan(&name); err == nil {
-				results = append(results, SearchResult{Type: "group", Name: name})
+			if hasID && hasImage {
+				var id int64
+				var name, img string
+				if err := rows.Scan(&id, &name, &img); err == nil {
+					r.ID = id
+					r.Name = name
+					r.ImageUrl = img
+					results = append(results, r)
+				}
+			} else if hasID && !hasImage {
+				var id int64
+				var name string
+				if err := rows.Scan(&id, &name); err == nil {
+					r.ID = id
+					r.Name = name
+					results = append(results, r)
+				}
+			} else if !hasID && hasImage {
+				var name, img string
+				if err := rows.Scan(&name, &img); err == nil {
+					r.Name = name
+					r.ImageUrl = img
+					results = append(results, r)
+				}
+			} else {
+				var name string
+				if err := rows.Scan(&name); err == nil {
+					r.Name = name
+					results = append(results, r)
+				}
 			}
 		}
 	}
 
 	switch req.Type {
 	case "post":
-		searchWithID(`SELECT id, title FROM posts WHERE title LIKE ?`, "post")
+		search(`SELECT id, title FROM posts WHERE title LIKE ?`, "post", true, false)
 	case "user":
-		searchWithID(`SELECT id, username FROM users WHERE username LIKE ?`, "user")
+		search(`SELECT id, username, COALESCE(profile_image_url,'') FROM users WHERE username LIKE ?`, "user", true, true)
 	case "group":
-		searchGroups(`SELECT name FROM groups WHERE name LIKE ?`)
+		search(`SELECT name, COALESCE(group_image_url,'') FROM groups WHERE name LIKE ?`, "group", false, true)
 	case "", "all":
-		searchWithID(`SELECT id, title FROM posts WHERE title LIKE ?`, "post")
-		searchGroups(`SELECT name FROM groups WHERE name LIKE ?`)
-		searchWithID(`SELECT id, username FROM users WHERE username LIKE ?`, "user")
+		search(`SELECT id, title FROM posts WHERE title LIKE ?`, "post", true, false)
+		search(`SELECT name, COALESCE(group_image_url,'') FROM groups WHERE name LIKE ?`, "group", false, true)
+		search(`SELECT id, username, COALESCE(profile_image_url,'') FROM users WHERE username LIKE ?`, "user", true, true)
 	default:
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid 'type' value"})
 		return
