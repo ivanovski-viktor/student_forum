@@ -12,7 +12,6 @@ export default function BlogPostMedia({ media }) {
   return (
     media && (
       <>
-        <h6 className="mb-2">Media attachments:</h6>
         <div className="blog-slider">
           <Swiper
             modules={[Navigation, Pagination]}
@@ -53,7 +52,10 @@ export default function BlogPostMedia({ media }) {
         <div className="mt-3">
           {audioFiles && (
             <>
-              <h6 className="mb-2">Audio attachments: </h6>
+              {audioFiles.length > 0 && (
+                <h6 className="mb-2">Audio attachments: </h6>
+              )}
+
               {audioFiles.map((file) => (
                 <audio
                   key={file.url}

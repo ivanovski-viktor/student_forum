@@ -1,6 +1,5 @@
-"use client";
-
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Modal from "react-modal";
 import Input from "../ui/Input";
 import RichTextEditor from "../ui/LexEditor";
@@ -11,28 +10,35 @@ import { X } from "lucide-react";
 import MultiFileUploader from "../ui/MultiFileUploader";
 
 Modal.setAppElement("#root");
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function AddBlogPostModal({ isOpen, onClose, url }) {
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
+  const [step, setStep] = useState(1); // Step 1 = post info, Step 2 = media
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [files, setFiles] = useState([]);
+  const [postId, setPostId] = useState(null);
   const [errorMessage, setErrorMessage] = useState({});
+  const [uploading, setUploading] = useState(false);
 
   const {
     exec: createPost,
-    loading,
-    success,
-    error,
+    loading: creating,
+    error: postError,
   } = usePostRequest(url, token);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleInputChange = (setter) => (e) => {
+    setter(e.target.value);
+    setErrorMessage({});
+  };
 
+  const handleSubmitPost = async (e) => {
+    e.preventDefault();
     setErrorMessage({});
 
-    // Frontend validation
     if (!title.trim()) {
       setErrorMessage({ type: "title", text: "Please enter a title" });
       return;
@@ -42,31 +48,68 @@ export default function AddBlogPostModal({ isOpen, onClose, url }) {
       return;
     }
 
-    // Submit post
-    const post = await createPost({ title, description: content });
-    if (post) {
-      // Clear state
-      setTitle("");
-      setContent("");
-      setErrorMessage({});
+    const response = await createPost({ title, description: content });
 
-      setTimeout(() => {
-        // Close modal
-        onClose();
-        window.location.reload();
-      }, 1500);
+    if (response?.post?.id) {
+      setPostId(response.post.id);
+      setStep(2); // Move to media step
     }
   };
 
-  const handleInputChange = (setter) => (e) => {
-    setter(e.target.value);
-    setErrorMessage({}); // Clear error when typing
+  const handleSubmitMedia = async (e) => {
+    e.preventDefault();
+    if (!postId) return;
+
+    if (files.length > 0) {
+      const formData = new FormData();
+      files.forEach((file) => formData.append("post_media", file));
+
+      setUploading(true);
+
+      try {
+        const res = await fetch(`${apiUrl}/posts/${postId}/media`, {
+          method: "POST",
+          headers: {
+            Authorization: token,
+          },
+          body: formData,
+        });
+
+        if (!res.ok) {
+          console.error("Media upload failed", res.statusText);
+          return;
+        }
+      } catch (err) {
+        console.error("Media upload error", err);
+        return;
+      } finally {
+        setUploading(false);
+      }
+    }
+
+    handleClose(); // refresh page after step 2
+  };
+
+  const handleClose = () => {
+    const wasStep2 = step === 2;
+
+    setStep(1);
+    setTitle("");
+    setContent("");
+    setFiles([]);
+    setPostId(null);
+    setErrorMessage({});
+    onClose();
+
+    if (wasStep2) {
+      window.location.reload();
+    }
   };
 
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
       shouldCloseOnOverlayClick={true}
       overlayClassName={{
         base: "fixed inset-0 bg-transparent z-50 flex justify-center items-start overflow-y-auto transition-colors duration-300 px-6",
@@ -74,55 +117,76 @@ export default function AddBlogPostModal({ isOpen, onClose, url }) {
       }}
       className="relative w-full max-w-lg mx-auto my-20 bg-background rounded-xl border border-stroke shadow-2xl outline-none z-50"
     >
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5 p-6 sm:p-10">
-        <div className="flex justify-between items-center mb-4">
-          <h2>Креирај објава</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-foreground-light hover:text-foreground text-xl font-bold transition-colors duration-200 ease-in-out"
-          >
-            <X />
-          </button>
-        </div>
+      {step === 1 && (
+        <form
+          onSubmit={handleSubmitPost}
+          className="flex flex-col gap-5 p-6 sm:p-10"
+        >
+          <div className="flex justify-between items-center mb-4">
+            <h2>Креирај објава</h2>
+            <button
+              type="button"
+              onClick={handleClose}
+              className="text-foreground-light hover:text-foreground text-xl font-bold transition-colors duration-200 ease-in-out"
+            >
+              <X />
+            </button>
+          </div>
 
-        {/* Title */}
-        <div>
           <Input
             id="blog-title-input"
             type="text"
             value={title}
             placeholder="Наслов на објавата..."
             className="input input--secondary outline-0"
-            required={false}
             onChange={handleInputChange(setTitle)}
           />
           {errorMessage.type === "title" && (
-            <Message simple={true} type="error" text={errorMessage.text} />
+            <Message simple type="error" text={errorMessage.text} />
           )}
-        </div>
 
-        {/* Content */}
-        <div>
           <RichTextEditor setContent={setContent} />
           {errorMessage.type === "content" && (
-            <Message simple={true} type="error" text={errorMessage.text} />
+            <Message simple type="error" text={errorMessage.text} />
           )}
-        </div>
 
-        <MultiFileUploader files={files} setFiles={setFiles} />
-
-        {!success && (
           <Button
             buttonType="form"
-            text={loading ? "Објавува..." : "Објави"}
-            disabled={loading}
+            text={creating ? "Објавува..." : "Следно"}
+            disabled={creating}
           />
-        )}
 
-        {success && <Message text="Post submitted successfully!" />}
-        {error && <Message type="error" text={error} />}
-      </form>
+          {postError && <Message type="error" text={postError} />}
+        </form>
+      )}
+
+      {step === 2 && (
+        <form
+          onSubmit={handleSubmitMedia}
+          className="flex flex-col gap-5 p-6 sm:p-10"
+        >
+          <div className="flex justify-between items-center mb-4">
+            <h2>Додади медија (опционално)</h2>
+            <button
+              type="button"
+              onClick={handleClose}
+              className="text-foreground-light hover:text-foreground text-xl font-bold transition-colors duration-200 ease-in-out"
+            >
+              <X />
+            </button>
+          </div>
+
+          <MultiFileUploader files={files} setFiles={setFiles} />
+
+          <div className="flex justify-end gap-2">
+            <Button
+              buttonType="form"
+              text={uploading ? "Се прикачува..." : "Заврши"}
+              disabled={uploading}
+            />
+          </div>
+        </form>
+      )}
     </Modal>
   );
 }

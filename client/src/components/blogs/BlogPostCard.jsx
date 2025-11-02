@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import CreatedAt from "../ui/CreatedAt";
 import BlogPostStatsBar from "./BlogPostStatsBar";
 import { Users } from "lucide-react";
+import BlogPostMedia from "./BlogPostMedia";
 
 function filterText(html, maxLength = 300) {
   if (!html) return "";
@@ -51,6 +52,7 @@ export default function BlogPostCard({ post }) {
         </Link>
 
         <p className="mb-4 text-foreground-light">{truncatedText}</p>
+        <BlogPostMedia media={post?.media} />
 
         <BlogPostStatsBar post={post} />
       </div>
