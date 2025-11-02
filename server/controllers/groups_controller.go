@@ -48,7 +48,7 @@ func CreateGroup(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Group created successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Group created successfully", "group": group})
 }
 
 func GetAllGroups(c *gin.Context) {

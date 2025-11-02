@@ -30,7 +30,7 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Created post!"})
+	c.JSON(http.StatusOK, gin.H{"message": "Created post!", "post": post})
 }
 
 func GetAllPosts(c *gin.Context) {
