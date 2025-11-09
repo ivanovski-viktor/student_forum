@@ -52,7 +52,7 @@ export default function BlogPostCard({ post }) {
         </Link>
 
         <p className="mb-4 text-foreground-light">{truncatedText}</p>
-        <BlogPostMedia media={post?.media} />
+        <BlogPostMedia media={post.media} />
 
         <BlogPostStatsBar post={post} />
       </div>

@@ -6,7 +6,6 @@ export default function LinkUnderline({
   bgClass = "bg-secondary",
   ...rest
 }) {
-  const color = colorClass || "secondary";
   return (
     <Link
       className={`${colorClass} group inline-flex items-center justify-center relative`}

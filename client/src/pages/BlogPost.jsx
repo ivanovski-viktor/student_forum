@@ -56,7 +56,7 @@ export default function BlogPost() {
 
   return (
     <MainLayout>
-      <div>
+      <>
         <BlogPostMain postUrl={postUrl} post={post} />
 
         <div className="text-sm space-y-3">
@@ -76,7 +76,7 @@ export default function BlogPost() {
                 />
               ))}
         </div>
-      </div>
+      </>
     </MainLayout>
   );
 }

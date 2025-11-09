@@ -70,7 +70,7 @@ export default function BlogPostStatsBar({ post }) {
         <button
           type="button"
           onClick={() => handlePostVote(1)}
-          className={`vote-btn ${activeVote === 1 && "active"}`}
+          className={`vote-btn ${activeVote === 1 ? "active" : ""}`}
         >
           <div className="shrink-0">
             <ArrowUp size={12} />
@@ -84,7 +84,7 @@ export default function BlogPostStatsBar({ post }) {
         <button
           type="button"
           onClick={() => handlePostVote(-1)}
-          className={`vote-btn ${activeVote === -1 && "active"}`}
+          className={`vote-btn ${activeVote === -1 ? "active" : ""}`}
         >
           <div className="shrink-0">
             <ArrowDown size={12} />

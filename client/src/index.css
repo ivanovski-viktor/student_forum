@@ -189,7 +189,7 @@
 }
 /* swiper */
 .blog-slider {
-  @apply bg-background aspect-video w-full rounded-xl
+  @apply bg-background aspect-video min-h-64 w-full rounded-xl
     overflow-hidden border border-stroke;
   .swiper {
     @apply h-full;

@@ -22,13 +22,21 @@ export default function BlogPosts({ group, url, groupMember }) {
 
   // Append new posts when data changes
   useEffect(() => {
-    if (!data) return;
     if (data?.posts) {
-      setPosts((prev) => [...prev, ...data.posts]);
+      setPosts((prev) => {
+        const newPosts = data.posts.filter(
+          (p) => !prev.some((existing) => existing.id === p.id)
+        );
+        return [...prev, ...newPosts];
+      });
+
       if (data.total_pages) setTotalPages(data.total_pages);
     }
-    setPageLoading(false);
-  }, [data]);
+  }, [data?.posts, data?.total_pages]);
+
+  useEffect(() => {
+    if (!loading) setPageLoading(false);
+  }, [loading]);
 
   // Infinite scroll
   useEffect(() => {
@@ -52,10 +60,10 @@ export default function BlogPosts({ group, url, groupMember }) {
       {isAuthenticated && (
         <>
           <div className="flex items-center justify-between my-5">
-            {groupMember ? (
+            {groupMember || location.pathname === "/" ? (
               <h2 className="h3">Објави во {group}</h2>
             ) : (
-              <h2 className="h3">Придружи се за да коментираш во {group}</h2>
+              <h2 className="h3">Придружи се за да објавиш во {group}</h2>
             )}
 
             {(groupMember || location.pathname === "/") && (

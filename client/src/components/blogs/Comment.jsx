@@ -11,6 +11,7 @@ import Message from "../ui/Message";
 import CommentContent from "./CommentContent";
 import { useDeleteRequest } from "../../hooks/useDeleteRequest";
 import { useUpdateRequest } from "../../hooks/useUpdateRequest";
+import User from "../users/User";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -117,19 +118,12 @@ export default function Comment({ comment, refetchPostData }) {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1">
-          <Link
-            to={`/users/${user_id}`}
-            className="transition-colors duration-200 ease-in-out hover:text-primary flex items-center gap-2"
-          >
-            <img
-              className="profile-img"
-              src={profile_image_url || userPlaceholder}
-              width={30}
-              height={30}
-              alt="profile"
-            />
-            <h6>{username}</h6>
-          </Link>
+          <User
+            username={username}
+            userId={user_id}
+            profileImage={profile_image_url || userPlaceholder}
+          />
+
           <CreatedAt time={commentObj.created_at} />
         </div>
 

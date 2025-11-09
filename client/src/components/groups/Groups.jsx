@@ -60,7 +60,7 @@ export default function Groups({ url }) {
                 />
               )}
 
-              <h5 className={location.pathname !== "/groups" && "h6"}>
+              <h5 className={location.pathname !== "/groups" ? "h6" : ""}>
                 g/{group.name}
               </h5>
             </Link>

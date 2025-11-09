@@ -24,7 +24,7 @@ export default function BlogPostMedia({ media }) {
             {media.map((file, index) => {
               if (file.type.includes("video")) {
                 return (
-                  <SwiperSlide key={index}>
+                  <SwiperSlide key={file.url} src={file.url}>
                     <video
                       className="blog-slider__media"
                       src={file.url}
@@ -36,7 +36,7 @@ export default function BlogPostMedia({ media }) {
                 );
               } else if (file.type.includes("image")) {
                 return (
-                  <SwiperSlide key={index}>
+                  <SwiperSlide key={file.url}>
                     <img
                       className="blog-slider__media"
                       src={file.url}

@@ -27,7 +27,7 @@ export default function CommentContent({
       <input
         onChange={(e) => setContentData(() => e.target.value)}
         className={`mt-1 text-sm w-full p-1 ${
-          editComment && "input input--secondary"
+          editComment ? "input input--secondary" : ""
         }`}
         disabled={!editComment}
         value={contentData}

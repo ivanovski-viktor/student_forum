@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useUpdateRequest } from "../../hooks/useUpdateRequest";
 import CommentContent from "./CommentContent";
 import InlineLoader from "../layout/InlineLoader";
+import User from "../users/User";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 const token = localStorage.getItem("token");
@@ -67,19 +68,11 @@ export default function Reply({ reply, refetchReplies }) {
       {errorDelete && <Message type="error" text={errorDelete} />}
       <div className=" flex items-center justify-between">
         <div className="flex items-center gap-1">
-          <Link
-            className="transition-colors duration-200 ease-in-out hover:text-primary flex items-center gap-2"
-            to={`/users/${user_id}`}
-          >
-            <img
-              className="profile-img"
-              src={profile_image_url || userPlaceholder}
-              height={30}
-              width={30}
-              alt="profile"
-            />
-            <h6>{username}</h6>
-          </Link>
+          <User
+            username={username}
+            userId={user_id}
+            profileImage={profile_image_url || userPlaceholder}
+          />
           <CreatedAt time={reply.created_at} />
         </div>
         <ModifyButtons
