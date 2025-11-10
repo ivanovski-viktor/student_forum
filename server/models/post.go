@@ -199,7 +199,7 @@ func GetPostsByGroupName(groupName string, limit, offset int) ([]Post, error) {
 	query := `
 	SELECT 
 		p.id, p.title, p.description, p.created_at, p.updated_at,
-		p.user_id, p.group_name,
+		p.user_id, p.group_name, p.media,
 		COUNT(DISTINCT CASE WHEN v.vote_type = 1 THEN v.user_id END) AS upvotes,
 		COUNT(DISTINCT CASE WHEN v.vote_type = -1 THEN v.user_id END) AS downvotes,
 		COUNT(DISTINCT CASE WHEN c.parent_id IS NULL THEN c.id END) AS comment_count
@@ -219,15 +219,28 @@ func GetPostsByGroupName(groupName string, limit, offset int) ([]Post, error) {
 	defer rows.Close()
 
 	var posts []Post
+	var media sql.NullString
+
 	for rows.Next() {
 		var p Post
 		err := rows.Scan(
 			&p.ID, &p.Title, &p.Description, &p.CreatedAt, &p.UpdatedAt,
-			&p.UserID, &p.GroupName, &p.Upvotes, &p.Downvotes, &p.CommentCount,
+			&p.UserID, &p.GroupName, &media,
+			&p.Upvotes, &p.Downvotes, &p.CommentCount,
 		)
 		if err != nil {
 			return nil, err
 		}
+
+		if media.Valid && media.String != "" {
+			err = json.Unmarshal([]byte(media.String), &p.Media)
+			if err != nil {
+				return nil, fmt.Errorf("failed to unmarshal media for post %d: %w", p.ID, err)
+			}
+		} else {
+			p.Media = []Media{}
+		}
+
 		posts = append(posts, p)
 	}
 
