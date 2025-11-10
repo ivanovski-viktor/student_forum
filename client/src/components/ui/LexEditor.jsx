@@ -1,4 +1,3 @@
-"use client";
 import {
   createEditorSystem,
   boldExtension,
@@ -105,19 +104,37 @@ function Toolbar() {
   );
 } // Editor Component
 function Editor({ setContent }) {
+  const initialText = "<p>Hello world</p>";
   useEffect(() => {
     const editor = document.querySelector(".js-rte");
-    if (!editor) return; // Create a MutationObserver to watch for DOM changes
+    if (!editor) return;
+
+    // Set initial text if not empty
+    if (initialText) {
+      editor.innerHTML = initialText;
+    }
+
+    let hasUserTyped = false;
+
     const observer = new MutationObserver(() => {
-      setContent(() => editor.innerHTML);
+      const text = editor.innerHTML;
+
+      // If user hasn't typed yet, ignore mutations from initial render
+      if (!hasUserTyped && text === initialText) return;
+
+      hasUserTyped = true;
+      setContent(text);
     });
+
     observer.observe(editor, {
       childList: true,
       characterData: true,
       subtree: true,
     });
+
     return () => observer.disconnect();
-  }, []);
+  }, [initialText, setContent]);
+
   return (
     <div className="w-full border border-stroke rounded-md shadow-sm overflow-hidden">
       <Toolbar />

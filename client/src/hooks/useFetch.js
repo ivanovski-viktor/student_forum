@@ -1,4 +1,3 @@
-// useFetch.js
 import { useState, useEffect, useCallback } from "react";
 import { usePageLoading } from "../context/PageLoadingContext";
 

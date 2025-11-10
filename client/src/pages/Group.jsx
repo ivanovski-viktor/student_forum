@@ -1,16 +1,10 @@
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useParams,
-  useRevalidator,
-} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useFetch } from "../hooks/useFetch";
 import InlineLoader from "../components/layout/InlineLoader";
 import MainLayout from "../components/layout/MainLayout";
 import BlogPosts from "../components/blogs/BlogPosts";
 import NotFound from "./NotFound";
-import { Image, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import Button from "../components/ui/Button";
 import { useAuthUser } from "../context/AuthUserContext";
 import GroupUsers from "../components/groups/GroupUsers";
@@ -18,7 +12,7 @@ import Banner from "../components/ui/Banner";
 import { usePostRequest } from "../hooks/usePostRequest";
 import { useState } from "react";
 import { useDeleteRequest } from "../hooks/useDeleteRequest";
-import { usePageLoading } from "../context/PageLoadingContext";
+import ModifyButtons from "../components/ui/ModifyButtons";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 export default function Group() {
@@ -63,7 +57,7 @@ export default function Group() {
     <MainLayout key={refreshKey}>
       <>
         <Banner img_url={group.group_cover_url} text={group.description} />
-        <div className="pt-5 pl-6 relative flex items-center gap-4 justify-between">
+        <div className="pt-5 px-2 md:pl-6  relative flex items-center gap-4 justify-between flex-wrap-reverse">
           <div className="relative flex items-center gap-4">
             {group.group_image_url ? (
               <img
@@ -77,6 +71,7 @@ export default function Group() {
               <Users size={50} className="group-img group-img--large" />
             )}
             <h5>g/{group.name}</h5>
+            <ModifyButtons token={token} userId={group?.creator_id} />
           </div>
           {isAuthenticated && !isCreator ? (
             groupMember ? (
@@ -98,7 +93,6 @@ export default function Group() {
             <Button link="/login" text="Придружи се" />
           ) : null}
         </div>
-
         <BlogPosts
           group="групата"
           url={`${groupUrl}/posts`}
@@ -109,6 +103,7 @@ export default function Group() {
         url={`${groupUrl}/users`}
         authUser={authUser}
         setGroupMember={setGroupMember}
+        creatorId={group?.creator_id}
       />
     </MainLayout>
   );

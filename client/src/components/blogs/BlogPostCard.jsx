@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import CreatedAt from "../ui/CreatedAt";
 import BlogPostStatsBar from "./BlogPostStatsBar";
 import { Users } from "lucide-react";
-import BlogPostMedia from "./BlogPostMedia";
+import { usePageLoading } from "../../context/PageLoadingContext";
 
 function filterText(html, maxLength = 300) {
   if (!html) return "";
@@ -18,14 +18,16 @@ function filterText(html, maxLength = 300) {
 }
 
 export default function BlogPostCard({ post }) {
+  const { setPageLoading } = usePageLoading();
   const truncatedText = filterText(post.description, 200);
 
   return (
     <li>
-      <div className="bg-box border border-stroke rounded-xl p-5 hover:bg-box hover:shadow-sm transition-all duration-200 flex flex-col items-start relative">
+      <div className="bg-box/50 border border-stroke rounded-xl p-3 xl:p-5 transition-all duration-200 flex flex-col items-start relative hover:bg-box">
         <Link
           className="absolute top-0 left-0 w-full h-full z-0"
           to={`/posts/${post.id}`}
+          onClick={() => setPageLoading(true)}
         ></Link>
         <div className="flex items-center gap-2">
           {!post.group_name ? (
@@ -36,7 +38,8 @@ export default function BlogPostCard({ post }) {
           ) : (
             <Link
               to={`/groups/${post.group_name}`}
-              className="text-sm text-primary hover:underline mb-1 inline-flex gap-1 items-center relative z-10"
+              onClick={() => setPageLoading(true)}
+              className="text-sm text-foreground hover:text-primary transition-colors duration-200 ease-in-out mb-1 inline-flex gap-1 items-center relative z-10"
             >
               <Users size={20} />
               <span>/{post.group_name}</span>
@@ -45,14 +48,16 @@ export default function BlogPostCard({ post }) {
           <CreatedAt time={post.created_at} />
         </div>
 
-        <Link to={`/posts/${post.id}`}>
+        <Link to={`/posts/${post.id}`} onClick={() => setPageLoading(true)}>
           <h3 className="hover:text-primary transition-colors duration-200 ease-in-out mb-3 mt-3 relative z-10">
             {post.title}
           </h3>
         </Link>
 
-        <p className="mb-4 text-foreground-light">{truncatedText}</p>
-        <BlogPostMedia media={post.media} />
+        <p className="mb-4 text-foreground-light !max-w-full break-all">
+          {truncatedText}
+        </p>
+        {/* <BlogPostMedia media={post.media} /> */}
 
         <BlogPostStatsBar post={post} />
       </div>

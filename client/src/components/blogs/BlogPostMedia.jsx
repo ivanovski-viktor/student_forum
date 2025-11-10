@@ -26,7 +26,7 @@ export default function BlogPostMedia({ media }) {
                 return (
                   <SwiperSlide key={file.url} src={file.url}>
                     <video
-                      className="blog-slider__media"
+                      className="blog-slider__media bg-black"
                       src={file.url}
                       controls={true}
                     >

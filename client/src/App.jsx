@@ -13,6 +13,7 @@ import NotFound from "./pages/NotFound.jsx";
 import { useEffect, useState } from "react";
 import AllGroups from "./pages/AllGroups.jsx";
 import { usePageLoading } from "./context/PageLoadingContext.jsx";
+import LatestPosts from "./pages/LatestPosts.jsx";
 
 function App() {
   const { pageLoading, setPageLoading } = usePageLoading();
@@ -39,6 +40,7 @@ function App() {
             element={<ChangePassword />}
           />
           {/* Posts */}
+          <Route path="/posts" element={<LatestPosts />} />
           <Route path="/posts/:id" element={<BlogPost />} />
           {/* Groups */}
           <Route path="/groups" element={<AllGroups />} />

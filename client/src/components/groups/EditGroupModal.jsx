@@ -1,38 +1,52 @@
+"use client";
+
 import { useState } from "react";
 import Modal from "react-modal";
 import Input from "../ui/Input";
 import Message from "../ui/Message";
 import Button from "../ui/Button";
 import { X } from "lucide-react";
-import { usePostRequest } from "../../hooks/usePostRequest";
+import { useFetch } from "../../hooks/useFetch";
 import ImageUploader from "../ui/ImageUploader";
 
 Modal.setAppElement("#root");
 const apiUrl = import.meta.env.VITE_API_URL;
 
-export default function AddGroupModal({ isOpen, onClose, url }) {
+export default function EditGroupModal({ isOpen, onClose, url, groupData }) {
   const token = localStorage.getItem("token");
 
   // Step state
-  const [step, setStep] = useState(1); // 1 = info, 2 = upload images
+  const [step, setStep] = useState(1);
 
   // Step 1
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState(groupData?.name || "");
+  const [description, setDescription] = useState(groupData?.description || "");
   const [errorMessage, setErrorMessage] = useState({});
 
   // Step 2
-  const [groupName, setGroupName] = useState(null);
+  const [groupName, setGroupName] = useState(groupData?.name || null);
   const [image, setImage] = useState(null);
   const [cover, setCover] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-  // Create group
+  // PUT request (edit group)
   const {
-    exec: createGroup,
-    loading: creating,
-    error: createError,
-  } = usePostRequest(url, token);
+    data: editResponse,
+    loading: editing,
+    error: editError,
+    refetch: updateGroup,
+  } = useFetch(
+    null,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+      body: JSON.stringify({}),
+    },
+    false
+  );
 
   const handleInputChange = (setter) => (e) => {
     setter(e.target.value);
@@ -55,13 +69,24 @@ export default function AddGroupModal({ isOpen, onClose, url }) {
       return;
     }
 
-    const groupData = { name, description };
-    const response = await createGroup(groupData);
+    // build updated data
+    const updatedData = { name, description };
 
-    if (response?.group?.name) {
-      setGroupName(response.group.name);
-      setStep(2); // move to image upload
-    }
+    // run PUT
+    await updateGroup(
+      fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify(updatedData),
+      })
+    );
+
+    // manually update state for next step
+    setGroupName(name);
+    setStep(2);
   };
 
   const handleSubmitImages = async (e) => {
@@ -101,10 +126,10 @@ export default function AddGroupModal({ isOpen, onClose, url }) {
 
   const handleClose = (refresh = false) => {
     setStep(1);
-    setName("");
-    setDescription("");
+    setName(groupData?.name || "");
+    setDescription(groupData?.description || "");
     setErrorMessage({});
-    setGroupName(null);
+    setGroupName(groupData?.name || null);
     setImage(null);
     setCover(null);
     setUploading(false);
@@ -129,7 +154,7 @@ export default function AddGroupModal({ isOpen, onClose, url }) {
           className="flex flex-col gap-5 p-6 sm:p-10"
         >
           <div className="flex justify-between items-center mb-4">
-            <h2>Креирај група</h2>
+            <h2>Уреди група</h2>
             <button
               type="button"
               onClick={() => handleClose()}
@@ -164,11 +189,11 @@ export default function AddGroupModal({ isOpen, onClose, url }) {
 
           <Button
             buttonType="form"
-            text={creating ? "Креирање..." : "Креирај група"}
-            disabled={creating}
+            text={editing ? "Се уредува..." : "Зачувај промени"}
+            disabled={editing}
           />
 
-          {createError && <Message type="error" text={createError} />}
+          {editError && <Message type="error" text={editError} />}
         </form>
       )}
 
@@ -178,7 +203,7 @@ export default function AddGroupModal({ isOpen, onClose, url }) {
           className="flex flex-col gap-5 p-6 sm:p-10"
         >
           <div className="flex justify-between items-center mb-4">
-            <h2>Додади слики(опционално)</h2>
+            <h2>Промени слики (опционално)</h2>
             <button
               type="button"
               onClick={() => handleClose(true)}
@@ -189,14 +214,8 @@ export default function AddGroupModal({ isOpen, onClose, url }) {
           </div>
 
           <div className="grid grid-cols-2 gap-5">
-            <div>
-              <h6 className="mb-2">Профилна:</h6>
-              <ImageUploader file={image} setFile={setImage} />
-            </div>
-            <div>
-              <h6 className="mb-2">Насловна:</h6>
-              <ImageUploader file={cover} setFile={setCover} />
-            </div>
+            <ImageUploader file={image} setFile={setImage} />
+            <ImageUploader file={cover} setFile={setCover} />
           </div>
 
           <div className="flex justify-end gap-2">

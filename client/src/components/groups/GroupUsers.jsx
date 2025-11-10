@@ -1,11 +1,18 @@
 import { Link, useLocation } from "react-router-dom";
 import { useFetch } from "../../hooks/useFetch";
 import InlineLoader from "../layout/InlineLoader";
-import { User, Users } from "lucide-react";
+import { Crown, User, Users } from "lucide-react";
 import LinkUnderline from "../ui/LinkUnderline";
 import { useEffect } from "react";
+import { usePageLoading } from "../../context/PageLoadingContext";
 
-export default function GroupUsers({ url, authUser, setGroupMember }) {
+export default function GroupUsers({
+  url,
+  authUser,
+  setGroupMember,
+  creatorId,
+}) {
+  const { setPageLoading } = usePageLoading();
   const location = useLocation();
   const { data: data, loading, error } = useFetch(url);
 
@@ -31,7 +38,8 @@ export default function GroupUsers({ url, authUser, setGroupMember }) {
           <li key={user.user_id}>
             <Link
               to={`/users/${user.user_id}`}
-              className={`hover:text-primary transition duration-200 ease-in-out flex items-center gap-2 p-1.5 bg-box border-stroke border rounded-full hover:shadow-sm`}
+              onClick={() => setPageLoading(true)}
+              className={`transition duration-200 ease-in-out flex items-center gap-2 p-1.5 bg-box border border-transparent rounded-full hover:border-stroke`}
             >
               {user.profile_image_url ? (
                 <img
@@ -46,6 +54,9 @@ export default function GroupUsers({ url, authUser, setGroupMember }) {
               )}
 
               <h5>u/{user.username}</h5>
+              {creatorId === user.user_id && (
+                <Crown className="ml-auto mr-2 text-primary-light" size={15} />
+              )}
             </Link>
           </li>
         ))}

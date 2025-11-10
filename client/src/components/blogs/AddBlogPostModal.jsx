@@ -112,10 +112,10 @@ export default function AddBlogPostModal({ isOpen, onClose, url }) {
       onRequestClose={handleClose}
       shouldCloseOnOverlayClick={true}
       overlayClassName={{
-        base: "fixed inset-0 bg-transparent z-50 flex justify-center items-start overflow-y-auto transition-colors duration-300 px-6",
-        afterOpen: "!bg-foreground/50",
+        base: "fixed inset-0 bg-transparent z-[99] flex justify-center items-start overflow-y-auto transition-all duration-300 px-6",
+        afterOpen: "!bg-background/80",
       }}
-      className="relative w-full max-w-lg mx-auto my-20 bg-background rounded-xl border border-stroke shadow-2xl outline-none z-50"
+      className="relative w-full max-w-lg mx-auto my-20 lg:my-36 bg-background rounded-xl border border-stroke shadow-2xl outline-none z-50"
     >
       {step === 1 && (
         <form

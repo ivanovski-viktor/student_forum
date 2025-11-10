@@ -10,8 +10,8 @@
   --color-background: #ffffff;
   --color-foreground: #0f0f0f;
   --color-foreground-light: #575757;
-  --color-box: rgba(0, 0, 0, 0.02);
-  --color-stroke: #e5e7eb;
+  --color-box: rgba(0, 0, 0, 0.045);
+  --color-stroke: #ded9d9;
   --color-error: #dc2626;
   --color-success: #00a63e;
 }
@@ -20,8 +20,8 @@
   --color-background: #0f0f0f;
   --color-foreground: #f8f8f8;
   --color-foreground-light: #c0c0c0;
-  --color-box: rgba(255, 255, 255, 0.05);
-  --color-stroke: #333;
+  --color-box: rgba(178, 178, 178, 0.1);
+  --color-stroke: #778c773f;
 }
 /* ==========================  BASE STYLES  ========================== */
 @layer base {
@@ -76,6 +76,9 @@
       &.disabled {
         @apply border-stroke hover:bg-background;
       }
+    }
+    &.btn--small {
+      @apply py-1.5 px-4 text-sm;
     }
   }
 
@@ -234,4 +237,36 @@
       @apply !bg-white;
     }
   }
+}
+
+/* ==========================  SCROLLBAR  ========================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-box);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-foreground-light);
+  border-radius: 4px;
+  border: 2px solid var(--color-box);
+  transition: background-color 0.2s ease-in-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-primary);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-foreground-light) var(--color-box);
 }

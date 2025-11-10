@@ -11,10 +11,12 @@ export default function BlogAuthor({ authorId }) {
   return loading ? (
     <InlineLoader small={true} />
   ) : (
-    <User
-      username={data.user.username}
-      userId={data.user.id}
-      profileImage={data.user.profile_image_url || userPlaceholder}
-    />
+    <div className="mt-2 w-max max-w-full">
+      <User
+        username={data.user.username}
+        userId={data.user.id}
+        profileImage={data.user.profile_image_url || userPlaceholder}
+      />
+    </div>
   );
 }

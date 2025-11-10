@@ -62,7 +62,7 @@ export default function MultiFileUploader({ files, setFiles }) {
 
     if (file.type.startsWith("video/")) {
       return (
-        <div className="flex items-center justify-center h-20 w-full bg-gray-100 rounded">
+        <div className="flex items-center justify-center h-20 w-full bg-foreground/10 rounded">
           <Video size={24} />
         </div>
       );
@@ -70,14 +70,14 @@ export default function MultiFileUploader({ files, setFiles }) {
 
     if (file.type.startsWith("audio/")) {
       return (
-        <div className="flex items-center justify-center h-20 w-full bg-gray-100 rounded">
+        <div className="flex items-center justify-center h-20 w-full bg-foreground/10 rounded">
           <Music size={24} />
         </div>
       );
     }
 
     return (
-      <div className="h-20 w-full bg-gray-100 rounded flex items-center justify-center">
+      <div className="h-20 w-full bg-foreground/10 rounded flex items-center justify-center">
         FILE
       </div>
     );
@@ -87,7 +87,7 @@ export default function MultiFileUploader({ files, setFiles }) {
     <div className="file-uploader">
       <div
         {...getRootProps()}
-        className="p-5 border-stroke border border-dashed rounded-md cursor-pointer"
+        className="p-5 py-12 border-stroke  text-foreground-light  border-dashed border-2 rounded-md cursor-pointer"
       >
         <input {...getInputProps()} />
         {isDragActive ? (

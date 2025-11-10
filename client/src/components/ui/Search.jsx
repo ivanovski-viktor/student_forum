@@ -3,10 +3,12 @@ import { useFetch } from "../../hooks/useFetch";
 import { FileText, SearchIcon, User, Users, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import InlineLoader from "../layout/InlineLoader";
+import { usePageLoading } from "../../context/PageLoadingContext";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Search() {
+  const { setPageLoading } = usePageLoading();
   const [searchBody, setSearchBody] = useState({ type: "", query: "" });
   const [searchResults, setSearchResults] = useState([]);
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -58,11 +60,11 @@ export default function Search() {
   };
 
   return (
-    <div className="relative z-50 w-96 max-w-full">
+    <div className="relative z-50 w-96 max-w-4/5">
       <input
         name="search-field"
         value={searchBody.query}
-        className="input bg-background border-primary py-2.5 hover:border-foreground pr-20 relative z-50 pl-10 transition-colors duration-200 ease-in-out"
+        className="input bg-background border-stroke text-foreground-light placeholder:text-foreground-light py-2.5  pr-20 relative z-50 pl-10 transition-colors duration-200 ease-in-out"
         placeholder="Пребарај..."
         onChange={handleChangeQuery}
       />
@@ -126,6 +128,7 @@ export default function Search() {
                   <Link
                     to={getLink(res)}
                     key={`${res.type}-${res.id}-${res.name}`}
+                    onClick={() => setPageLoading(true)}
                     className="flex items-center gap-3 p-2 cursor-pointer transition border-b border-stroke last:border-0 last:pb-0 group"
                   >
                     {res.image_url ? (

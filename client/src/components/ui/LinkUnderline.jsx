@@ -8,11 +8,11 @@ export default function LinkUnderline({
 }) {
   return (
     <Link
-      className={`${colorClass} group inline-flex items-center justify-center relative`}
+      className={`${colorClass} group inline-flex items-center justify-center relative  shrink-0`}
       to={link}
       {...rest}
     >
-      <span className="relative inline-block">
+      <span className="relative inline-block ">
         {text}
         <span
           className={`${bgClass} absolute left-0 bottom-0 h-[1px] w-0 group-hover:w-full transition-all ease-in-out duration-200`}

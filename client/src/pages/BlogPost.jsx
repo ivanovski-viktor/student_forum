@@ -13,8 +13,6 @@ import { useEffect } from "react";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-// TODO Make api return user data with username user image also
-
 export default function BlogPost() {
   const { setPageLoading } = usePageLoading();
   const { id } = useParams();

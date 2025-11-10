@@ -8,7 +8,12 @@ import { useAuthUser } from "../../context/AuthUserContext";
 import { useLocation } from "react-router-dom";
 import { usePageLoading } from "../../context/PageLoadingContext";
 
-export default function BlogPosts({ group, url, groupMember }) {
+export default function BlogPosts({
+  group,
+  url,
+  groupMember,
+  enableAddPost = true,
+}) {
   const { pageLoading, setPageLoading } = usePageLoading();
   const { authUser, isAuthenticated, checkAuth } = useAuthUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,7 +62,7 @@ export default function BlogPosts({ group, url, groupMember }) {
   if (error) return <p>Error: {error}</p>;
   return (
     <div>
-      {isAuthenticated && (
+      {isAuthenticated && enableAddPost === true && (
         <>
           <div className="flex items-center justify-between my-5">
             {groupMember || location.pathname === "/" ? (
@@ -69,7 +74,7 @@ export default function BlogPosts({ group, url, groupMember }) {
             {(groupMember || location.pathname === "/") && (
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="btn btn--primary inline-flex items-center gap-1 m-0"
+                className="btn btn--small inline-flex items-center gap-1 m-0"
               >
                 Објави
               </button>
@@ -86,9 +91,11 @@ export default function BlogPosts({ group, url, groupMember }) {
         </>
       )}
 
-      {!isAuthenticated && <LogInCta text="Најави се за да објавиш нешто..." />}
+      {!isAuthenticated && enableAddPost === true && (
+        <LogInCta text="Најави се за да објавиш нешто..." />
+      )}
 
-      <ul className="space-y-4">
+      <ul className="space-y-4 my-4">
         {posts.map((post) => (
           <BlogPostCard key={post.id} post={post} />
         ))}
