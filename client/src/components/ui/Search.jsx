@@ -155,7 +155,9 @@ export default function Search() {
                 );
               })
             ) : (
-              <p className="text-sm text-muted-foreground">No results found.</p>
+              <p className="text-sm text-muted-foreground">
+                Нема резултати од пребарувањето.
+              </p>
             )}
           </div>
         </div>
