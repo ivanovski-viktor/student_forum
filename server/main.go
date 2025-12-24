@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	"github.com/ivanovski-viktor/student_forum/server/config"
-	_ "github.com/ivanovski-viktor/student_forum/server/config"
 	"github.com/ivanovski-viktor/student_forum/server/db"
 	"github.com/ivanovski-viktor/student_forum/server/routes"
 	"github.com/ivanovski-viktor/student_forum/server/validation"
