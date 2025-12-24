@@ -123,7 +123,7 @@ export default function AddBlogPostModal({ isOpen, onClose, url }) {
           className="flex flex-col gap-5 p-6 sm:p-10"
         >
           <div className="flex justify-between items-center mb-4">
-            <h2>Креирај објава</h2>
+            <h2>Create a post</h2>
             <button
               type="button"
               onClick={handleClose}

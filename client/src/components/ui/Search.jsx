@@ -104,7 +104,7 @@ export default function Search() {
 
       {debouncedQuery.length > 2 && (
         <div className="absolute z-40 top-3/5 left-0 py-8 px-4 bg-background w-full rounded-b-3xl shadow-md overflow-hidden max-h-[80dvh] h-84 border border-stroke">
-          <h6>Search Results:</h6>
+          <h6>Резултати од пребарување:</h6>
           <div className="mt-2 space-y-2 overflow-y-auto max-h-full flex flex-col">
             {loading ? (
               <InlineLoader />

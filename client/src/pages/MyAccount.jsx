@@ -57,7 +57,7 @@ export default function MyAccount() {
             </div>
           </div>
           <div className="flex flex-col items-start justify-center sm:grid sm:grid-cols-6 ">
-            <div className="sm:col-span-2 max-sm:w-[280px] max-w-full m-auto">
+            <div className="sm:col-span-2 max-sm:w-[280px] max-w-full">
               <ProfileImage
                 key={profile_image_url}
                 image_url={profile_image_url}

@@ -100,7 +100,7 @@ export default function Login() {
         <Button buttonType="form" text="Продолжи" />
         {message.text && <Message type={message.type} text={message.text} />}
 
-        <LinkUnderline link="/register" text="Регистрирај се" />
+        <LinkUnderline link="/register" text="Register" />
       </Form>
     </div>
   );

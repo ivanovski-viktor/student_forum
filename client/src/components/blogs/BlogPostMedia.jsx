@@ -21,7 +21,7 @@ export default function BlogPostMedia({ media }) {
             pagination={{ clickable: true }}
             allowTouchMove={false}
           >
-            {media.map((file, index) => {
+            {media.map((file) => {
               if (file.type.includes("video")) {
                 return (
                   <SwiperSlide key={file.url} src={file.url}>

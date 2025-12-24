@@ -3,6 +3,7 @@ import CreatedAt from "../ui/CreatedAt";
 import BlogPostStatsBar from "./BlogPostStatsBar";
 import { Users } from "lucide-react";
 import { usePageLoading } from "../../context/PageLoadingContext";
+import BlogPostMedia from "../blogs/BlogPostMedia";
 
 function filterText(html, maxLength = 300) {
   if (!html) return "";
@@ -57,8 +58,7 @@ export default function BlogPostCard({ post }) {
         <p className="mb-4 text-foreground-light !max-w-full break-all">
           {truncatedText}
         </p>
-        {/* <BlogPostMedia media={post.media} /> */}
-
+        <BlogPostMedia media={post?.media} />
         <BlogPostStatsBar post={post} />
       </div>
     </li>

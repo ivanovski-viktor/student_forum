@@ -18,25 +18,25 @@ export default function Home({ children }) {
     <div className="max-md:flex max-md:flex-col-reverse md:grid md:grid-cols-12 md:min-h-screen">
       {/* nav menu */}
       <div className="col-span-3 xl:col-span-2 border-r border-stroke bg-background max-md:hidden">
-        <div className="p-2 xl:p-5 !pt-0 flex flex-col sticky top-20 border-b border-stroke">
+        <div className="p-2 xl:p-5 !pt-0 flex flex-col sticky top-20 border-b border-stroke ">
           <NavItem to="/">
             <House size={20} />
-            Home
+            Дома
           </NavItem>
 
           <NavItem to="/posts">
             <FileText size={20} />
-            Latest Posts
+            Најнови објави
           </NavItem>
 
           <NavItem to="/groups">
             <Users size={20} />
-            Groups
+            Групи
           </NavItem>
 
           <NavItem to="/users/me">
             <User size={20} />
-            {isAuthenticated ? "My Profile" : "Login"}
+            {isAuthenticated ? "Мој профил" : "Најави се"}
           </NavItem>
         </div>
       </div>

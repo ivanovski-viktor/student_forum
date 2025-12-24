@@ -92,7 +92,7 @@ export default function BlogPosts({
       )}
 
       {!isAuthenticated && enableAddPost === true && (
-        <LogInCta text="Најави се за да објавиш нешто..." />
+        <LogInCta text="Најави се за да објавиш..." />
       )}
 
       <ul className="space-y-4 my-4">

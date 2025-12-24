@@ -88,7 +88,7 @@ export default function Register() {
 
   return (
     <div className="p-5 min-h-screen flex flex-col items-center justify-center">
-      <Form handleSubmit={handleSubmit} title="Регистрирај се!">
+      <Form handleSubmit={handleSubmit} title="Register">
         <Input
           type="text"
           name="username"
@@ -122,7 +122,7 @@ export default function Register() {
         <Button buttonType="form" text="Продолжи" />
         {message.text && <Message type={message.type} text={message.text} />}
 
-        <LinkUnderline link="/login" text="Кон најава" />
+        <LinkUnderline link="/login" text="Најави се" />
       </Form>
     </div>
   );

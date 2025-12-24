@@ -3,28 +3,34 @@ import ModifyButton from "./ModifyButton";
 import InlineLoader from "../layout/InlineLoader";
 import { useFetch } from "../../hooks/useFetch";
 import { Pencil, Trash2 } from "lucide-react";
-import EditPostModal from "../blogs/EditBlogPostMoldal";
-import { useAuthUser } from "../../context/AuthUserContext";
-import { useState } from "react";
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function ModifyButtons({
-  url,
+  token,
   userId,
+  authUser = null,
   onClickEdit,
   onClickDelete,
   loadingEdit,
   editing,
   loadingDelete,
-  post,
 }) {
-  const { authUser, isAuthenticated } = useAuthUser();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const authUserId = authUser?.user?.id;
+  let authUserId = authUser?.user?.id;
 
-  if (authUserId !== userId || !isAuthenticated) return null;
+  // if no authuser is passed fetch authuserdata
+  if (token && !authUser) {
+    const { data: authUserData } = useFetch(`${apiUrl}/users/me`, {
+      headers: { "Content-Type": "application/json", Authorization: token },
+    });
+
+    authUserId = authUserData?.user?.id;
+  }
+
+  if (authUserId !== userId) return null;
   return (
     <div className="flex items-center gap-2">
-      <ModifyButton active={editing} onClick={() => setIsModalOpen(true)}>
+      <ModifyButton active={editing} onClick={onClickEdit}>
         {loadingEdit ? <InlineLoader small={true} /> : <Pencil size={20} />}
       </ModifyButton>
       <ModifyButton
@@ -34,13 +40,6 @@ export default function ModifyButtons({
       >
         {loadingDelete ? <InlineLoader small={true} /> : <Trash2 size={20} />}
       </ModifyButton>
-
-      <EditPostModal
-        post={post}
-        url={url}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </div>
   );
 }

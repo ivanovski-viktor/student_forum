@@ -8,18 +8,18 @@ export default function ProfileImage({ image_url, uploadImage = false }) {
   const [isUploading, setIsUploading] = useState(false);
 
   return uploadImage === true ? (
-    <div className="relative">
+    <div className="relative w-full">
       <UploadProfileImage
         setIsUploading={setIsUploading}
         setCurrentImageUrl={setCurrentImageUrl}
       />
       {isUploading ? (
-        <div className="rounded-xl w-full flex items-center justify-center aspect-[1/1.25] bg-gray-100">
+        <div className="rounded-xl !w-full flex items-center justify-center aspect-[1/1.25] bg-gray-100">
           <InlineLoader />
         </div>
       ) : (
         <img
-          className={`rounded-xl w-full aspect-[1/1.25] object-cover bg-foreground/10 ${
+          className={`rounded-xl !w-full aspect-[1/1.25] object-cover bg-foreground/10 ${
             image_url ? "" : "pt-10"
           }`}
           src={currentImageUrl || userPlaceholder}
