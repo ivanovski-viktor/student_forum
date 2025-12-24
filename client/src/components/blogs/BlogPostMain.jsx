@@ -30,11 +30,15 @@ export default function BlogPostMain({ post, postUrl }) {
     success: successDelete,
   } = useDeleteRequest(postUrl, token);
 
-  if (successDelete) {
-    setTimeout(() => {
-      navigate("/", { replace: true });
-    }, 1500);
-  }
+  useEffect(() => {
+    if (successDelete) {
+      const timer = setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [successDelete, navigate]);
 
   return (
     <div className="blog-post">
@@ -59,6 +63,7 @@ export default function BlogPostMain({ post, postUrl }) {
           <CreatedAt time={post.created_at} />
         </div>
         <ModifyButtons
+          token={token}
           post={post}
           url={postUrl}
           userId={post?.user_id}

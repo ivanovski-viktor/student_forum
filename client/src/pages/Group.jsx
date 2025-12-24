@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useFetch } from "../hooks/useFetch";
 import InlineLoader from "../components/layout/InlineLoader";
 import MainLayout from "../components/layout/MainLayout";
@@ -10,14 +10,15 @@ import { useAuthUser } from "../context/AuthUserContext";
 import GroupUsers from "../components/groups/GroupUsers";
 import Banner from "../components/ui/Banner";
 import { usePostRequest } from "../hooks/usePostRequest";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDeleteRequest } from "../hooks/useDeleteRequest";
 import ModifyButtons from "../components/ui/ModifyButtons";
+import Message from "../components/ui/Message";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 export default function Group() {
   const [refreshKey, setRefreshKey] = useState(0);
-
+  const navigate = useNavigate();
   const { name } = useParams();
   const token = localStorage.getItem("token");
   const { authUser, isAuthenticated, checkAuth } = useAuthUser();
@@ -48,6 +49,24 @@ export default function Group() {
     setRefreshKey((prev) => prev + 1);
   }
 
+  // Delete group
+  const {
+    exec: handleDelete,
+    loading: loadingDelete,
+    error: errorDelete,
+    success: successDelete,
+  } = useDeleteRequest(groupUrl, token);
+
+  useEffect(() => {
+    if (successDelete) {
+      const timer = setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [successDelete, navigate]);
+
   if (loadingGroupData) return <InlineLoader />;
   if (groupError) return <NotFound />;
   const group = groupData?.group;
@@ -70,8 +89,17 @@ export default function Group() {
             ) : (
               <Users size={50} className="group-img group-img--large" />
             )}
-            <h5>g/{group.name}</h5>
-            <ModifyButtons token={token} userId={group?.creator_id} />
+            <div>
+              <h5>g/{group.name}</h5>
+              {errorDelete && <Message type="error" text={errorDelete} />}
+              {successDelete && <Message text="Successfully deleted group!" />}
+            </div>
+            <ModifyButtons
+              token={token}
+              userId={group?.creator_id}
+              onClickDelete={handleDelete}
+              loadingDelete={loadingDelete}
+            />
           </div>
           {isAuthenticated && !isCreator ? (
             groupMember ? (
